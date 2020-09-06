@@ -4,4 +4,6 @@
 *.ipynb_checkpoints
 *.txt
 __pycache__/*
+*.csv
+amb_other/*
 amb_sin/*
