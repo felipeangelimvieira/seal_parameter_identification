@@ -25,32 +25,39 @@ class MagneticBearing3D:
         self.gravity = 9.80665
         self.mass = 1  # axis mass
 
-        radius = 14.28 / 2 * 0.001  # radius of the axis
-        self.rotor_radius = 36.4 / 2 * 0.001  # radius of the rotors
 
-        # TODO:
+        ## Rotor parameters
+        # Considering constant cross-section area
+        #radius = 14.28 / 2 * 0.001  # radius of the axis
+        self.rotor_radius = 36.4 / 2 * 0.001  # radius of the rotors
         radius = self.rotor_radius
         self.radius = radius
-        # self.inertia = 1/2*self.mass*(radius**2) #moment of inertia
-        # self.bearing_constant = 2.15846*1e-5 #0.039925 # magnetic constant. Fm = bearing_constant*i^2/d^2
-
-        # bearing n number
-        self.n = 260
-        # area of transversal section
-        self.area = 2 * 0.0077 * 0.0165 * np.cos(np.pi / 8)
         # axis length
         self.axis_length = 0.4
         self.L = self.axis_length / 2
+        # axial position from center C to bearings
+        self.pm = 0.150
+
+        ## Bearing parameters
+        # bearing n number
+        self.n = 260
+        # Magnetic constants
+        self.l_metal = 0.115  # m
+        self.mi_r = 8e3
+        self.mi = np.pi * 4e-7
+
+        # area of transversal section
+        self.area = 2 * 0.0077 * 0.0165 * np.cos(np.pi / 8)
         # gap between rotor and support
         self.gap_rotor_support = 0.4 * 0.001  # 0.4 mm
         # gap between rotor and bearing
         self.gap_rotor_bearing = 1 * 0.001  # 1.0 mm
-        # axial position from center C to bearings
-        self.pm = 0.150
         # radial position from center C to bearings
         self.radial_bearing_position = self.rotor_radius + self.gap_rotor_bearing
         # radial position from center C to support
         self.radial_support_position = self.rotor_radius + self.gap_rotor_support
+
+
 
         # TODO: add rotor and axis inertia
         self.inertia_x = 1 / 4 * self.mass * radius ** 2 + 1 / 12 * self.mass * (self.L * 2) ** 2
@@ -61,10 +68,6 @@ class MagneticBearing3D:
                              [0, self.inertia_y, 0],
                              [0, 0, self.inertia_z]])
 
-        # Magnetic constants
-        self.l_metal = 0.115  # m
-        self.mi_r = 8e3
-        self.mi = np.pi * 4e-7
 
         self.current_inf_A = 0
         self.current_sup_A = 0
@@ -81,7 +84,10 @@ class MagneticBearing3D:
         # position = R.self.pm*sz + [x, y, z]T
         self.rotor_position_B = None
 
-        self.Tq = 0.01
+
+
+        # Init parameters
+        self.Tq = 0.00
         self.init_rpm_min_ratio = 0.5
         self.init_rpm_max_ratio = 1
         self.max_rpm = 0  # rpm
@@ -93,9 +99,11 @@ class MagneticBearing3D:
         self.init_from_center = True
         self.speed_reward = True
 
-        self.dt = 1e-4 / 3
-        self.dt_std = 0
 
+        self.dt = 0.000195
+
+
+        # State
         self.theta = np.zeros((3,))
         self.beta = np.zeros((3,))
         self.omega = np.zeros((3,))
@@ -104,24 +112,11 @@ class MagneticBearing3D:
         self.z = np.zeros((3,))
         self.state = np.array([self.x, self.y, self.z, self.theta, self.beta, self.omega])
 
+
         self.max_current = 4
-
         self.steps_before_done = 0
-        self.past_y_a = []
-        self.past_y_b = []
-        self.past_y = []
-        self.past_beta = []
 
-        self.y_a = 0
-        self.y_b = 0
-        self.y_a_dot = 0
-        self.y_b_dot = 0
-        self.x_a = 0
-        self.x_b = 0
-        self.x_a_dot = 0
-        self.x_b_dot = 0
 
-        self.viewer = None
 
         self.force_inf_A = 0
         self.force_sup_A = 0
@@ -254,23 +249,6 @@ class MagneticBearing3D:
         self.reset_count += 1
         self.state = np.zeros((6, 3))
 
-        ra, rb = np.random.rand(2) * self.gap_rotor_support
-        angle_a, angle_b = np.random.rand(2) * np.pi * 2
-        self.state[:, 0] = self.get_position_state_from_polar(ra=ra, angle_a=angle_a,
-                                                              rb=rb, angle_b=angle_b)
-
-        # self.state[:3, 0] = pos_center
-        # self.state[3:, 0] = [ang_theta, ang_beta, 0]
-
-        if self.init_from_support:
-            self.state[:6, 0] = 0
-            self.state[0, 0] = -self.gap_rotor_support * 0.99
-
-        if self.init_from_center:
-            self.state[:6, 0] = 0
-
-        # if np.random.uniform(low=0, high=1) > 0.9:
-        #    self.state[:,0] = 0
 
         x, y, z, theta, beta, omega = self.state
         # Rotation along rx (axis = 0) r->a
@@ -282,29 +260,10 @@ class MagneticBearing3D:
         # r->b
         R_beta_theta = np.matmul(R_beta, R_theta)
         R = np.matmul(R_omega, R_beta_theta)
-
-        theta_dot, beta_dot = self.get_init_angular_speed(self.state, R_theta, R_beta_theta)
-
-        if self.init_with_velocity:
-            self.state[:, 1] = self.sample_velocity_from_polar(ra, angle_a,
-                                                               rb, angle_b, self.state,
-                                                               steps_before_collision=self.steps_before_collision)
-
-        else:
-            theta_dot = np.zeros_like(theta_dot)
-            beta_dot = np.zeros_like(beta_dot)
-            self.state[3:5, 1] = np.array([theta_dot, beta_dot])
+        self.R = R
 
         q = self.state[:, :1]
         q_dot = self.state[:, 1:2]
-
-        self.state[-1, 1] = (np.random.uniform(self.init_rpm_min_ratio,
-                                               self.init_rpm_max_ratio)) * self.max_rpm / 60 * 3.14
-
-        if self.forced_initial_omega_dot:
-            self.state[-1, 1] = self.forced_initial_omega_dot
-
-        self.R = R
         self.rotor_position_A = np.matmul(R.transpose(), np.array([[0], [0], [-self.pm]])) + q[:3]
         # bearing B (positive rz axis)
         # position = R.self.pm*sz + [x, y, z]T
@@ -316,21 +275,6 @@ class MagneticBearing3D:
                                          axis=0) + q_dot[:3]
         self.steps_before_done = 0
         return self._get_obs()
-
-    def get_init_angular_speed(self, state, R_theta, R_beta_theta):
-        # suppose omega_dot = 0
-        omega_dot = 0.001
-        min_steps_before_collision = np.random.uniform(low=1, high=1.2) * 1e4
-        # min_steps_before_collision = 1e7
-        w_r_max = self.gap_rotor_support / self.dt / (min_steps_before_collision) / self.pm
-        w_r = np.random.rand(2) - 0.5
-        w_r = w_r * w_r_max / np.linalg.norm(w_r)
-
-        theta_dot = w_r[0] - omega_dot * np.sin(state[4, 1])
-        beta_dot = (w_r[1] - omega_dot * np.cos(state[4, 1]) * np.sin(state[4, 0])) / np.cos(state[3, 0])
-
-        return theta_dot, beta_dot
-
 
     def rotation_matrix(self, angle, axis):
         """Returns rotation matrix of angle along axis
@@ -354,26 +298,6 @@ class MagneticBearing3D:
                              [0, 0, 1]])
         raise ValueError("Axis must be 0, 1 or 2")
 
-    def rotation_matrix_compose(self, theta, beta, inverse=False):
-        """Returns rotation matrix along rx and ay
-
-        Arguments:
-            theta {float} -- rotation angle around axis rx
-            beta {float} -- rotation angle around axis ay
-
-        Keyword Arguments:
-            inverse {bool} -- whether to return rotation matrix r->b or its inverse (default: {False})
-
-        Returns:
-            np.array -- rotation matrix
-        """
-        matrix = np.array([[np.cos(beta), -np.sin(theta) * np.sin(beta), np.cos(theta) * np.sin(beta)],
-                           0, np.cos(theta), np.sin(theta),
-                           -np.sin(beta), -np.sin(theta) * np.cos(beta), np.cos(beta) * np.cos(beta)])
-        if inverse:
-            self.transpose = np.transpose(matrix)
-            return self.transpose
-        return matrix
 
     def _get_obs(self):
         """
@@ -390,10 +314,6 @@ class MagneticBearing3D:
                           self.rotor_velocity_B[1, 0]],  # x2 speed
                          dtype=np.float64)).tolist()
 
-    def close(self):
-        if self.viewer:
-            self.viewer.close()
-            self.viewer = None
 
     def magnetic_force(self, current, d):
         return self.mi * (self.n ** 2) * self.area * (current ** 2) / (self.l_metal / self.mi_r + 2 * d) ** 2
@@ -458,7 +378,17 @@ class MagneticBearing3D:
                  f_bx,
                  mass,
                  gravity):
+        """
+        Acceleration of center of mass
 
+        :param f_ay: force on bearing A along y axis
+        :param f_by: force on bearing B along y axis
+        :param f_ax: force on bearing A along x axis
+        :param f_bx: force on bearing B along x axis
+        :param mass: mass
+        :param gravity: gravity
+        :return:
+        """
 
         x_dot2 = (f_ax + f_bx) / mass - gravity
         y_dot2 = (f_ay + f_by) / mass
@@ -472,6 +402,16 @@ class MagneticBearing3D:
                          f_ay,
                          f_by,
                          state):
+        """
+        Angular acceleration
+
+        :param f_ay: force on bearing A along y axis
+        :param f_by: force on bearing B along y axis
+        :param f_ax: force on bearing A along x axis
+        :param f_bx: force on bearing B along x axis
+        :param state: state 6x3 matrix (coordinates position, coords velocity, coords acceleration)
+        :return: vector of shape (3, 1)
+        """
 
         Icm = self.Icm
         R = self.R
@@ -490,36 +430,6 @@ class MagneticBearing3D:
 
         return np.matmul(np.linalg.inv(A), M - np.cross(w_s, np.matmul(self.Icm, w_s), axis=0) - B).reshape((3,))
 
-    def get_dot2(self,
-                 state,
-                 f_ay,
-                 f_by,
-                 f_ax,
-                 f_bx):
-
-        x, y, z, theta, beta, omega = state
-
-        R = self.get_R(theta=theta[0], beta=beta[0], omega=omega[0])
-
-
-        trans_dot2 = self._get_acc(f_ay=f_ay,
-                                   f_by=f_by,
-                                   f_ax=f_ax,
-                                   f_bx=f_bx,
-                                   mass=self.mass,
-                                   gravity=self.gravity
-                                   )
-
-
-
-
-        ang_dot2 = self._get_angular_acc(f_ay=f_ay,
-                                           f_by=f_by,
-                                           f_ax=f_ax,
-                                           f_bx=f_bx,
-                                         state=state)
-
-        return np.array([trans_dot2, ang_dot2]).flatten()
 
     def get_R(self, theta: float, beta: float, omega: float):
 
@@ -533,14 +443,18 @@ class MagneticBearing3D:
         R_beta_theta = np.matmul(R_beta, R_theta)
         return np.matmul(R_omega, R_beta_theta)
 
-    def get_momentum(self):
-        M = np.eye(5) * self.mass
-        M[2:, 2:] = self.Icm
-
-        return M.dot(np.delete(self.state[:, 2].flatten(), 2))
 
     def dynamics_fn(self, t, y, f, mass, gravity, Icm):
+        """
 
+        :param t: time
+        :param y:  array of shape (12,) with position and velocity
+        :param f:  force
+        :param mass: mass
+        :param gravity: gravity
+        :param Icm:
+        :return:
+        """
         q, q_dot = y[:6], y[6:]
 
         f_ax, f_ay, f_bx, f_by = f
@@ -564,53 +478,6 @@ class MagneticBearing3D:
 
         dydt = np.concatenate([q_dot.flatten(), trans_dot2.flatten(), ang_dot2.flatten()])
         return dydt
-
-    def set_max_rpm(self, rpm):
-        self.max_rpm = rpm
-        return self.max_rpm
-
-    def set_Tq(self, Tq):
-        self.Tq = Tq
-        return self.Tq
-
-    def set_dt(self, dt):
-        self.dt = dt
-        return self.dt
-
-    def set_dt_std(self, dt_std):
-        self.dt_std = dt_std
-
-    def get_position_state_from_polar(self, ra, angle_a, rb, angle_b):
-        xa = ra * np.sin(angle_a)
-        ya = ra * np.cos(angle_a)
-        xb = rb * np.sin(angle_b)
-        yb = rb * np.cos(angle_b)
-
-        xc = 0.5 * (xa + xb)
-        yc = 0.5 * (ya + yb)
-
-        theta = np.arcsin((yb - yc) / self.pm)
-        assert (np.abs(theta) < np.pi / 2)
-        beta = np.arcsin((xb - xc) / self.pm / np.cos(theta))
-
-        omega = 0
-
-        return np.array([xc, yc, 0, theta, beta, 0])
-
-    def sample_velocity_from_polar(self, ra, angle_a,
-                                   rb, angle_b, state,
-                                   steps_before_collision=1000):
-        r = np.max([ra, rb])
-        angle = np.random.uniform(0, 2 * np.pi)
-        xc_dot = np.random.uniform(0, self.gap_rotor_support / self.dt / steps_before_collision)
-        yc_dot = np.random.uniform(0, self.gap_rotor_support / self.dt / steps_before_collision)
-
-        max_norm = (self.gap_rotor_support - r) / self.dt / steps_before_collision
-
-        beta_dot = max_norm / self.pm * np.sin(angle) - xc_dot
-        theta_dot = max_norm / self.pm * np.cos(angle) / (-np.cos(state[4, 0])) - yc_dot
-
-        return np.array([xc_dot, yc_dot, 0, theta_dot, beta_dot, 0])
 
 
 if __name__ == '__main__':
