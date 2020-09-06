@@ -1,0 +1,7 @@
+*.idea
+*.png
+*.npy
+*.ipynb_checkpoints
+*.txt
+__pycache__/*
+amb_sin/*
