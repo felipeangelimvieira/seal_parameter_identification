@@ -149,7 +149,7 @@ class MagneticBearing3D:
 
         return - (self.K @ q + self.C @ q_dot)
 
-
+    
     def step(self, action=jnp.array([0, 0, 0, 0])):
 
         dt = self.dt

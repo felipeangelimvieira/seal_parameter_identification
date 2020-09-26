@@ -49,7 +49,7 @@ class MagneticBearing3D:
         # area of transversal section
         self.area = 2 * 0.0077 * 0.0165 * np.cos(np.pi / 8)
         # gap between rotor and support
-        self.gap_rotor_support = 0.4 * 0.001  # 0.4 mm
+        self.gap_rotor_support = 4e-3  # 0.4 mm
         # gap between rotor and bearing
         self.gap_rotor_bearing = 1 * 0.001  # 1.0 mm
         # radial position from center C to bearings
@@ -128,17 +128,17 @@ class MagneticBearing3D:
         self.force_left_B = 0
         self.force_right_B = 0
 
-        self.K = np.array([[4300, 43],[-43, 430]])
-        self.C = np.array([[43, 0],
-                           [0, 43]])
+        #self.K = np.array([[4300, 43],[-43, 430]])
+        #self.C = np.array([[43, 0],
+        #                   [0, 43]])
 
-        self.gravity = 0
-        k = 4300
-        c = 43
-        self.K = np.array([[k, k / 10],
-                          [-k / 10, k]])
-        self.C = np.array([[c, 0],
-                          [0, c]])
+        
+        #k = 4300
+        #c = 43
+        #self.K = np.array([[k, k / 10],
+        #                  [-k / 10, k]])
+        #self.C = np.array([[c, 0],
+        #                  [0, c]])
 
 
     def get_force(self, q, q_dot):
@@ -149,7 +149,8 @@ class MagneticBearing3D:
 
 
     def step(self, action=np.array([0, 0, 0, 0])):
-
+        
+        
         dt = self.dt
         """
         State matrix
@@ -182,13 +183,15 @@ class MagneticBearing3D:
         q_dot = self.state[:, 1:2]
 
 
-        force_a = self.get_force(q=self.rotor_position_A, q_dot=self.rotor_velocity_A)
-        force_b = self.get_force(q=self.rotor_position_B, q_dot=self.rotor_velocity_B)
-
-        f = np.array([force_a[0], force_a[1], force_b[0], force_b[1]]).flatten()
-        f += action
+        #force_a = self.get_force(q=self.rotor_position_A, q_dot=self.rotor_velocity_A)
+        #force_b = self.get_force(q=self.rotor_position_B, q_dot=self.rotor_velocity_B)
+        #f = np.array([force_a[0], force_a[1], force_b[0], force_b[1]]).flatten()
+        
+        
+        f = action
+        
         y = self.state[:, :2].transpose().flatten()
-        self.dynamics_fn(dt, y, f, self.mass, self.gravity, self.Icm)
+        #self.dynamics_fn(dt, y, f, self.mass, self.gravity, self.Icm)
         # new_y = odeint(func=self.dynamics_fn, y0=y, t=[0,dt], args=(f, self.mass, self.gravity, self.Icm))[1]
         sol = solve_ivp(fun=self.dynamics_fn, t_span=[0, dt], y0=y, method='RK45',
                         args=(f, self.mass, self.gravity, self.Icm), t_eval=[dt])
@@ -304,7 +307,7 @@ class MagneticBearing3D:
         Return observations (current x y position and velocities at A and B)
         """
 
-        return (np.array([self.rotor_position_A[0, 0],  # x1 distance
+        return np.array([self.rotor_position_A[0, 0],  # x1 distance
                           self.rotor_position_A[1, 0],  # x2 distance
                           self.rotor_position_B[0, 0],  # x1 distance
                           self.rotor_position_B[1, 0],  # x2 distance
@@ -312,7 +315,7 @@ class MagneticBearing3D:
                           self.rotor_velocity_A[1, 0],  # x2 speed
                           self.rotor_velocity_B[0, 0],  # x1 speed
                           self.rotor_velocity_B[1, 0]],  # x2 speed
-                         dtype=np.float64)).tolist()
+                         dtype=np.float64)
 
 
     def magnetic_force(self, current, d):
@@ -457,7 +460,9 @@ class MagneticBearing3D:
         """
         q, q_dot = y[:6], y[6:]
 
+        
         f_ax, f_ay, f_bx, f_by = f
+                
 
         R = self.get_R(theta=q[3], beta=q[4], omega=q[5])
 
@@ -469,7 +474,7 @@ class MagneticBearing3D:
                                    f_by=f_by,
                                    mass=mass,
                                    gravity=gravity)
-
+        
         ang_dot2 = self._get_angular_acc(f_ax=f_ax,
                                          f_bx=f_bx,
                                          f_ay=f_ay,
