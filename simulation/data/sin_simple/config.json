@@ -1,8 +1,10 @@
 {
-    "excitation" : "sweep",
+    "excitation" : "sinusoidal",
     "excitation_params" : {
-        "f1": 4,
-        "f2": 69
+
+        "fmin" : 4,
+        "fmax" : 69,
+        "fstep": 5
     },
     "episodes_x" : 1,
     "episodes_y" : 1,

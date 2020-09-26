@@ -10,13 +10,21 @@ from simulation.pid import PID
 from simulation.seal import Seal
 from simulation import excitation_signals
 from pathlib import Path
+import logging 
 from tqdm import tqdm
 
+log = logging.getLogger()
+log.setLevel(logging.INFO)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+log.addHandler(handler)
 
 
 def generate_data_episode(env,
                           axis,
-                          config):
+                          config,
+                          use_seal=True):
 
     
     # PID
@@ -24,7 +32,7 @@ def generate_data_episode(env,
 
     # Excitation signal
     signal_fun = getattr(excitation_signals, config["excitation"] + "_fun")
-    excitation_signal = signal_fun(axis=axis , **config["excitation_params"])
+    excitation_signal = signal_fun(axis=axis, T=config["time_per_episode"], **config["excitation_params"])
     
     # Seal
     K = np.array(config["K"])
@@ -39,6 +47,7 @@ def generate_data_episode(env,
     
     obs = env.reset()
     for _ in tqdm(range(int(config["time_per_episode"]/env.dt))):
+        
         
         t.append(_*env.dt)
         # Excitation_signal
@@ -55,7 +64,8 @@ def generate_data_episode(env,
 
         # Action
         action = pid_force
-        action += seal_force
+        if use_seal:
+            action += seal_force
         action += np.array([env.gravity, 0, env.gravity, 0])/2
         action += excitation_force
         
@@ -113,6 +123,102 @@ def add_noise_to_data(df, config):
     
     return df
 
+def add_center_of_mass_columns(df):
+    
+    df["fx"] = (df["f_ax"] + df["f_bx"])/2
+    df["fy"] = (df["f_ay"] + df["f_by"])/2
+    
+    df["y"] = (df["by"] + df["ay"])/2
+    df["x"] = (df["bx"] + df["ax"])/2
+    
+    return df
+    
+
+def post_processing_data(df, noise):
+    df = parse_data_to_csv(data)
+    if noise:
+        df = add_noise_to_data(df, config)
+    df = add_center_of_mass_columns(df)
+    return df
+
+def get_data_sweep(env, config, config_file):
+    
+    for use_seal in [True, False]:
+        
+        
+        for i in range(config.get("episodes_x", 0)):
+            log.info("X episodes")
+
+            data = generate_data_episode(env, axis="x", config=config, use_seal=use_seal)
+            df = post_processing_data(df, args.noise)
+            df.to_csv(config_file.parent / Path(f"excitation_x_episode_{i}_seal_{use_seal}.csv"), index=False)
+
+
+
+        for i in range(config.get("episodes_y", 0)):
+            log.info("Y episodes")
+            data = generate_data_episode(env, axis="y", config=config, use_seal=use_seal)
+            df = post_processing_data(df, args.noise)
+
+            df.to_csv(config_file.parent / Path(f"excitation_y_episode_{i}_seal_{use_seal}.csv"), index=False)
+
+        for i in range(config.get("episodes_both", 0)):
+            log.info("Both - episodes")
+            data = generate_data_episode(env, axis="both", config=config, use_seal=use_seal)
+            df = post_processing_data(df, args.noise)
+
+            df.to_csv(config_file.parent / Path(f"excitation_both_episode_{i}_seal_{use_seal}.csv"), index=False)
+        
+def get_data_sin(env, config, config_file):
+    
+    fmax = config["excitation_params"]["fmax"]
+    fmin = config["excitation_params"]["fmin"]
+    fstep = config["excitation_params"]["fstep"]
+    
+    def loop_axis(env, config, axis, use_seal, freq):
+        df = pd.DataFrame()
+        for i in range(config.get(f"episodes_{axis}", 0)):
+            data = generate_data_episode(env, axis=axis, config=config, use_seal=use_seal)
+            _df = parse_data_to_csv(data)
+            if args.noise:
+                _df = add_noise_to_data(_df, config)
+            _df = add_center_of_mass_columns(df)
+            _df["episode"] = i
+            df = pd.concat([df, _df], ignore_index=True)
+        df.to_csv(config_file.parent / Path(f"excitation_{axis}_episode_{i}_freq_{freq}Hz_seal_{use_seal}.csv"),
+                  index=False)
+
+    for use_seal in [True, False]:
+        
+        for freq in tqdm(range(fmin, fmax+fstep, fstep)):
+
+            log.info(f" {freq} Hz")
+
+            config["excitation_params"]["freq"] = freq
+
+            loop_axis(env, config, axis="x", use_seal=use_seal, freq=freq)
+            loop_axis(env, config, axis="y", use_seal=use_seal, freq=freq)
+            loop_axis(env, config, axis="both", use_seal=use_seal, freq=freq)
+
+            for i in range(config.get("episodes_y", 0)):
+                data = generate_data_episode(env, axis="y", config=config, use_seal=use_seal)
+                df = parse_data_to_csv(data)
+                if args.noise:
+                    df = add_noise_to_data(df, config)
+                df = add_center_of_mass_columns(df)
+
+                df.to_csv(config_file.parent / Path(f"excitation_y_episode_{i}_freq_{freq}Hz_seal_{use_seal}.csv"), index=False)
+
+            for i in range(config.get("episodes_both", 0)):
+                data = generate_data_episode(env, axis="both", config=config, use_seal=use_seal)
+                df = parse_data_to_csv(data)
+                if args.noise:
+                    df = add_noise_to_data(df, config)
+                df = add_center_of_mass_columns(df)
+
+                df.to_csv(config_file.parent / Path(f"excitation_both_episode_{i}_freq_{freq}Hz_seal_{use_seal}.csv"), index=False)
+
+        
 if __name__ == "__main__":
     
     argparser = argparse.ArgumentParser()
@@ -129,30 +235,16 @@ if __name__ == "__main__":
     env.dt = config["dt"]
     
     
-    
-    for i in range(config.get("episodes_x", 0)):
-        data = generate_data_episode(env, axis="x", config=config)
-        df = parse_data_to_csv(data)
-        if args.noise:
-            df = add_noise_to_data(df, config)
-            
-        df.to_csv(config_file.parent / Path(f"excitation_x_episode_{i}.csv"), index=False)
+    if config["excitation"] == "sweep":
+        log.info("Sweep excitation")
+        get_data_sweep(env, config, config_file)
         
-    for i in range(config.get("episodes_y", 0)):
-        data = generate_data_episode(env, axis="y", config=config)
-        df = parse_data_to_csv(data)
-        if args.noise:
-            df = add_noise_to_data(df, config)
-            
-        df.to_csv(config_file.parent / Path(f"excitation_y_episode_{i}.csv"), index=False)
-            
-    for i in range(config.get("episodes_both", 0)):
-        data = generate_data_episode(env, axis="both", config=config)
-        df = parse_data_to_csv(data)
-        if args.noise:
-            df = add_noise_to_data(df, config)
-            
-        df.to_csv(config_file.parent / Path(f"excitation_both_episode_{i}.csv"), index=False)
+    elif config["excitation"] == "sinusoidal":
+        log.info("Sinusoidal excitation")
+        get_data_sin(env, config, config_file)
+    
+    else:
+        ValueError(config["excitation"])
         
     
     

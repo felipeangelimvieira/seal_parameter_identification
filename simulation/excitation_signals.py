@@ -10,7 +10,7 @@ def parse_axis(axis):
         mask += np.array([1, 0, 1, 0])
     return mask    
     
-def sinusoidal(freq, axis="both", **kwargs):
+def sinusoidal_fun(freq, axis="both", **kwargs):
     
     mask = parse_axis(axis)
     
@@ -31,6 +31,6 @@ def sweep_fun(T, f1, f2, axis="both", **kwargs):
     b = 2*np.pi*f0
     
     def sweep(t):
-        f = np.sin(2*np.pi*(a*t * b)*t)
+        f = np.sin((a*t * b)*t)
         return f*mask
     return sweep
