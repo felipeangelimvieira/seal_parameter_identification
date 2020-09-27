@@ -3,13 +3,14 @@
     "excitation_params" : {
 
         "fmin" : 4,
-        "fmax" : 49,
-        "fstep": 5
+        "fmax" : 4,
+        "fstep": 1
     },
     "episodes_x" : 1,
     "episodes_y" : 1,
     "time_per_episode" : 10,
-    "K": [[4300, 430],[-430, 430]],
+    "K": [[4300, 430],
+          [-430, 430]],
     "C": [[43, 0],
           [0, 43]],
     "kp" : 7.5e3,

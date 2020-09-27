@@ -26,7 +26,17 @@ def generate_data_episode(env,
                           config,
                           use_seal=True):
 
-    
+    if use_seal:
+        K = np.array(config["K"])
+        C = np.array(config["C"])
+        env.K = K
+        env.C = C
+    else:
+        env.K = np.array([[0, 0],
+                          [0, 0]])
+        env.C = np.array([[0, 0],
+                          [0, 0]])
+
     # PID
     pid = PID(kp=config["kp"], kd=config["kd"], ki=config["ki"], dt=env.dt)
 
@@ -42,7 +52,6 @@ def generate_data_episode(env,
     history = []
     excitation_history = []
     pid_history = []
-    seal_history = []
     t = []
     
     obs = env.reset()
@@ -52,20 +61,15 @@ def generate_data_episode(env,
         t.append(_*env.dt)
         # Excitation_signal
         excitation_force = excitation_signal(_*env.dt)
-        
-        # Seal force
-        f_ax, f_ay = seal(q=obs[[0,1]], q_dot=obs[[4,5]]).flatten()/2
-        f_bx, f_by = seal(q=obs[[2,3]], q_dot=obs[[6,7]]).flatten()/2
-        seal_force = np.array([f_ax, f_ay, f_bx, f_by])
+
         
         # Pid
         pid_force = pid(obs[:4])
         
 
         # Action
-        action = pid_force
-        if use_seal:
-            action += seal_force
+        action = np.array([.0, .0, .0, .0])
+        action += pid_force
         action += np.array([env.gravity, 0, env.gravity, 0])/2
         action += excitation_force
         
@@ -74,16 +78,14 @@ def generate_data_episode(env,
     
         excitation_history.append(excitation_force)
         pid_history.append(pid_force)
-        seal_history.append(seal_force)
         history.append(obs)
 
-        if done:
-            break
+        #if done:
+        #    break
             
     return {
         "excitation" : np.array(excitation_history),
         "pid" : np.array(pid_history),
-        "seal" : np.array(seal_history),
         "observation" : np.array(history),
         "t" : np.array(t)
     }
@@ -182,10 +184,11 @@ def get_data_sin(env, config, config_file):
             _df = parse_data_to_csv(data)
             if args.noise:
                 _df = add_noise_to_data(_df, config)
-            _df = add_center_of_mass_columns(df)
+            _df = add_center_of_mass_columns(_df)
             _df["episode"] = i
             df = pd.concat([df, _df], ignore_index=True)
-        df.to_csv(config_file.parent / Path(f"excitation_{axis}_episode_{i}_freq_{freq}Hz_seal_{use_seal}.csv"),
+        if df.shape[0] > 0:
+            df.to_csv(config_file.parent / Path(f"excitation_{axis}_freq_{freq}Hz_seal_{use_seal}.csv"),
                   index=False)
 
     for use_seal in [True, False]:
@@ -200,23 +203,6 @@ def get_data_sin(env, config, config_file):
             loop_axis(env, config, axis="y", use_seal=use_seal, freq=freq)
             loop_axis(env, config, axis="both", use_seal=use_seal, freq=freq)
 
-            for i in range(config.get("episodes_y", 0)):
-                data = generate_data_episode(env, axis="y", config=config, use_seal=use_seal)
-                df = parse_data_to_csv(data)
-                if args.noise:
-                    df = add_noise_to_data(df, config)
-                df = add_center_of_mass_columns(df)
-
-                df.to_csv(config_file.parent / Path(f"excitation_y_episode_{i}_freq_{freq}Hz_seal_{use_seal}.csv"), index=False)
-
-            for i in range(config.get("episodes_both", 0)):
-                data = generate_data_episode(env, axis="both", config=config, use_seal=use_seal)
-                df = parse_data_to_csv(data)
-                if args.noise:
-                    df = add_noise_to_data(df, config)
-                df = add_center_of_mass_columns(df)
-
-                df.to_csv(config_file.parent / Path(f"excitation_both_episode_{i}_freq_{freq}Hz_seal_{use_seal}.csv"), index=False)
 
         
 if __name__ == "__main__":
@@ -230,7 +216,9 @@ if __name__ == "__main__":
     config_file = Path(args.config_file)
     with open(config_file, "rb") as f:
         config = json.load(f)
-    
+
+    logging.info(config)
+
     env = MagneticBearing3D()
     env.dt = config["dt"]
     

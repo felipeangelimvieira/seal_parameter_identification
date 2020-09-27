@@ -14,13 +14,24 @@ class EIVSin:
 
         dt = (df_x["t"] - df_y["t"].shift()).median()
 
-        df_x = self.get_frequency_domain_data(df=df_x,
-                                              freq=freq,
-                                              dt=dt)
+        dfs = []
+        for episode, group in df_x.groupby("episode"):
+            temp = self.get_frequency_domain_data(df=group,
+                                                  freq=freq,
+                                                  dt=dt)
+            temp["episode"] = episode
+            dfs.append(temp)
+        df_x = pd.concat(dfs, ignore_index=True)
 
-        df_y = self.get_frequency_domain_data(df=df_y,
-                                              freq=freq,
-                                              dt=dt)
+        dfs = []
+        for episode, group in df_y.groupby("episode"):
+            temp = self.get_frequency_domain_data(df=group,
+                                                  freq=freq,
+                                                  dt=dt)
+            temp["episode"] = episode
+            dfs.append(temp)
+        df_y = pd.concat(dfs, ignore_index=True)
+
 
         df = pd.concat([df_x, df_y], ignore_index=False)
 
@@ -29,7 +40,6 @@ class EIVSin:
         # Apenas indices que exisitam no dataframe x e y
         inds = list(map(lambda x: x[0], (filter(lambda x: x[1] == 2, Counter(df.index).most_common()))))
 
-        print(len(inds))
 
         inds = list(filter(lambda  x: x in sel_df.index, inds))
 
@@ -66,8 +76,8 @@ class EIVSin:
         :param dt: float: sample interval
         :return:
         """
-        N = int(np.ceil(1 / freq / dt * 4))
-
+        N = int(np.ceil(1 / freq / dt * 2))
+        
         data = {}
         data["freqs"] = []
         for n in range(df.shape[0] // N):

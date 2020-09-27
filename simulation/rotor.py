@@ -128,9 +128,9 @@ class MagneticBearing3D:
         self.force_left_B = 0
         self.force_right_B = 0
 
-        #self.K = np.array([[4300, 43],[-43, 430]])
-        #self.C = np.array([[43, 0],
-        #                   [0, 43]])
+        self.K = np.array([[.0, .0],[.0, .0]])
+        self.C = np.array([[.0, .0],
+                           [.0, .0]])
 
         
         #k = 4300
@@ -182,13 +182,14 @@ class MagneticBearing3D:
         q = self.state[:, :1]
         q_dot = self.state[:, 1:2]
 
+        f = 0
 
-        #force_a = self.get_force(q=self.rotor_position_A, q_dot=self.rotor_velocity_A)
-        #force_b = self.get_force(q=self.rotor_position_B, q_dot=self.rotor_velocity_B)
-        #f = np.array([force_a[0], force_a[1], force_b[0], force_b[1]]).flatten()
+        force_a = self.get_force(q=self.rotor_position_A, q_dot=self.rotor_velocity_A)
+        force_b = self.get_force(q=self.rotor_position_B, q_dot=self.rotor_velocity_B)
+        f += np.array([force_a[0], force_a[1], force_b[0], force_b[1]]).flatten()
         
         
-        f = action
+        f += action
         
         y = self.state[:, :2].transpose().flatten()
         #self.dynamics_fn(dt, y, f, self.mass, self.gravity, self.Icm)
