@@ -6,6 +6,7 @@ import numpy as np
 import json
 import matplotlib.pyplot as plt
 from simulation.rotor import MagneticBearing3D
+from simulation.simple_system import SimpleSystem
 from simulation.pid import PID
 from simulation.seal import Seal
 from simulation import excitation_signals
@@ -45,10 +46,7 @@ def generate_data_episode(env,
     excitation_signal = signal_fun(axis=axis, T=config["time_per_episode"], **config["excitation_params"])
     
     # Seal
-    K = np.array(config["K"])
-    C = np.array(config["C"])
-    seal = Seal(K=K, C=C)
-    
+
     history = []
     excitation_history = []
     pid_history = []
@@ -65,7 +63,6 @@ def generate_data_episode(env,
         
         # Pid
         pid_force = pid(obs[:4])
-        
 
         # Action
         action = np.array([.0, .0, .0, .0])
@@ -127,8 +124,8 @@ def add_noise_to_data(df, config):
 
 def add_center_of_mass_columns(df):
     
-    df["fx"] = (df["f_ax"] + df["f_bx"])/2
-    df["fy"] = (df["f_ay"] + df["f_by"])/2
+    df["fx"] = df["f_ax"] + df["f_bx"]
+    df["fy"] = df["f_ay"] + df["f_by"]
     
     df["y"] = (df["by"] + df["ay"])/2
     df["x"] = (df["bx"] + df["ax"])/2
@@ -219,7 +216,8 @@ if __name__ == "__main__":
 
     logging.info(config)
 
-    env = MagneticBearing3D()
+    #env = MagneticBearing3D()
+    env = SimpleSystem()
     env.dt = config["dt"]
     
     

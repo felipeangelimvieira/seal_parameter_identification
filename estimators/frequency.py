@@ -43,9 +43,11 @@ class EIVSin:
 
         inds = list(filter(lambda  x: x in sel_df.index, inds))
 
-        print(len(inds))
+
         sel_df = sel_df.loc[inds]
 
+        freq = sel_df["freqs"].unique()[0]
+        print("Freq", freq, ", length", sel_df["freqs"].unique().shape)
         Us = []
         Ys = []
         for name, group in sel_df.groupby(sel_df.index):

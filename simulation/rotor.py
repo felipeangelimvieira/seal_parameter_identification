@@ -186,7 +186,7 @@ class MagneticBearing3D:
 
         force_a = self.get_force(q=self.rotor_position_A, q_dot=self.rotor_velocity_A)
         force_b = self.get_force(q=self.rotor_position_B, q_dot=self.rotor_velocity_B)
-        f += np.array([force_a[0], force_a[1], force_b[0], force_b[1]]).flatten()
+        #f += np.array([force_a[0], force_a[1], force_b[0], force_b[1]]).flatten()
         
         
         f += action
@@ -223,22 +223,24 @@ class MagneticBearing3D:
         q = self.state[:, :1]
         q_dot = self.state[:, 1:2]
 
-        self.rotor_position_A_bef = self.rotor_position_A.copy()
-        self.rotor_position_B_bef = self.rotor_position_B.copy()
 
         # bearing A (negative rz axis)
         # position = R.-self.pm*sz + [x, y, z]T
-        self.rotor_position_A = np.matmul(R.transpose(), np.array([[0], [0], [-self.pm]])) + q[:3]
+        #self.rotor_position_A = np.matmul(R.transpose(), np.array([[0], [0], [-self.pm]])) + q[:3]
+        #self.rotor_position_A = self.position_to_inertial(np.array([[0], [0], [-self.pm]]), q)
         # bearing B (positive rz axis)
         # position = R.self.pm*sz + [x, y, z]T
-        self.rotor_position_B = np.matmul(R.transpose(), np.array([[0], [0], [self.pm]])) + q[:3]
-        self.rotor_velocity_A = (self.rotor_position_A - self.rotor_position_A_bef) / dt
-        self.rotor_velocity_B = (self.rotor_position_B - self.rotor_position_B_bef) / dt
+        #self.rotor_position_B = np.matmul(R.transpose(), np.array([[0], [0], [self.pm]])) + q[:3]
+        #self.rotor_position_B = self.position_to_inertial(np.array([[0], [0], [self.pm]]), q)
 
-        self.rotor_velocity_A = np.cross(self._w_r(theta, beta, omega), np.array([[0], [0], [-self.pm]]),
-                                         axis=0) + q_dot[:3]
-        self.rotor_velocity_B = np.cross(self._w_r(theta, beta, omega), np.array([[0], [0], [self.pm]]),
-                                         axis=0) + q_dot[:3]
+
+        #self.rotor_velocity_A = np.cross(self._w_r(theta, beta, omega), np.array([[0], [0], [-self.pm]]),
+        #                                 axis=0) + q_dot[:3]
+        #self.rotor_velocity_B = np.cross(self._w_r(theta, beta, omega), np.array([[0], [0], [self.pm]]),
+        #                                 axis=0) + q_dot[:3]
+
+        self.rotor_position_A, self.rotor_position_B = self.get_rotor_position(q)
+        self.rotor_velocity_A, self.rotor_velocity_B = self.get_rotor_velocity(q, q_dot)
 
         rotor_distance_A = np.linalg.norm(self.rotor_position_A - np.array([[0], [0], [-self.pm]]))
         rotor_distance_B = np.linalg.norm(self.rotor_position_B - np.array([[0], [0], [self.pm]]))
@@ -247,6 +249,50 @@ class MagneticBearing3D:
         if not (rotor_distance_A < self.gap_rotor_support and rotor_distance_B < self.gap_rotor_support):
             done = True
         return self._get_obs(), done
+
+    def get_rotor_position(self, q):
+        rotorA = self.position_to_inertial(np.array([[0], [0], [-self.pm]]), q)
+        rotorB = self.position_to_inertial(np.array([[0], [0], [self.pm]]), q)
+
+        return rotorA, rotorB
+
+    def get_rotor_velocity(self, q, q_dot):
+        rotorA = self.velocity_to_inertial(np.array([[0], [0], [-self.pm]]), q, q_dot)
+        rotorB = self.velocity_to_inertial(np.array([[0], [0], [self.pm]]), q, q_dot)
+
+        return rotorA, rotorB
+
+    def position_to_inertial(self, x, q):
+        q = q.reshape((-1, 1))
+
+        _, _, _, theta, beta, omega = q.flatten()
+        # Rotation along rx (axis = 0) r->a
+        R_theta = self.rotation_matrix(theta, 0)
+        # Rotation along ay (axis = 1) a->b
+        R_beta = self.rotation_matrix(beta, 1)
+        # Rotation along sz (axis = 2) b->s
+        R_omega = self.rotation_matrix(omega, 2)
+        # r->b
+        R_beta_theta = np.matmul(R_beta, R_theta)
+        R = np.matmul(R_omega, R_beta_theta)
+
+        x = x.reshape((-1, 1))
+        return R.transpose() @ x + q[:3]
+
+    def velocity_to_inertial(self, x, q, q_dot):
+        x = x.reshape((-1, 1))
+        q = q.reshape((-1, 1))
+        q_dot = q_dot.reshape((-1, 1))
+
+        state =  np.concatenate([q, q_dot], axis=-1)
+        try:
+            assert state.shape == (6, 2)
+        except Exception as e:
+            print("x:", x.shape)
+            print("State:", state.shape)
+            raise e
+        _, _, _, theta, beta, omega = state
+        return np.cross(self._w_r(theta, beta, omega), x, axis=0) + q_dot[:3]
 
     def reset(self):
 
@@ -302,6 +348,19 @@ class MagneticBearing3D:
                              [0, 0, 1]])
         raise ValueError("Axis must be 0, 1 or 2")
 
+
+    def get_R(self, q):
+
+        R_theta = self.rotation_matrix(theta[0], 0)
+        # Rotation along ay (axis = 1) a->b
+        R_beta = self.rotation_matrix(beta[0], 1)
+        # Rotation along sz (axis = 2) b->s
+        R_omega = self.rotation_matrix(omega[0], 2)
+        # r->b
+        R_beta_theta = np.matmul(R_beta, R_theta)
+        R = np.matmul(R_omega, R_beta_theta)
+
+        return R
 
     def _get_obs(self):
         """
@@ -461,9 +520,16 @@ class MagneticBearing3D:
         """
         q, q_dot = y[:6], y[6:]
 
-        
+        f = f.copy()
+        # Seal
+
+        rotor_position_A, rotor_position_B = self.get_rotor_position(q)
+        rotor_velocity_A, rotor_velocity_B = self.get_rotor_velocity(q, q_dot)
+        force_a = self.get_force(q=rotor_position_A, q_dot=rotor_velocity_A)
+        force_b = self.get_force(q=rotor_position_B, q_dot=rotor_velocity_B)
+        f += np.array([force_a[0], force_a[1], force_b[0], force_b[1]]).flatten()
+
         f_ax, f_ay, f_bx, f_by = f
-                
 
         R = self.get_R(theta=q[3], beta=q[4], omega=q[5])
 

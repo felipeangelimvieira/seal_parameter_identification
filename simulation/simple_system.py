@@ -24,10 +24,22 @@ class SimpleSystem:
         self.reset_count = 1
         self.gravity = 9.80665
         self.mass = 1  # axis mass
-        
 
-    def step(self, action=np.array([0, 0, 0, 0])):
+        self.dt = 0.000001
+        self.q = np.array([[0],
+                           [0]])
+        self.q_dot = np.array([[0],
+                           [0]])
         
+        self.M = np.array([[1, 0],
+                           [0, 1]])
+        self.K = np.array([[0, 0],
+                           [0, 0]])
+        self.C = np.array([[0, 0],
+                           [0, 0]])
+
+    def step(self, action=np.array([0, 0])):
+        action = action.reshape((2, 2)).transpose().sum(axis=1).flatten()
         
         dt = self.dt
         """
@@ -43,17 +55,23 @@ class SimpleSystem:
     
         """
 
-        
-        sol = solve_ivp(fun=self.dynamics_fn, t_span=[0, dt], y0=y, method='RK45',
-                        args=(f, self.mass, self.gravity, self.Icm), t_eval=[dt])
+        f = action.copy()
 
-       
+        y = np.concatenate([self.q.flatten(), self.q_dot.flatten()], axis=0).flatten()
+        sol = solve_ivp(fun=self.dynamics_fn, t_span=[0, dt], y0=y, method='RK45',
+                        args=(f,), t_eval=[dt])
+
+        if sol['success']:
+            y = sol['y'].reshape((2, 2, 1))
+            self.q, self.q_dot = y
+        else:
+            raise ValueError('Solver error')
         
-        return self._get_obs(), done
+        return self._get_obs(), False
 
     def reset(self):
-
-        
+        self.q = np.zeros_like(self.q)
+        self.q_dot = np.zeros_like(self.q_dot)
         return self._get_obs()
 
    
@@ -62,19 +80,13 @@ class SimpleSystem:
         """
         Return observations (current x y position and velocities at A and B)
         """
+        x, y = self.q.flatten()
 
-        return np.array([self.rotor_position_A[0, 0],  # x1 distance
-                          self.rotor_position_A[1, 0],  # x2 distance
-                          self.rotor_position_B[0, 0],  # x1 distance
-                          self.rotor_position_B[1, 0],  # x2 distance
-                          self.rotor_velocity_A[0, 0],  # x1 speed
-                          self.rotor_velocity_A[1, 0],  # x2 speed
-                          self.rotor_velocity_B[0, 0],  # x1 speed
-                          self.rotor_velocity_B[1, 0]],  # x2 speed
+        return np.array([x, y, x, y],
                          dtype=np.float64)
 
 
-    def dynamics_fn(self, t, y, f, mass, gravity, Icm):
+    def dynamics_fn(self, t, y, f):
         """
 
         :param t: time
@@ -85,30 +97,24 @@ class SimpleSystem:
         :param Icm:
         :return:
         """
-        q, q_dot = y[:6], y[6:]
+        q, q_dot = y[:2], y[2:]
 
         
-        f_ax, f_ay, f_bx, f_by = f
-                
 
-        R = self.get_R(theta=q[3], beta=q[4], omega=q[5])
-
-        state = np.concatenate([np.expand_dims(q, axis=-1), np.expand_dims(q_dot, axis=-1)], axis=-1)
-
-        trans_dot2 = self._get_acc(f_ax=f_ax,
-                                   f_bx=f_bx,
-                                   f_ay=f_ay,
-                                   f_by=f_by,
-                                   mass=mass,
-                                   gravity=gravity)
         
-        ang_dot2 = self._get_angular_acc(f_ax=f_ax,
-                                         f_bx=f_bx,
-                                         f_ay=f_ay,
-                                         f_by=f_by,
-                                         state=state)
+        q = q.reshape((-1, 1))
+        q_dot = q_dot.reshape((-1, 1))
 
-        dydt = np.concatenate([q_dot.flatten(), trans_dot2.flatten(), ang_dot2.flatten()])
+
+        bearing_force = self.K @ q + self.C @ q_dot
+        assert bearing_force.shape == (2, 1)
+
+        q_dot2 = - np.linalg.inv(self.M) @ ( bearing_force - f.reshape((2, 1)) ) - self.gravity*np.array([[1],
+                                                                                                          [0]])
+        assert q_dot2.shape == (2, 1)
+        dydt = np.concatenate([q_dot.flatten(), q_dot2.flatten()], axis=0)
+
+
         return dydt
 
 
