@@ -33,10 +33,14 @@ def generate_data_episode(env,
         env.K = K
         env.C = C
     else:
-        env.K = np.array([[0, 0],
-                          [0, 0]])
-        env.C = np.array([[0, 0],
-                          [0, 0]])
+        K = np.array(config["K2"])
+        C = np.array(config["C2"])
+        env.K = K
+        env.C = C
+        #env.K = np.array([[0, 0],
+        #                  [0, 0]])
+        #env.C = np.array([[0, 0],
+        #                  [0, 0]])
 
     # PID
     pid = PID(kp=config["kp"], kd=config["kd"], ki=config["ki"], dt=env.dt)
@@ -66,7 +70,7 @@ def generate_data_episode(env,
 
         # Action
         action = np.array([.0, .0, .0, .0])
-        action += pid_force
+        #action += pid_force
         action += np.array([env.gravity, 0, env.gravity, 0])/2
         action += excitation_force
         

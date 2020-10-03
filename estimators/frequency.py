@@ -10,6 +10,10 @@ class EIVSin:
     def __init__(self):
         pass
 
+
+    def get_near_frequencies(self, df, freq):
+        return df[(df["freqs"] > freq - 1e-1) & (df["freqs"] < freq + 1e-1)].sort_index()
+
     def estimate(self, df_x, df_y, freq):
 
         dt = (df_x["t"] - df_y["t"].shift()).median()
@@ -36,11 +40,10 @@ class EIVSin:
         df = pd.concat([df_x, df_y], ignore_index=False)
 
         # Apenas frequencia de interesse
-        sel_df = df[(df["freqs"] > freq - 2) & (df["freqs"] < freq + 1)].sort_index()
+        sel_df = self.get_near_frequencies(df, freq)
+
         # Apenas indices que exisitam no dataframe x e y
         inds = list(map(lambda x: x[0], (filter(lambda x: x[1] == 2, Counter(df.index).most_common()))))
-
-
         inds = list(filter(lambda  x: x in sel_df.index, inds))
 
 
@@ -68,7 +71,7 @@ class EIVSin:
                 "K": K}
 
     @staticmethod
-    def get_frequency_domain_data(df, freq, dt):
+    def _get_frequency_domain_data(df, freq, dt):
         """
         Recebe um dataframe com colunas x, y, fy e fx e retorna um dataframe com as mesmas colunas + sufixo "f"
         no dominio do tempo, alem da coluna "freqs"
@@ -89,4 +92,12 @@ class EIVSin:
             for n in range(df.shape[0] // N):
                 data[col + "f"].extend(fftshift(fft(df[col].iloc[N * n:N * (n + 1)].values)))
 
+        return pd.DataFrame(data)
+    
+    @staticmethod
+    def get_frequency_domain_data(df, freq, dt):
+        data={}
+        for col in ["x", "y", "fy", "fx"]:
+            data[col + "f"] = fftshift(fft(df[col].values))
+        data["freqs"] = fftshift(fftfreq(data["xf"].shape[0], d= dt))
         return pd.DataFrame(data)
