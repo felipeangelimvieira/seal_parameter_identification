@@ -1,0 +1,218 @@
+---
+title: "EDA - Template"
+author: "Exploratory Data Analysis"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+    #includes:
+    #    in_header: inputs_esteticos_para_relatorio/preamble.tex
+  html_document:
+     theme: spacelab
+     toc: true
+     toc_depth: 2
+     toc_float: true
+     smooth_scroll: false
+     number_sections: true
+     highlight: tango
+     code_folding: hide
+classoption: "aspectratio=169"
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T,
+                      message=FALSE,
+                      warning = F,
+                      results = 'asis',
+                      fig.align='center',  out.height= '100%', 
+                      fig.pos='H',
+                      out.width="100%",
+                      fig.margin=F)
+options("kableExtra.html.bsTable" = T)
+options(tinytex.verbose = TRUE)
+options(knitr.kable.NA = "-")
+rm(list = setdiff(objects(),c("main.directory","usuario", "params") ))
+
+```
+
+```{r}
+
+library(ggplot2)
+library(data.table)
+library(pracma)
+library(dplyr)
+library(stats)
+library(ggthemes)
+library(gridExtra)
+
+```
+
+```{r}
+.blue   = "#1D7C96"
+.mauve  = "#d46edb"
+.orange = "#f27b1f"
+.bistre = "#876f5c"
+.gray   = "#6b8599"
+
+```
+
+```{r}
+
+filter.coef <- function(width, order, derivative=0) {
+  stopifnot(width %% 2 == 1)
+  
+  
+  
+  # half-width
+  M <- (width - 1)/2
+  A <- matrix(0,
+              nrow=width,
+              ncol=order)
+  
+  for (n in 0:(width-1)){
+    for (i in 0:(order-1)){
+      A[n+1, i+1] <- (n-M)^i
+    }
+  }
+  
+  
+  H = solve(t(A) %*% A, tol=1e-80) %*% t(A)
+  
+  return(H[derivative+1,]*factorial(derivative))
+  
+  
+}
+
+
+rep.like <- function(x) {
+  return(-(length(x)%/%2):(length(x)%/%2))
+}
+
+filter <- function(x, filter) {
+  x <- stats::filter(x, filter, method="convolution")
+  x[is.na(x)] <- 0
+  return(x)
+}
+
+fftshift <- function(x) {
+  l <- length(x)
+  
+  return(c(x[(l%/%2+1):l],x[1:(l%/%2)]))
+  
+  #return(c(x[(l%/%2+2):l],x[l%/%2+1], x[1:(l%/%2)]))  
+}
+
+
+fftfreq <- function(n, d) {
+  
+  if (n %% 2 == 0) {
+    
+    return(c(
+      0:(n/2-1),
+      (-n/2):-1) / (d*n))
+  }
+  
+  return(c(
+   0:((n-1)/2),
+   (-(n-1)/2):-1
+  )/(d*n)) 
+#f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   if n is even
+#f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   if n is odd
+}
+
+```
+
+
+```{r}
+
+coefs <- filter.coef(61, 3)
+data = data.table(x=rep.like(coefs),
+                  y=coefs)
+ggplot(data) +
+  geom_hline(yintercept = 0, color=.gray, alpha=0.5) +
+  geom_line(aes(x=x, y=y), color=.blue) +
+  theme_bw()
+
+```
+
+```{r}
+
+
+generate.impulse.response <- function(half.size) {
+  impulse.response <- rep(0, 2*half.size + 1)
+  impulse.response[half.size+1] <- 1
+  return(impulse.response)
+}
+
+impulse.response <- generate.impulse.response(2000)
+coefs <- filter.coef(15, 1)
+
+res <- filter(impulse.response, coefs)
+#res <- res[res != 0]
+#res <- stats::filter(impulse.response, coefs, method="convolution")
+res <- log10(abs(fft(res)))
+
+
+data.frame(y=res,
+           x=fftfreq(length(res), d=1)) %>%
+  ggplot(., aes(x, y)) +
+  geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+  geom_line(color=.blue) +
+  theme_pander()
+
+
+
+```
+
+```{r}
+
+widths <- seq(1, 100, 30)
+orders <- seq(1, 8, 2)
+impulse.response <- generate.impulse.response(2000)
+
+
+
+dt <- data.table()
+for (order in orders){
+  for (width in widths[widths > order*2]) {
+    coefs <- filter.coef(width=width, order=order)
+    res <- filter(impulse.response, coefs)
+    res.log <- log10(abs(fft(res)))
+    freqs <- fftfreq(length(res), d=1)
+    
+    dt <- rbind(dt,
+                data.table(y=res.log,
+                           freq=freqs,
+                           width = as.factor(width),
+                           order = as.factor(order)))
+  }
+
+}
+
+g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+              geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+              geom_line() +
+              geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+              theme_pander() +
+              scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+              scale_x_continuous(name=expression(omega*"/2"*pi)) +
+              scale_y_continuous(name="Logaritmo da magnitude")
+              
+
+g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+              geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+              geom_line() +
+              geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+              theme_pander() +
+              scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+              scale_x_continuous(name=expression(omega*"/2"*pi)) +
+              scale_y_continuous(name="Logaritmo da magnitude")
+
+
+arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+
+```
+

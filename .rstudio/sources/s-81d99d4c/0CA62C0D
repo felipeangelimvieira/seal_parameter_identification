@@ -1,0 +1,24 @@
+{
+    "id": "0CA62C0D",
+    "path": "~/R/packages.R",
+    "project_path": null,
+    "type": "r_source",
+    "hash": "600560074",
+    "contents": "",
+    "dirty": false,
+    "created": 1607785670075.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "cursorPosition": "9,37",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1607795404,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1607795404313,
+    "read_only": false,
+    "read_only_alternatives": []
+}

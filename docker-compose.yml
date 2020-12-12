@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  rstudio:
+    image: rocker/rstudio:4.0.3
+    environment:
+      - ROOT=TRUE
+      - PASSWORD=password
+    volumes:
+      - .:/home/rstudio
+    ports:
+      - 8787:8787

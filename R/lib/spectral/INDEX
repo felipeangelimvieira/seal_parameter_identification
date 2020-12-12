@@ -1,0 +1,21 @@
+BP                      Simple bandpass function
+H                       The Hilbert-transformation
+Windowfunctions         Windowfunctions
+analyticFunction        Analytic function
+envelope                Calculates the envelope of a band limited
+                        signal
+filter.fft              Filter in the frequency domain
+filter.lomb             Filter and reconstruction of data analysed via
+                        spec.lomb
+gLmb                    generalized Lomb-Scargle estimation function
+interpolate.fft         interpolates data using the Fourier back
+                        transform
+lmb                     Lomb-Scargle estimation function
+plot.fft                Plot 'fft'-objects
+plot.lomb               plot method for Lomb-Scargle periodograms
+spec.fft                1D/2D/nD (multivariate) spectrum of the Fourier
+                        transform
+spec.lomb               Lomb-Scargle Periodigram
+waterfall               Estimate the local frequencies
+win.cos                 Cosine window function
+win.tukey               Tukey window function

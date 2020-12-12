@@ -1,0 +1,17 @@
+analyticFunction	analyticFunction
+BP	BP
+envelope	envelope
+filter.fft	filter.fft
+filter.lomb	filter.lomb
+gLmb	gLmb
+H	H
+interpolate.fft	interpolate.fft
+lmb	lmb
+plot.fft	plot.fft
+plot.lomb	plot.lomb
+spec.fft	spec.fft
+spec.lomb	spec.lomb
+waterfall	waterfall
+win.cos	win.cos
+win.tukey	win.tukey
+Windowfunctions	Windowfunctions

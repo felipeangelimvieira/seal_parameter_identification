@@ -1,0 +1,1349 @@
+1607785744706:setwd("~/R")
+1607785747280:.libPaths("lib/")
+1607785779293:setwd("~/R")
+1607785780801:.libPaths("lib/")
+1607785781511:packages.to.install <- c("ggplot",
+1607785781525:"data.table")
+1607785781936:install.packages(packages.to.install, dependencies=T)
+1607786436296:knitr::opts_chunk$set(echo = T,
+1607786436327:message=FALSE,
+1607786436359:warning = F,
+1607786436390:results = 'asis',
+1607786436425:fig.align='center',  out.height= '100%',
+1607786436455:fig.pos='H',
+1607786436492:out.width="100%",
+1607786436528:fig.margin=F)
+1607786436568:options("kableExtra.html.bsTable" = T)
+1607786436609:options(tinytex.verbose = TRUE)
+1607786436647:options(knitr.kable.NA = "-")
+1607786436683:rm(list = setdiff(objects(),c("main.directory","usuario", "params") ))
+1607787336454:packages.to.install <- c("ggplot",
+1607787336475:"data.table",
+1607787336495:"assertthat")
+1607787336876:install.packages(packages.to.install, dependencies=T)
+1607787469526:matrix(nrow=3, ncol=3)
+1607787605348:inv(matrix(nrow=3, ncol=3) )
+1607787625850:library(matlib)
+1607787630494:install.packages("matlib")
+1607787954676:library(matlib)
+1607787989926:A
+1607788024406:5 %% 2
+1607788047461:factorial
+1607788063798:factorial(3)
+1607788074366:return(H[derivative,]*factorial(derivative))
+1607788075425:filter.coef <- function(width, order, derivative=0) {
+1607788075441:stopifnot(width %% 2 == 1)
+1607788075462:# half-width
+1607788075480:M <- (width - 1)/2
+1607788075497:A <- matrix(0,
+1607788075516:nrow=width,
+1607788075534:ncol=order)
+1607788075556:for (n in 1:width){
+1607788075573:for (i in 1:order){
+1607788075589:A[n, i] <- (n-M)**2
+1607788075605:}
+1607788075623:}
+1607788075646:H = solve(t(A) %*% A) %*% t(A)
+1607788075671:return(H[derivative,]*factorial(derivative))
+1607788075701:}
+1607788083293:filter.coef(61, 12)
+1607788092710:filter.coef <- function(width, order, derivative=0) {
+1607788092727:stopifnot(width %% 2 == 1)
+1607788092748:# half-width
+1607788092765:M <- (width - 1)/2
+1607788092783:A <- matrix(0,
+1607788092799:nrow=width,
+1607788092817:ncol=order)
+1607788092840:for (n in 1:width){
+1607788092861:for (i in 1:order){
+1607788092878:A[n, i] <- (n-M)**2
+1607788092897:}
+1607788092916:}
+1607788092940:print(A)
+1607788092958:H = solve(t(A) %*% A) %*% t(A)
+1607788092979:return(H[derivative,]*factorial(derivative))
+1607788093013:}
+1607788093139:filter.coef(61, 12)
+1607788109452:width = 61
+1607788112965:grau = 12
+1607788115229:derivada = 0
+1607788144270:stopifnot(width %% 2 == 1)
+1607788144803:# half-width
+1607788144819:M <- (width - 1)/2
+1607788145668:A <- matrix(0,
+1607788145686:nrow=width,
+1607788145702:ncol=order)
+1607788160157:order = 12
+1607788162934:A <- matrix(0,
+1607788162950:nrow=width,
+1607788162966:ncol=order)
+1607788164637:A
+1607788166948:for (n in 1:width){
+1607788166966:for (i in 1:order){
+1607788166982:A[n, i] <- (n-M)**2
+1607788167001:}
+1607788167016:}
+1607788173361:A %>% dims
+1607788179293:dim(A)
+1607788184549:t(A) %*% A
+1607788188560:solve(t(A) %*% A)
+1607788194552:A
+1607788199004:t(A) %*% A
+1607788208085:A
+1607788217611:A
+1607788219240:t(A)
+1607788240981:t(A) %*% A
+1607788252294:width=11
+1607788258949:order=2
+1607788261350:stopifnot(width %% 2 == 1)
+1607788261990:# half-width
+1607788262008:M <- (width - 1)/2
+1607788262726:A <- matrix(0,
+1607788262741:nrow=width,
+1607788262761:ncol=order)
+1607788264054:for (n in 1:width){
+1607788264076:for (i in 1:order){
+1607788264093:A[n, i] <- (n-M)**2
+1607788264108:}
+1607788264125:}
+1607788264846:print(A)
+1607788273743:t(A) %*% A
+1607788315782:A <- matrix(0,
+1607788315799:nrow=width,
+1607788315814:ncol=order)
+1607788316233:for (n in 0:(width-1)){
+1607788316252:for (i in 0:(order-1)){
+1607788316269:A[n+1, i+1] <- (n-M)**2
+1607788316287:}
+1607788316305:}
+1607788318484:t(A) %*% A
+1607788320181:A
+1607788351772:A
+1607788359492:n
+1607788362848:i
+1607788367076:i
+1607788370036:A[10, 1]
+1607788388615:# half-width
+1607788388631:M <- (width - 1)/2
+1607788389717:A <- matrix(0,
+1607788389734:nrow=width,
+1607788389750:ncol=order)
+1607788390021:for (n in 0:(width-1)){
+1607788390037:for (i in 0:(order-1)){
+1607788390056:A[n+1, i+1] <- (n-M)**2
+1607788390075:}
+1607788390093:}
+1607788391492:A
+1607788402863:A <- matrix(0,
+1607788402879:nrow=width,
+1607788402895:ncol=order)
+1607788403422:for (n in 0:(width-1)){
+1607788403438:for (i in 0:(order-1)){
+1607788403453:A[n+1, i+1] <- (n-M)**i
+1607788403468:}
+1607788403486:}
+1607788406861:A
+1607788412356:H = solve(t(A) %*% A) %*% t(A)
+1607788418150:H[derivative+1,]*factorial(derivative)
+1607788422606:derivative = 0
+1607788424596:H[derivative+1,]*factorial(derivative)
+1607788440013:filter.coef(11, 2)
+1607788442354:filter.coef <- function(width, order, derivative=0) {
+1607788442370:stopifnot(width %% 2 == 1)
+1607788442406:# half-width
+1607788442422:M <- (width - 1)/2
+1607788442440:A <- matrix(0,
+1607788442457:nrow=width,
+1607788442473:ncol=order)
+1607788442499:for (n in 0:(width-1)){
+1607788442515:for (i in 0:(order-1)){
+1607788442530:A[n+1, i+1] <- (n-M)**i
+1607788442546:}
+1607788442563:}
+1607788442592:H = solve(t(A) %*% A) %*% t(A)
+1607788442617:return(H[derivative+1,]*factorial(derivative))
+1607788442646:}
+1607788442667:filter.coef(11, 2)
+1607788504430:coefs <- filter.coef(61, 12)
+1607788504765:data = data.table(x=1:length(coefs),
+1607788504782:y=coefs)
+1607788595772:width=61;order=12
+1607788598075:stopifnot(width %% 2 == 1)
+1607788598268:# half-width
+1607788598285:M <- (width - 1)/2
+1607788598437:A <- matrix(0,
+1607788598456:nrow=width,
+1607788598472:ncol=order)
+1607788605226:for (n in 0:(width-1)){
+1607788605242:for (i in 0:(order-1)){
+1607788605259:A[n+1, i+1] <- (n-M)^i
+1607788605275:}
+1607788605292:}
+1607788605926:H = solve(t(A) %*% A) %*% t(A)
+1607788608951:t(A) %*% A
+1607788616048:solve(t(A) %*% A)
+1607788649278:pinv(t(A) %*% A)
+1607788741332:filter.coef <- function(width, order, derivative=0) {
+1607788741355:stopifnot(width %% 2 == 1)
+1607788741390:# half-width
+1607788741406:M <- (width - 1)/2
+1607788741420:A <- matrix(0,
+1607788741435:nrow=width,
+1607788741451:ncol=order)
+1607788741474:for (n in 0:(width-1)){
+1607788741491:for (i in 0:(order-1)){
+1607788741507:A[n+1, i+1] <- (n-M)^i
+1607788741524:}
+1607788741542:}
+1607788741574:H = solve(t(A) %*% A) %*% t(A)
+1607788741598:return(H[derivative+1,]*factorial(derivative))
+1607788741629:}
+1607788742957:coefs <- filter.coef(61, 3)
+1607788749406:coefs <- filter.coef(61, 5)
+1607788752372:coefs <- filter.coef(61, 6)
+1607788755155:coefs <- filter.coef(61, 7)
+1607788791516:filter.coef <- function(width, order, derivative=0) {
+1607788791535:stopifnot(width %% 2 == 1)
+1607788791571:# half-width
+1607788791591:M <- (width - 1)/2
+1607788791608:A <- matrix(0,
+1607788791625:nrow=width,
+1607788791643:ncol=order)
+1607788791669:for (n in 0:(width-1)){
+1607788791687:for (i in 0:(order-1)){
+1607788791704:A[n+1, i+1] <- (n-M)^i
+1607788791721:}
+1607788791740:}
+1607788791774:H = solve((t(A) %*% A)*1e10)*1e10 %*% t(A)
+1607788791797:return(H[derivative+1,]*factorial(derivative))
+1607788791830:}
+1607788794157:coefs <- filter.coef(61, 7)
+1607788803810:1e10
+1607788811755:filter.coef <- function(width, order, derivative=0) {
+1607788811772:stopifnot(width %% 2 == 1)
+1607788811812:# half-width
+1607788811829:M <- (width - 1)/2
+1607788811846:A <- matrix(0,
+1607788811862:nrow=width,
+1607788811877:ncol=order)
+1607788811903:for (n in 0:(width-1)){
+1607788811920:for (i in 0:(order-1)){
+1607788811937:A[n+1, i+1] <- (n-M)^i
+1607788811955:}
+1607788811972:}
+1607788812004:H = solve((t(A) %*% A)*1e20)*1e20 %*% t(A)
+1607788812027:return(H[derivative+1,]*factorial(derivative))
+1607788812061:}
+1607788814347:coefs <- filter.coef(61, 7)
+1607788829725:coefs <- filter.coef(61, 7)
+1607788833147:coefs <- filter.coef(61, 6)
+1607788838645:filter.coef <- function(width, order, derivative=0) {
+1607788838662:stopifnot(width %% 2 == 1)
+1607788838699:# half-width
+1607788838717:M <- (width - 1)/2
+1607788838732:A <- matrix(0,
+1607788838751:nrow=width,
+1607788838768:ncol=order)
+1607788838796:for (n in 0:(width-1)){
+1607788838811:for (i in 0:(order-1)){
+1607788838827:A[n+1, i+1] <- (n-M)^i
+1607788838843:}
+1607788838859:}
+1607788838888:H = solve((t(A) %*% A)) %*% t(A)
+1607788838911:return(H[derivative+1,]*factorial(derivative))
+1607788838943:}
+1607788841115:coefs <- filter.coef(61, 6)
+1607788843247:data = data.table(x=1:length(coefs),
+1607788843267:y=coefs)
+1607788845851:library(ggplot)
+1607788846004:library(data.table)
+1607788853443:library(ggplot2)
+1607788869189:install.packages("ggplot")
+1607788876586:install.packages("ggplot2")
+1607788966256:library(data.table)
+1607788969177:library(ggplot2)
+1607788974058:coefs <- filter.coef(61, 6)
+1607788974210:data = data.table(x=1:length(coefs),
+1607788974228:y=coefs)
+1607788975100:ggplot(data) +
+1607788975118:geom_line(aes(x=x, y=y))
+1607789018860:ggplot(data) +
+1607789018878:geom_line(aes(x=x, y=y))+
+1607789018895:theme_classic()
+1607789027707:ggplot(data) +
+1607789027722:geom_line(aes(x=x, y=y))+
+1607789027738:theme_dark()
+1607789071194:library(ggthemes)
+1607789079786:install.packages("ggthemes")
+1607789096425:library(ggthemes)
+1607789101666:ggplot(data) +
+1607789101685:geom_line(aes(x=x, y=y))+
+1607789101702:theme_fivethirtyeight()
+1607789107762:ggplot(data) +
+1607789107781:geom_line(aes(x=x, y=y))+
+1607789107798:theme_bw()
+1607789121682:coefs <- filter.coef(61, 3)
+1607789121844:data = data.table(x=1:length(coefs),
+1607789121863:y=coefs)
+1607789121962:ggplot(data) +
+1607789121981:geom_line(aes(x=x, y=y))+
+1607789122000:theme_bw()
+1607789130202:coefs <- filter.coef(121, 4)
+1607789130385:data = data.table(x=1:length(coefs),
+1607789130403:y=coefs)
+1607789130499:ggplot(data) +
+1607789130516:geom_line(aes(x=x, y=y))+
+1607789130537:theme_bw()
+1607789170878:data = data.table(x=-length(coefs)%/%2:length(coefs)%/%2,
+1607789170896:y=coefs)
+1607789173625:ggplot(data) +
+1607789173642:geom_line(aes(x=x, y=y))+
+1607789173658:theme_bw()
+1607789180698:length(coefs)%/%2:length(coefs)%/%2
+1607789192531:-(length(coefs)%/%2):(length(coefs)%/%2)
+1607789197819:data = data.table(x=-(length(coefs)%/%2):(length(coefs)%/%2),
+1607789197836:y=coefs)
+1607789198083:ggplot(data) +
+1607789198100:geom_line(aes(x=x, y=y))+
+1607789198118:theme_bw()
+1607789209186:coefs <- filter.coef(121, 7)
+1607789255633:install.packages("pracma")
+1607789268531:library(pracma)
+1607789278970:filter.coef <- function(width, order, derivative=0) {
+1607789278989:stopifnot(width %% 2 == 1)
+1607789279029:# half-width
+1607789279046:M <- (width - 1)/2
+1607789279065:A <- matrix(0,
+1607789279083:nrow=width,
+1607789279102:ncol=order)
+1607789279129:for (n in 0:(width-1)){
+1607789279150:for (i in 0:(order-1)){
+1607789279171:A[n+1, i+1] <- (n-M)^i
+1607789279187:}
+1607789279203:}
+1607789279231:H = pinv(t(A) %*% A) %*% t(A)
+1607789279253:return(H[derivative+1,]*factorial(derivative))
+1607789279287:}
+1607789281123:coefs <- filter.coef(121, 7)
+1607789282123:data = data.table(x=-(length(coefs)%/%2):(length(coefs)%/%2),
+1607789282140:y=coefs)
+1607789282533:ggplot(data) +
+1607789282550:geom_line(aes(x=x, y=y))+
+1607789282565:theme_bw()
+1607789293529:coefs <- filter.coef(61, 12)
+1607789293787:data = data.table(x=-(length(coefs)%/%2):(length(coefs)%/%2),
+1607789293802:y=coefs)
+1607789294052:ggplot(data) +
+1607789294068:geom_line(aes(x=x, y=y))+
+1607789294085:theme_bw()
+1607789302640:?pinv
+1607789314843:.Machine$double.eps^(2/3)
+1607789329971:filter.coef <- function(width, order, derivative=0) {
+1607789329987:stopifnot(width %% 2 == 1)
+1607789330024:# half-width
+1607789330039:M <- (width - 1)/2
+1607789330059:A <- matrix(0,
+1607789330073:nrow=width,
+1607789330093:ncol=order)
+1607789330118:for (n in 0:(width-1)){
+1607789330135:for (i in 0:(order-1)){
+1607789330151:A[n+1, i+1] <- (n-M)^i
+1607789330166:}
+1607789330186:}
+1607789330218:H = pinv(t(A) %*% A, tol=1e-40) %*% t(A)
+1607789330243:return(H[derivative+1,]*factorial(derivative))
+1607789330270:}
+1607789331258:coefs <- filter.coef(61, 12)
+1607789331866:data = data.table(x=-(length(coefs)%/%2):(length(coefs)%/%2),
+1607789331886:y=coefs)
+1607789332027:ggplot(data) +
+1607789332045:geom_line(aes(x=x, y=y))+
+1607789332063:theme_bw()
+1607789340994:coefs <- filter.coef(61, 5)
+1607789341387:data = data.table(x=-(length(coefs)%/%2):(length(coefs)%/%2),
+1607789341404:y=coefs)
+1607789341547:ggplot(data) +
+1607789341563:geom_line(aes(x=x, y=y))+
+1607789341581:theme_bw()
+1607789346586:coefs <- filter.coef(61, 3)
+1607789346756:data = data.table(x=-(length(coefs)%/%2):(length(coefs)%/%2),
+1607789346774:y=coefs)
+1607789346923:ggplot(data) +
+1607789346940:geom_line(aes(x=x, y=y))+
+1607789346961:theme_bw()
+1607789352139:coefs <- filter.coef(61, 12)
+1607789352291:data = data.table(x=-(length(coefs)%/%2):(length(coefs)%/%2),
+1607789352310:y=coefs)
+1607789352435:ggplot(data) +
+1607789352454:geom_line(aes(x=x, y=y))+
+1607789352470:theme_bw()
+1607789358315:H = pinv(t(A) %*% A, tol=1e-80) %*% t(A)
+1607789358667:return(H[derivative+1,]*factorial(derivative))
+1607789359180:filter.coef <- function(width, order, derivative=0) {
+1607789359197:stopifnot(width %% 2 == 1)
+1607789359230:# half-width
+1607789359245:M <- (width - 1)/2
+1607789359262:A <- matrix(0,
+1607789359278:nrow=width,
+1607789359292:ncol=order)
+1607789359316:for (n in 0:(width-1)){
+1607789359334:for (i in 0:(order-1)){
+1607789359351:A[n+1, i+1] <- (n-M)^i
+1607789359370:}
+1607789359386:}
+1607789359416:H = pinv(t(A) %*% A, tol=1e-80) %*% t(A)
+1607789359443:return(H[derivative+1,]*factorial(derivative))
+1607789359474:}
+1607789360043:```{r}
+1607789360205:coefs <- filter.coef(61, 12)
+1607789360565:data = data.table(x=-(length(coefs)%/%2):(length(coefs)%/%2),
+1607789360582:y=coefs)
+1607789360740:ggplot(data) +
+1607789360758:geom_line(aes(x=x, y=y))+
+1607789360776:theme_bw()
+1607789425306:filter.coef <- function(width, order, derivative=0) {
+1607789425326:stopifnot(width %% 2 == 1)
+1607789425362:# half-width
+1607789425381:M <- (width - 1)/2
+1607789425398:A <- matrix(0,
+1607789425416:nrow=width,
+1607789425433:ncol=order)
+1607789425457:for (n in 0:(width-1)){
+1607789425476:for (i in 0:(order-1)){
+1607789425494:A[n+1, i+1] <- (n-M)^i
+1607789425512:}
+1607789425529:}
+1607789425557:H = solve(t(A) %*% A, tol=1e-80) %*% t(A)
+1607789425579:return(H[derivative+1,]*factorial(derivative))
+1607789425610:}
+1607789427514:coefs <- filter.coef(61, 12)
+1607789428057:data = data.table(x=-(length(coefs)%/%2):(length(coefs)%/%2),
+1607789428074:y=coefs)
+1607789428393:ggplot(data) +
+1607789428410:geom_line(aes(x=x, y=y))+
+1607789428426:theme_bw()
+1607789445362:ggplot(data) +
+1607789445378:geom_line(aes(x=x, y=y)) +
+1607789445394:geom_hline(yintercept = 0) +
+1607789445410:theme_bw()
+1607789452770:ggplot(data) +
+1607789452786:geom_hline(yintercept = 0) +
+1607789452804:geom_line(aes(x=x, y=y)) +
+1607789452820:theme_bw()
+1607789667033:.blue   = "#4e6678"
+1607789667169:.mauve  = "#d46edb"
+1607789667331:.orange = "#f27b1f"
+1607789667473:.bistre = "#876f5c"
+1607789667601:.gray   = "#6b8599"
+1607789673985:ggplot(data) +
+1607789674004:geom_hline(yintercept = 0, color=.gray) +
+1607789674021:geom_line(aes(x=x, y=y)) +
+1607789674036:theme_bw()
+1607789682027:ggplot(data) +
+1607789682044:geom_hline(yintercept = 0, color=.gray) +
+1607789682060:geom_line(aes(x=x, y=y), color=.blue) +
+1607789682075:theme_bw()
+1607789688938:ggplot(data) +
+1607789688956:geom_hline(yintercept = 0, color=.gray, alpha=0.1) +
+1607789688976:geom_line(aes(x=x, y=y), color=.blue) +
+1607789688994:theme_bw()
+1607789729601:.blue   = "#1D7C96"
+1607789732121:ggplot(data) +
+1607789732137:geom_hline(yintercept = 0, color=.gray, alpha=0.1) +
+1607789732155:geom_line(aes(x=x, y=y), color=.blue) +
+1607789732175:theme_bw()
+1607789739608:ggplot(data) +
+1607789739626:geom_hline(yintercept = 0, color=.gray, alpha=0.5) +
+1607789739643:geom_line(aes(x=x, y=y), color=.blue) +
+1607789739661:theme_bw()
+1607789822230:filer
+1607789823384:filter
+1607789825416:?filter
+1607789899263:?rep
+1607789907699:size <- 100
+1607789911632:rep(0, size)
+1607789936816:half.size <- 100
+1607789979007:generate.impulse.responde <- function(half.size) {
+1607789979026:impulse.response <- rep(0, 2*half.size + 1)
+1607789979042:impulse.response[half.size+1] <- 1
+1607789979058:return(impulse.response)
+1607789979075:}
+1607789989375:generate.impulse.response <- function(half.size) {
+1607789989391:impulse.response <- rep(0, 2*half.size + 1)
+1607789989407:impulse.response[half.size+1] <- 1
+1607789989421:return(impulse.response)
+1607789989440:}
+1607789992746:generate.impulse.response(3)
+1607790005400:impulse.response <- generate.impulse.response(3)
+1607790036278:?filter
+1607790043664:filter(impulse.response, coefs, method="convolution")
+1607790048464:impulse.response <- generate.impulse.response(100)
+1607790048772:filter(impulse.response, coefs, method="convolution")
+1607790078984:ggplot(aes(res))
+1607790084959:res <- filter(impulse.response, coefs, method="convolution")
+1607790085144:ggplot(aes(res)) + geom_line()
+1607790111190:library(dplyr)
+1607790124857:install.packages("dplyr")
+1607790228757:data.frame
+1607790259550:data.frame(y=res) %>%
+1607790259567:ggplot(., aes(y)) + geom_line()
+1607790263983:library(dplyr)
+1607790266519:data.frame(y=res) %>%
+1607790266541:ggplot(., aes(y)) + geom_line()
+1607790336358:rep.like <- function(x) {
+1607790336374:return(-(length(x)%/%2):(length(x)%/%2))
+1607790336390:}
+1607790338718:coefs <- filter.coef(61, 12)
+1607790338848:data = data.table(x=rep.like(coefs),
+1607790338863:y=coefs)
+1607790338993:ggplot(data) +
+1607790339011:geom_hline(yintercept = 0, color=.gray, alpha=0.5) +
+1607790339031:geom_line(aes(x=x, y=y), color=.blue) +
+1607790339051:theme_bw()
+1607790343433:generate.impulse.response <- function(half.size) {
+1607790343454:impulse.response <- rep(0, 2*half.size + 1)
+1607790343474:impulse.response[half.size+1] <- 1
+1607790343495:return(impulse.response)
+1607790343515:}
+1607790343616:impulse.response <- generate.impulse.response(100)
+1607790344054:res <- filter(impulse.response, coefs, method="convolution")
+1607790366312:library(stats)
+1607790369295:res <- filter(impulse.response, coefs, method="convolution")
+1607790381270:impulse.response
+1607790384302:coes
+1607790385925:coefs
+1607790388224:res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790399766:data.frame(y=res,
+1607790399782:x=rep.like(res)) %>%
+1607790399801:ggplot(., aes(x, y)) + geom_line()
+1607790414421:?filter
+1607790439606:res <- stats::filter(impulse.response, coefs, method="convolution", circular=F)
+1607790439839:data.frame(y=res,
+1607790439855:x=rep.like(res)) %>%
+1607790439875:ggplot(., aes(x, y)) + geom_line()
+1607790444662:res <- stats::filter(impulse.response, coefs, method="convolution", circular=T)
+1607790444863:data.frame(y=res,
+1607790444880:x=rep.like(res)) %>%
+1607790444899:ggplot(., aes(x, y)) + geom_line()
+1607790495703:filter <- function(x, filter) {
+1607790495722:x <- stats::filter(x, filter, method="convolution")
+1607790495742:return(x[!is.na(x)])
+1607790495760:}
+1607790502936:res <- filter(impulse.response, coefs, method="convolution")
+1607790506214:data.frame(y=res,
+1607790506231:x=rep.like(res)) %>%
+1607790506250:ggplot(., aes(x, y)) + geom_line()
+1607790510757:res <- filter(impulse.response, coefs)
+1607790511231:data.frame(y=res,
+1607790511249:x=rep.like(res)) %>%
+1607790511264:ggplot(., aes(x, y)) + geom_line()
+1607790515198:res
+1607790528503:stats::filter(x, filter, method="convolution")
+1607790550021:#res <- filter(impulse.response, coefs)
+1607790550037:res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790551268:res
+1607790555382:res[!is.na(res)]
+1607790558161:res
+1607790632367:fft(res)
+1607790637502:res <- filter(impulse.response, coefs)
+1607790639357:fft(res)
+1607790652244:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790652261:res <- abs(fft(res))
+1607790652720:data.frame(y=res,
+1607790652736:x=rep.like(res)) %>%
+1607790652757:ggplot(., aes(x, y)) + geom_line()
+1607790674972:res <- filter(impulse.response, coefs)
+1607790675087:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790675104:res <- log10(abs(fft(res)))
+1607790675510:data.frame(y=res,
+1607790675527:x=rep.like(res)) %>%
+1607790675545:ggplot(., aes(x, y)) + geom_line()
+1607790684278:coefs <- filter.coef(61, 3)
+1607790684550:data = data.table(x=rep.like(coefs),
+1607790684567:y=coefs)
+1607790684752:ggplot(data) +
+1607790684771:geom_hline(yintercept = 0, color=.gray, alpha=0.5) +
+1607790684789:geom_line(aes(x=x, y=y), color=.blue) +
+1607790684805:theme_bw()
+1607790685613:```{r}
+1607790686101:generate.impulse.response <- function(half.size) {
+1607790686121:impulse.response <- rep(0, 2*half.size + 1)
+1607790686141:impulse.response[half.size+1] <- 1
+1607790686158:return(impulse.response)
+1607790686174:}
+1607790687971:impulse.response <- generate.impulse.response(100)
+1607790688143:res <- filter(impulse.response, coefs)
+1607790688641:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790688660:res <- log10(abs(fft(res)))
+1607790689231:data.frame(y=res,
+1607790689250:x=rep.like(res)) %>%
+1607790689268:ggplot(., aes(x, y)) + geom_line()
+1607790719701:res <- filter(impulse.response, coefs)
+1607790726462:res <- res[res != 0]
+1607790727103:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790727123:res <- log10(abs(fft(res)))
+1607790727254:data.frame(y=res,
+1607790727272:x=rep.like(res)) %>%
+1607790727289:ggplot(., aes(x, y)) + geom_line()
+1607790745011:impulse.response <- generate.impulse.response(100)
+1607790745385:coefs <- filter.coef(121, 3)
+1607790745728:res <- filter(impulse.response, coefs)
+1607790745926:res <- res[res != 0]
+1607790746087:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790746105:res <- log10(abs(fft(res)))
+1607790746349:data.frame(y=res,
+1607790746366:x=rep.like(res)) %>%
+1607790746385:ggplot(., aes(x, y)) + geom_line()
+1607790813932:res <- filter(impulse.response, coefs)
+1607790814086:res <- res[res != 0]
+1607790814238:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790814255:res <- log10(abs(mvfft(res)))
+1607790814988:data.frame(y=res,
+1607790815003:x=rep.like(res)) %>%
+1607790815020:ggplot(., aes(x, y)) + geom_line()
+1607790821750:res <- filter(impulse.response, coefs)
+1607790821894:res <- res[res != 0]
+1607790822044:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790822061:res <- log10(abs(fft(res)))
+1607790822192:data.frame(y=res,
+1607790822210:x=rep.like(res)) %>%
+1607790822226:ggplot(., aes(x, y)) + geom_line()
+1607790832725:coefs <- filter.coef(121, 4)
+1607790832912:res <- filter(impulse.response, coefs)
+1607790833052:res <- res[res != 0]
+1607790833205:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607790833228:res <- log10(abs(fft(res)))
+1607790833364:data.frame(y=res,
+1607790833384:x=rep.like(res)) %>%
+1607790833402:ggplot(., aes(x, y)) + geom_line()
+1607790837292:res
+1607790906475:install.packages("spectral")
+1607791052342:spectrum
+1607791057483:sprectrum(res)
+1607791061707:spectrum(res)
+1607791072963:?spectrum
+1607791079758:res
+1607791084304:impulse.response <- generate.impulse.response(1000)
+1607791084583:coefs <- filter.coef(121, 4)
+1607791084864:res <- filter(impulse.response, coefs)
+1607791085053:res <- res[res != 0]
+1607791085244:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607791085262:res <- log10(abs(fft(res)))
+1607791085483:data.frame(y=res,
+1607791085499:x=rep.like(res)) %>%
+1607791085515:ggplot(., aes(x, y)) + geom_line()
+1607791093494:res <- filter(impulse.response, coefs)
+1607791093652:res <- res[res != 0]
+1607791099259:spectrum(res)
+1607791111548:impulse.response <- generate.impulse.response(4000)
+1607791112204:coefs <- filter.coef(121, 4)
+1607791112846:res <- filter(impulse.response, coefs)
+1607791113044:res <- res[res != 0]
+1607791113549:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607791113566:#res <- log10(abs(fft(res)))
+1607791113584:data.frame(y=res,
+1607791113602:x=rep.like(res)) %>%
+1607791113621:ggplot(., aes(x, y)) + geom_line()
+1607791120364:spectrum(res)
+1607791225603:impulse.response <- generate.impulse.response(20)
+1607791225860:coefs <- filter.coef(15, 1)
+1607791227662:res <- filter(impulse.response, coefs)
+1607791230564:res
+1607791246588:fft(res)
+1607791262010:res
+1607791275820:res
+1607791314637:impulse.response <- generate.impulse.response(27)
+1607791314790:coefs <- filter.coef(15, 1)
+1607791315090:#res <- filter(impulse.response, coefs)
+1607791315110:#res <- res[res != 0]
+1607791315129:res <- stats::filter(impulse.response, coefs, method="convolution")
+1607791316842:res
+1607791333717:fft(res)
+1607791346322:filter <- function(x, filter) {
+1607791346340:x <- stats::filter(x, filter, method="convolution")
+1607791346357:x[is.na(x)] <- 0
+1607791346373:return(x)
+1607791346389:}
+1607791348651:generate.impulse.response <- function(half.size) {
+1607791348667:impulse.response <- rep(0, 2*half.size + 1)
+1607791348683:impulse.response[half.size+1] <- 1
+1607791348701:return(impulse.response)
+1607791348718:}
+1607791348799:impulse.response <- generate.impulse.response(27)
+1607791349092:coefs <- filter.coef(15, 1)
+1607791349564:#res <- filter(impulse.response, coefs)
+1607791349581:#res <- res[res != 0]
+1607791349597:res <- stats::filter(impulse.response, coefs, method="convolution")
+1607791356748:res <- filter(impulse.response, coefs)
+1607791358442:res
+1607791362549:fft(res)
+1607791374261:res
+1607791379147:res %>% length
+1607791391795:impulse.response <- generate.impulse.response(20)
+1607791392275:coefs <- filter.coef(15, 1)
+1607791392730:res <- filter(impulse.response, coefs)
+1607791395260:res %>% length
+1607791421082:fft(res)
+1607791425350:fft(res, inverse=T)
+1607791429363:fft(res)
+1607791506090:#res <- res[res != 0]
+1607791506108:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607791506129:res <- log10(abs(fft(res)))
+1607791506332:data.frame(y=res,
+1607791506350:x=rep.like(res)) %>%
+1607791506370:ggplot(., aes(x, y)) + geom_line()
+1607791514892:impulse.response <- generate.impulse.response(2000)
+1607791515067:coefs <- filter.coef(15, 1)
+1607791515220:res <- filter(impulse.response, coefs)
+1607791515370:#res <- res[res != 0]
+1607791515387:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607791515402:res <- log10(abs(fft(res)))
+1607791515530:data.frame(y=res,
+1607791515548:x=rep.like(res)) %>%
+1607791515567:ggplot(., aes(x, y)) + geom_line()
+1607791794551:length(res)
+1607791838739:.res <- res[:2000]
+1607791841507:.res <- res[1:2000]
+1607791841933:data.frame(y=.res,
+1607791841952:x=rep.like(.res)) %>%
+1607791841971:ggplot(., aes(x, y)) + geom_line()
+1607791850172:.res <- res[1:2000]
+1607791853513:..res
+1607791855395:.res
+1607791859361:.res %>% length
+1607791865000:data.frame(y=.res,
+1607791865018:x=rep.like(.res))
+1607791876882:data.frame(y=.res,
+1607791876899:x=1:2000) %>%
+1607791876917:ggplot(., aes(x, y)) + geom_line()
+1607791889286:data.frame(y=.res,
+1607791889305:x=1:2001) %>%
+1607791889325:ggplot(., aes(x, y)) + geom_line()
+1607791893658:.res <- res[1:2001]
+1607791893792:data.frame(y=.res,
+1607791893809:x=1:2001) %>%
+1607791893825:ggplot(., aes(x, y)) + geom_line()
+1607791898969:.res
+1607791910496:res[1998:2002]
+1607792031856:library(spectral)
+1607792039586:res <- filter(impulse.response, coefs)
+1607792041664:spec.fft(res)
+1607792046033:res
+1607792303103:spec.fft(res)
+1607792374337:res
+1607792396455:res
+1607792405864:a <- c(1,2,3,4,5,6)
+1607792407974:a[1:2]
+1607792538216:7 %/% 2
+1607792566115:if (l %% 2 == 0){
+1607792566135:return(c(x[(l%/%2+1):l],x[1:(l%/%2)]))
+1607792566154:} else{
+1607792566170:return(c(x[(l%/%2+2):l],x[l%/%2+1], x[1:(l%/%2)]))
+1607792566185:}
+1607792569639:fftshift <- function(x) {
+1607792569656:l <- length(x)
+1607792569674:if (l %% 2 == 0){
+1607792569692:return(c(x[(l%/%2+1):l],x[1:(l%/%2)]))
+1607792569710:} else{
+1607792569729:return(c(x[(l%/%2+2):l],x[l%/%2+1], x[1:(l%/%2)]))
+1607792569745:}
+1607792569769:}
+1607792576792:fftshift <- function(x) {
+1607792576810:l <- length(x)
+1607792576829:if (l %% 2 == 0){
+1607792576847:return(c(x[(l%/%2+1):l],x[1:(l%/%2)]))
+1607792576864:}
+1607792576882:return(c(x[(l%/%2+2):l],x[l%/%2+1], x[1:(l%/%2)]))
+1607792576899:}
+1607792583944:fftshift(c(1,2,3,4,5))
+1607792605608:res <- filter(impulse.response, coefs)
+1607792606494:#res <- res[res != 0]
+1607792606511:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607792606527:res <- log10(abs(fft(res)))
+1607792620568:data.frame(y=fftshift(res),
+1607792627511:)
+1607792630222:data.frame(y=fftshift(res),
+1607792630241:x=rep.like(res)) %>%
+1607792630261:ggplot(., aes(x, y)) + geom_line()
+1607792649501:fftshift <- function(x) {
+1607792649519:l <- length(x)
+1607792649543:return(c(x[(l%/%2+1):l],x[1:(l%/%2)]))
+1607792649568:#return(c(x[(l%/%2+2):l],x[l%/%2+1], x[1:(l%/%2)]))
+1607792649588:}
+1607792651973:data.frame(y=fftshift(res),
+1607792651990:x=rep.like(res)) %>%
+1607792652009:ggplot(., aes(x, y)) + geom_line()
+1607792857066:fftfreq <- function(n, d) {
+1607792857090:if (n %/% 2 == 0) {
+1607792857107:return(c(
+1607792857126:0:(n/2-1),
+1607792857143:(-n/2):-1))
+1607792857161:}
+1607792857185:return(c(
+1607792857200:0:((n-1)/2),
+1607792857217:(-(n-1)/2:-1)
+1607792857235:))
+1607792857253:#f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   if n is even
+1607792857269:#f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   if n is odd
+1607792857284:}
+1607792910604:fftshift(8, 0.1)
+1607792921212:fftfreq(8, 0.1)
+1607792987726:n = 8
+1607792992559:c(
+1607792992578:0:(n/2-1),
+1607792992596:(-n/2):-1)
+1607793009606:fftfreq <- function(n, d) {
+1607793009629:if (n %/% 2 == 0) {
+1607793009645:print("ok")
+1607793009661:return(c(
+1607793009677:0:(n/2-1),
+1607793009696:(-n/2):-1))
+1607793009712:}
+1607793009737:return(c(
+1607793009755:0:((n-1)/2),
+1607793009771:(-(n-1)/2:-1)
+1607793009787:))
+1607793009803:#f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   if n is even
+1607793009819:#f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   if n is odd
+1607793009838:}
+1607793011876:fftfreq(8, 0.1)
+1607793021765:n %/% 2
+1607793025380:fftfreq <- function(n, d) {
+1607793025405:if (n %% 2 == 0) {
+1607793025424:print("ok")
+1607793025443:return(c(
+1607793025459:0:(n/2-1),
+1607793025475:(-n/2):-1))
+1607793025491:}
+1607793025517:return(c(
+1607793025537:0:((n-1)/2),
+1607793025555:(-(n-1)/2:-1)
+1607793025576:))
+1607793025597:#f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   if n is even
+1607793025618:#f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   if n is odd
+1607793025641:}
+1607793030411:fftfreq(8, 0.1)
+1607793057990:fftfreq <- function(n, d) {
+1607793058015:if (n %% 2 == 0) {
+1607793058037:return(c(
+1607793058052:0:(n/2-1),
+1607793058068:(-n/2):-1) / (d*n))
+1607793058083:}
+1607793058104:return(c(
+1607793058118:0:((n-1)/2),
+1607793058134:(-(n-1)/2:-1)
+1607793058149:)/(d*n))
+1607793058165:#f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   if n is even
+1607793058180:#f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   if n is odd
+1607793058195:}
+1607793075705:data.frame(y=fftshift(res),
+1607793075722:x=fft.shift(length(res))) %>%
+1607793075740:ggplot(., aes(x, y)) + geom_line()
+1607793081523:data.frame(y=fftshift(res),
+1607793081540:x=fftfreq(length(res))) %>%
+1607793081560:ggplot(., aes(x, y)) + geom_line()
+1607793089109:data.frame(y=fftshift(res),
+1607793089126:x=fftfreq(length(res), d=0.1)) %>%
+1607793089145:ggplot(., aes(x, y)) + geom_line()
+1607793094989:res
+1607793101996:length(res)
+1607793106695:fftfreq(length(res), d=0.1)
+1607793111588:fftfreq(length(res), d=0.1) %>% length
+1607793127997:fftfreq(8, 0.1)
+1607793135837:fftfreq(9, 0.1)
+1607793198174:return(c(
+1607793198191:0:((n-1)/2),
+1607793198210:(-(n-1)/2):-1
+1607793198228:)/(d*n))
+1607793200324:fftfreq <- function(n, d) {
+1607793200350:if (n %% 2 == 0) {
+1607793200376:return(c(
+1607793200396:0:(n/2-1),
+1607793200415:(-n/2):-1) / (d*n))
+1607793200437:}
+1607793200464:return(c(
+1607793200483:0:((n-1)/2),
+1607793200503:(-(n-1)/2):-1
+1607793200525:)/(d*n))
+1607793200543:#f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   if n is even
+1607793200561:#f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   if n is odd
+1607793200577:}
+1607793202652:fftfreq(9, 0.1)
+1607793211692:data.frame(y=fftshift(res),
+1607793211711:x=fftfreq(length(res), d=0.1)) %>%
+1607793211730:ggplot(., aes(x, y)) + geom_line()
+1607793220244:data.frame(y=res,
+1607793220263:x=fftfreq(length(res), d=0.1)) %>%
+1607793220282:ggplot(., aes(x, y)) + geom_line()
+1607793233955:data.frame(y=res,
+1607793233971:x=fftfreq(length(res), d=1)) %>%
+1607793233988:ggplot(., aes(x, y)) + geom_line()
+1607793545506:res
+1607793564819:data.frame(y=res,
+1607793564836:x=fftfreq(length(res), d=1)) %>%
+1607793564855:ggplot(., aes(x, y), color=.blue) + geom_line() +
+1607793564891:```
+1607793567685:data.frame(y=res,
+1607793567703:x=fftfreq(length(res), d=1)) %>%
+1607793567720:ggplot(., aes(x, y), color=.blue) + geom_line()
+1607793576548:data.frame(y=res,
+1607793576566:x=fftfreq(length(res), d=1)) %>%
+1607793576585:ggplot(., aes(x, y)) + geom_line(color=.blue)
+1607793587162:data.frame(y=res,
+1607793587180:x=fftfreq(length(res), d=1)) %>%
+1607793587199:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793587216:theme_economist_white()
+1607793592971:data.frame(y=res,
+1607793592988:x=fftfreq(length(res), d=1)) %>%
+1607793593006:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793593024:theme_economist()
+1607793607789:data.frame(y=res,
+1607793607809:x=fftfreq(length(res), d=1)) %>%
+1607793607828:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793607848:theme_excel()
+1607793612705:data.frame(y=res,
+1607793612723:x=fftfreq(length(res), d=1)) %>%
+1607793612739:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793612755:theme_excel_new()
+1607793627186:data.frame(y=res,
+1607793627204:x=fftfreq(length(res), d=1)) %>%
+1607793627221:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793627238:theme_pander()
+1607793640579:data.frame(y=res,
+1607793640597:x=fftfreq(length(res), d=1)) %>%
+1607793640617:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793640634:theme_foundation()
+1607793656852:data.frame(y=res,
+1607793656872:x=fftfreq(length(res), d=1)) %>%
+1607793656889:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793656906:theme_wsj()
+1607793668979:data.frame(y=res,
+1607793668996:x=fftfreq(length(res), d=1)) %>%
+1607793669012:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793669029:theme_excel_new()
+1607793675673:data.frame(y=res,
+1607793675691:x=fftfreq(length(res), d=1)) %>%
+1607793675709:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793675725:theme_bw()
+1607793681196:data.frame(y=res,
+1607793681213:x=fftfreq(length(res), d=1)) %>%
+1607793681230:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793681246:theme_excel_new()
+1607793687635:data.frame(y=res,
+1607793687652:x=fftfreq(length(res), d=1)) %>%
+1607793687670:ggplot(., aes(x, y)) + geom_line(color=.blue) +
+1607793687689:theme_pander()
+1607793710043:geom_line(color=.blue) +
+1607793710062:theme_pander()
+1607793714533:data.frame(y=res,
+1607793714553:x=fftfreq(length(res), d=1)) %>%
+1607793714571:ggplot(., aes(x, y)) +
+1607793714588:geom_hline(yintercept=0, color=.gray) +
+1607793714604:geom_line(color=.blue) +
+1607793714620:theme_pander()
+1607793725690:data.frame(y=res,
+1607793725706:x=fftfreq(length(res), d=1)) %>%
+1607793725722:ggplot(., aes(x, y)) +
+1607793725737:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607793725754:geom_line(color=.blue) +
+1607793725771:theme_pander()
+1607794202303:widths <- 1:100:10
+1607794202445:orders <- 1:12:2
+1607794202603:impulse.response <- generate.impulse.response(2000)
+1607794202900:dt <- data.table()
+1607794203225:for (width in widths) {
+1607794203242:for (order in orders) {
+1607794203266:coefs <- filter.coef(width=width, order=order)
+1607794203285:res <- filter(impulse.response, coefs)
+1607794203301:res.log <- log10(abs(fft(res)))
+1607794203319:freqs <- fftfreq(length(res), d=1)
+1607794203345:dt <- rbind(dt,
+1607794203363:data.table(y=res.log,
+1607794203381:freq=freqs))
+1607794203402:}
+1607794203420:}
+1607794208080:d
+1607794210329:order
+1607794210800:w
+1607794212752:width
+1607794284913:order <- 3
+1607794285385:for (width in widths[widths > order*2]) {
+1607794285403:coefs <- filter.coef(width=width, order=order)
+1607794285420:res <- filter(impulse.response, coefs)
+1607794285436:res.log <- log10(abs(fft(res)))
+1607794285453:freqs <- fftfreq(length(res), d=1)
+1607794285477:dt <- rbind(dt,
+1607794285493:data.table(y=res.log,
+1607794285509:freq=freqs))
+1607794285525:}
+1607794303825:1:100:6
+1607794321643:widths <- seq(1, 100, 10)
+1607794321794:orders <- seq(1, 12, 2)
+1607794322312:impulse.response <- generate.impulse.response(2000)
+1607794322883:dt <- data.table()
+1607794323298:order <- 3
+1607794323973:for (width in widths[widths > order*2]) {
+1607794323994:coefs <- filter.coef(width=width, order=order)
+1607794324013:res <- filter(impulse.response, coefs)
+1607794324033:res.log <- log10(abs(fft(res)))
+1607794324052:freqs <- fftfreq(length(res), d=1)
+1607794324078:dt <- rbind(dt,
+1607794324097:data.table(y=res.log,
+1607794324116:freq=freqs))
+1607794324135:}
+1607794326482:dt
+1607794343482:for (width in widths[widths > order*2]) {
+1607794343501:coefs <- filter.coef(width=width, order=order)
+1607794343521:res <- filter(impulse.response, coefs)
+1607794343539:res.log <- log10(abs(fft(res)))
+1607794343556:freqs <- fftfreq(length(res), d=1)
+1607794343580:dt <- rbind(dt,
+1607794343599:data.table(y=res.log,
+1607794343618:freq=freqs,
+1607794343637:width=width))
+1607794343655:}
+1607794353201:order <- 3
+1607794353345:dt <- data.table()
+1607794353545:for (width in widths[widths > order*2]) {
+1607794353563:coefs <- filter.coef(width=width, order=order)
+1607794353580:res <- filter(impulse.response, coefs)
+1607794353598:res.log <- log10(abs(fft(res)))
+1607794353614:freqs <- fftfreq(length(res), d=1)
+1607794353641:dt <- rbind(dt,
+1607794353658:data.table(y=res.log,
+1607794353677:freq=freqs,
+1607794353695:width=width))
+1607794353713:}
+1607794355304:dt
+1607794379281:ggplot(dt, aes(freq, y, color=width)) +
+1607794379299:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794379315:geom_line() +
+1607794379333:theme_pander()
+1607794398393:dt[, unique(width)]
+1607794408825:widths <- seq(1, 100, 30)
+1607794411216:dt <- data.table()
+1607794411368:for (width in widths[widths > order*2]) {
+1607794411384:coefs <- filter.coef(width=width, order=order)
+1607794411404:res <- filter(impulse.response, coefs)
+1607794411423:res.log <- log10(abs(fft(res)))
+1607794411440:freqs <- fftfreq(length(res), d=1)
+1607794411467:dt <- rbind(dt,
+1607794411487:data.table(y=res.log,
+1607794411505:freq=freqs,
+1607794411523:width=width))
+1607794411542:}
+1607794412019:ggplot(dt, aes(freq, y, color=width)) +
+1607794412036:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794412054:geom_line() +
+1607794412074:theme_pander()
+1607794430330:ggplot(dt, aes(freq, y, color=width)) +
+1607794430349:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794430368:geom_line() +
+1607794430385:theme_pander() +
+1607794430400:scale_color_brewer()
+1607794443573:for (width in widths[widths > order*2]) {
+1607794443591:coefs <- filter.coef(width=width, order=order)
+1607794443607:res <- filter(impulse.response, coefs)
+1607794443625:res.log <- log10(abs(fft(res)))
+1607794443644:freqs <- fftfreq(length(res), d=1)
+1607794443667:dt <- rbind(dt,
+1607794443684:data.table(y=res.log,
+1607794443703:freq=freqs,
+1607794443721:width=as.factor(width)))
+1607794443740:}
+1607794444479:ggplot(dt, aes(freq, y, color=width)) +
+1607794444497:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794444517:geom_line() +
+1607794444533:theme_pander() +
+1607794444553:scale_color_brewer()
+1607794457105:ggplot(dt, aes(freq, y, color=width)) +
+1607794457123:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794457143:geom_line() +
+1607794457162:theme_pander() +
+1607794457179:scale_color_canva()
+1607794469768:?scale_color_canva
+1607794547537:ggplot(dt, aes(freq, y, color=width)) +
+1607794547558:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794547577:geom_line() +
+1607794547595:theme_pander() +
+1607794547613:scale_color_canvas(palette = "Subdued & Professional")
+1607794555441:ggplot(dt, aes(freq, y, color=width)) +
+1607794555459:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794555475:geom_line() +
+1607794555498:theme_pander() +
+1607794555516:scale_color_canva(palette = "Subdued & Professional")
+1607794562706:ggplot(dt, aes(freq, y, color=width)) +
+1607794562724:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794562743:geom_line() +
+1607794562761:theme_pander() +
+1607794562779:scale_color_canva(palette = "Subdued and Professional")
+1607794575103:canva_palettes()
+1607794587317:canva_palettes
+1607794600143:names(canva_palettes)[1]
+1607794605423:ggplot(dt, aes(freq, y, color=width)) +
+1607794605441:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794605460:geom_line() +
+1607794605477:theme_pander() +
+1607794605495:scale_color_canva(palette = names(canva_palettes)[2])
+1607794611649:ggplot(dt, aes(freq, y, color=width)) +
+1607794611668:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794611685:geom_line() +
+1607794611703:theme_pander() +
+1607794611720:scale_color_canva(palette = names(canva_palettes)[3])
+1607794617351:ggplot(dt, aes(freq, y, color=width)) +
+1607794617367:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794617382:geom_line() +
+1607794617400:theme_pander() +
+1607794617417:scale_color_canva(palette = names(canva_palettes)[2])
+1607794678246:ggplot(dt[freq>0], aes(freq, y, color=width)) +
+1607794678264:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794678282:geom_line() +
+1607794678301:theme_pander() +
+1607794678319:scale_color_canva(palette = names(canva_palettes)[2])
+1607794858882:for (order in orders){
+1607794858899:for (width in widths[widths > order*2]) {
+1607794858918:coefs <- filter.coef(width=width, order=order)
+1607794858934:res <- filter(impulse.response, coefs)
+1607794858952:res.log <- log10(abs(fft(res)))
+1607794858971:freqs <- fftfreq(length(res), d=1)
+1607794858995:dt <- rbind(dt,
+1607794859014:data.table(y=res.log,
+1607794859032:freq=freqs,
+1607794859048:width = as.factor(width),
+1607794859065:order = as.factor(order)))
+1607794859083:}
+1607794859108:}
+1607794859149:ggplot(dt[freq>0], aes(freq, y, color=width)) +
+1607794859168:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794859186:geom_line() +
+1607794859202:theme_pander() +
+1607794859220:scale_color_canva(palette = names(canva_palettes)[2])
+1607794866928:order <- 3
+1607794867083:dt <- data.table()
+1607794869615:widths <- seq(1, 100, 30)
+1607794869764:orders <- seq(1, 12, 2)
+1607794870761:impulse.response <- generate.impulse.response(2000)
+1607794871216:dt <- data.table()
+1607794871367:for (order in orders){
+1607794871385:for (width in widths[widths > order*2]) {
+1607794871405:coefs <- filter.coef(width=width, order=order)
+1607794871423:res <- filter(impulse.response, coefs)
+1607794871441:res.log <- log10(abs(fft(res)))
+1607794871460:freqs <- fftfreq(length(res), d=1)
+1607794871484:dt <- rbind(dt,
+1607794871502:data.table(y=res.log,
+1607794871521:freq=freqs,
+1607794871539:width = as.factor(width),
+1607794871558:order = as.factor(order)))
+1607794871576:}
+1607794871601:}
+1607794873062:ggplot(dt[freq>0], aes(freq, y, color=width)) +
+1607794873083:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794873101:geom_line() +
+1607794873118:theme_pander() +
+1607794873136:scale_color_canva(palette = names(canva_palettes)[2])
+1607794887823:ggplot(dt[(freq>0) & (order == 2)], aes(freq, y, color=width)) +
+1607794887842:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794887860:geom_line() +
+1607794887877:theme_pander() +
+1607794887894:scale_color_canva(palette = names(canva_palettes)[2])
+1607794892152:ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607794892171:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794892190:geom_line() +
+1607794892207:theme_pander() +
+1607794892224:scale_color_canva(palette = names(canva_palettes)[2])
+1607794914502:ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607794914520:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794914537:geom_line() +
+1607794914554:theme_pander() +
+1607794914569:scale_color_canva(palette = names(canva_palettes)[2])
+1607794955248:ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=as.numeric(order))) +
+1607794955264:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794955284:geom_line() +
+1607794955302:theme_pander() +
+1607794955321:scale_color_canva(palette = names(canva_palettes)[2])
+1607794990018:ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=as.numeric(order))) +
+1607794990039:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794990058:geom_line() +
+1607794990078:theme_pander() +
+1607794990096:scale_color_canva(palette = names(canva_palettes)[2])
+1607794998040:ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607794998056:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607794998073:geom_line() +
+1607794998090:theme_pander() +
+1607794998109:scale_color_canva(palette = names(canva_palettes)[2])
+1607795024490:widths <- seq(1, 100, 30)
+1607795024647:orders <- seq(1, 8, 2)
+1607795024799:impulse.response <- generate.impulse.response(2000)
+1607795025095:dt <- data.table()
+1607795025614:for (order in orders){
+1607795025634:for (width in widths[widths > order*2]) {
+1607795025651:coefs <- filter.coef(width=width, order=order)
+1607795025671:res <- filter(impulse.response, coefs)
+1607795025686:res.log <- log10(abs(fft(res)))
+1607795025707:freqs <- fftfreq(length(res), d=1)
+1607795025735:dt <- rbind(dt,
+1607795025755:data.table(y=res.log,
+1607795025773:freq=freqs,
+1607795025793:width = as.factor(width),
+1607795025810:order = as.factor(order)))
+1607795025829:}
+1607795025853:}
+1607795027966:ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795027986:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795028004:geom_line() +
+1607795028021:theme_pander() +
+1607795028038:scale_color_canva(palette = names(canva_palettes)[2])
+1607795032821:ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607795032839:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795032856:geom_line() +
+1607795032873:theme_pander() +
+1607795032889:scale_color_canva(palette = names(canva_palettes)[2])
+1607795128509:expression
+1607795132636:expression(alpha)
+1607795144233:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795144251:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795144269:geom_line() +
+1607795144289:theme_pander() +
+1607795144306:scale_color_canva(palette = names(canva_palettes)[2]) +
+1607795144322:scale_x_continuous(name=expression(alpha))
+1607795146662:g.widths
+1607795179556:ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795179573:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795179589:geom_line() +
+1607795179606:theme_pander() +
+1607795179622:scale_color_canva(palette = names(canva_palettes)[2]) +
+1607795179639:scale_x_continuous(name=paste0(expression(alpha), " teste"))
+1607795218900:ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795218918:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795218935:geom_line() +
+1607795218952:theme_pander() +
+1607795218969:scale_color_canva(palette = names(canva_palettes)[2]) +
+1607795218984:scale_x_continuous(name=expression(alpha"/teste"))
+1607795226117:ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795226135:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795226154:geom_line() +
+1607795226173:theme_pander() +
+1607795226190:scale_color_canva(palette = names(canva_palettes)[2]) +
+1607795226206:scale_x_continuous(name=expression(alpha"/teste")))
+1607795235079:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795235097:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795235116:geom_line() +
+1607795235136:theme_pander() +
+1607795235153:scale_color_canva(palette = names(canva_palettes)[2]) +
+1607795235172:scale_x_continuous(name=expression(alpha*"/teste"))
+1607795237734:g.widths
+1607795254669:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795254691:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795254711:geom_line() +
+1607795254730:theme_pander() +
+1607795254748:scale_color_canva(palette = names(canva_palettes)[2]) +
+1607795254766:scale_x_continuous(name=expression(omega*"/2"*pi))
+1607795255109:g.widths
+1607795288494:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795288511:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795288527:geom_line() +
+1607795288547:theme_pander() +
+1607795288566:scale_color_canva(palette = names(canva_palettes)[2]) +
+1607795288583:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795288600:scale_y_continuous(name="Logaritmo da magnitude")
+1607795288772:g.widths
+1607795298806:g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607795298823:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795298841:geom_line() +
+1607795298859:theme_pander() +
+1607795298878:scale_color_canva(palette = names(canva_palettes)[2]) +
+1607795298897:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795298915:scale_y_continuous(name="Logaritmo da magnitude")
+1607795316634:arrangeGrob(g.width, g.orders, nrow=2)
+1607795320757:??arrangeGrob
+1607795350364:library(grid)
+1607795375300:install.packages("gridExtra")
+1607795407845:library(gridExtra)
+1607795412140:arrangeGrob(g.width, g.orders, nrow=2)
+1607795416232:arrangeGrob(g.widths, g.orders, nrow=2)
+1607795421421:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607795445817:g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607795445835:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795445853:geom_line() +
+1607795445869:theme_pander() +
+1607795445888:scale_color_canva(palette = names(canva_palettes)[3]) +
+1607795445903:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795445925:scale_y_continuous(name="Logaritmo da magnitude")
+1607795446049:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607795493287:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795493303:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795493321:geom_line() +
+1607795493340:theme_pander() +
+1607795493361:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607795493377:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795493393:scale_y_continuous(name="Logaritmo da magnitude")
+1607795493524:g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607795493541:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795493557:geom_line() +
+1607795493575:theme_pander() +
+1607795493590:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607795493605:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795493622:scale_y_continuous(name="Logaritmo da magnitude")
+1607795493901:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607795570348:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795570368:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795570387:geom_hline(yintercept=-3, color=.gray, alpha=0.8) +
+1607795570407:geom_line() +
+1607795570425:theme_pander() +
+1607795570446:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607795570462:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795570483:scale_y_continuous(name="Logaritmo da magnitude")
+1607795570624:g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607795570645:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795570665:geom_line() +
+1607795570685:theme_pander() +
+1607795570705:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607795570720:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795570738:scale_y_continuous(name="Logaritmo da magnitude")
+1607795573997:g.widths
+1607795592456:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795592477:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795592496:geom_hline(yintercept=-3, color="black", alpha=0.8) +
+1607795592514:geom_line() +
+1607795592534:theme_pander() +
+1607795592552:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607795592571:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795592591:scale_y_continuous(name="Logaritmo da magnitude")
+1607795595069:g.widths
+1607795606601:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795606622:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795606640:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795606656:geom_line() +
+1607795606675:theme_pander() +
+1607795606691:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607795606708:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795606726:scale_y_continuous(name="Logaritmo da magnitude")
+1607795606753:g.widths
+1607795640278:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795640296:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795640311:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795640335:geom_line() +
+1607795640359:theme_pander() +
+1607795640374:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607795640390:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795640406:scale_y_continuous(name="Logaritmo da magnitude")
+1607795640551:g.widths
+1607795657968:g.widths
+1607795658204:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795658220:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795658237:geom_line() +
+1607795658256:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795658274:theme_pander() +
+1607795658293:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607795658311:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795658329:scale_y_continuous(name="Logaritmo da magnitude")
+1607795672868:g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607795672888:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795672906:geom_line() +
+1607795672925:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795672943:theme_pander() +
+1607795672961:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607795672977:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795672995:scale_y_continuous(name="Logaritmo da magnitude")
+1607795679125:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
