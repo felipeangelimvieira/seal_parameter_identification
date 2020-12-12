@@ -46,6 +46,7 @@ library(pracma)
 library(dplyr)
 library(stats)
 library(ggthemes)
+library(grid)
 library(gridExtra)
 
 ```
@@ -92,7 +93,7 @@ rep.like <- function(x) {
 }
 
 filter <- function(x, filter) {
-  x <- stats::filter(x, filter, method="convolution")
+  x <- as.numeric(stats::filter(x, filter, method="convolution"))
   x[is.na(x)] <- 0
   return(x)
 }
@@ -128,7 +129,7 @@ fftfreq <- function(n, d) {
 
 ```{r}
 
-coefs <- filter.coef(61, 3)
+coefs <- filter.coef(15, 6, derivative=1)
 data = data.table(x=rep.like(coefs),
                   y=coefs)
 ggplot(data) +
@@ -167,32 +168,48 @@ data.frame(y=res,
 
 ```
 
-```{r}
 
-widths <- seq(1, 100, 30)
-orders <- seq(1, 8, 2)
+```{r}
+widths <- seq(11, 300, 20)
+orders <- seq(3, 12, 2)
+
 impulse.response <- generate.impulse.response(2000)
 
 
 
 dt <- data.table()
-for (order in orders){
+for (derivative in 0:2) {
+
+  for (order in orders[orders > derivative]){
   for (width in widths[widths > order*2]) {
-    coefs <- filter.coef(width=width, order=order)
+    coefs <- filter.coef(width=width, order=order, derivative=derivative)
     res <- filter(impulse.response, coefs)
     res.log <- log10(abs(fft(res)))
     freqs <- fftfreq(length(res), d=1)
     
     dt <- rbind(dt,
-                data.table(y=res.log,
+                data.table(y= as.numeric(res.log),
+                           f=fft(res),
                            freq=freqs,
-                           width = as.factor(width),
-                           order = as.factor(order)))
+                           width = width,
+                           order = order,
+                           derivative = derivative))
   }
+  
+}
 
 }
 
-g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+dt[, y_ideal := (freq*pi*2)^derivative]
+dt[, mag_ratio := 10*log10(abs(f)/abs(y_ideal))]
+dt[, width := factor(as.factor(width), levels=widths)]
+dt[, order := factor(as.factor(order), levels=orders)]
+
+plot.magnitudes <- function(dt, derivative, title="") {
+ 
+   .derivative <- derivative
+   g.widths <- ggplot(dt[(freq>0) & (order == first(order)) & (derivative == .derivative)],
+                   aes(freq, mag_ratio, color=width)) +
               geom_hline(yintercept=0, color=.gray, alpha=0.4) +
               geom_line() +
               geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
@@ -202,7 +219,8 @@ g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
               scale_y_continuous(name="Logaritmo da magnitude")
               
 
-g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+    g.orders <- ggplot(dt[(freq>0) & (width == first(width)) & (derivative == .derivative)],
+                       aes(freq, mag_ratio, color=order)) +
               geom_hline(yintercept=0, color=.gray, alpha=0.4) +
               geom_line() +
               geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
@@ -212,7 +230,91 @@ g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
               scale_y_continuous(name="Logaritmo da magnitude")
 
 
-arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+    return(arrangeGrob(g.widths, g.orders, nrow=2,
+                       top=textGrob(title,gp=gpar(fontsize=20,font=3))
+                       )
+           )
+}
+```
+
+
+```{r}
+
+g.der0 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=0, title="SG") 
+g.der1 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=1, title="SG 1a ordem") 
+g.der2 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=2, title="SG 2a ordem")
+
+```
+
+
+```{r}
+g.der0 %>% grid.draw
+```
+
+```{r}
+g.der1 %>% grid.draw
+```
+
+```{r}
+g.der2 %>% grid.draw
+```
+
+
+```{r}
+
+sel.dt <- dt[(order==3) & (width == last(width)) & derivative == 1]
+ggplot(sel.dt) + 
+  geom_line(aes(freq, abs(f))) +
+  geom_line(aes(x=freq, y=abs(freq)*pi*2), color = .gray) +
+  xlim(-0.01, 0.01) +
+  ylim(0, 0.1)
+
+```
+
+
+```{r}
+
+dt.cutoff <- copy(dt)
+dt.cutoff <- dt.cutoff[ (freq >= 0) & (mag_ratio <= -3)]
+dt.cutoff <- dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
+dt.cutoff[, estimated := as.numeric(order)/((as.numeric(as.character(width))))]
+
+plot.cutoff <- function(derivative) {
+  .derivative <- derivative
+  g <- ggplot(dt.cutoff[ (derivative == .derivative) & (freq < 0.12)],
+       aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+        geom_line() + 
+        #geom_point(aes(y=estimated)) +
+        geom_point() +
+        theme_pander() +
+        scale_x_continuous("Grau") +
+        scale_y_continuous("Frequência de corte") +
+        scale_color_gradientn("largura", colors=c("#93b6db", "#505160")) +
+        coord_cartesian(ylim=c(NA, 0.12))
+  return(g)
+}
+g.cutoff.der0 <- plot.cutoff(0)
+g.cutoff.der1 <- plot.cutoff(1)      
+g.cutoff.der2 <- plot.cutoff(2)      
+
+plot(g.cutoff.der0)
+plot(g.cutoff.der1)
+plot(g.cutoff.der2)
+
+```
+
+```{r Save figures}
+
+save.at <- c("~/R/images/")
+dir.create(save.at)
+
+ggsave(paste0(save.at, "savitzky-golay-der0.png"), g.der0)
+ggsave(paste0(save.at, "savitzky-golay-der1.png"), g.der1)
+ggsave(paste0(save.at, "savitzky-golay-der2.png"), g.der2)
+ggsave(paste0(save.at, "savitzky-golay-cutoff-der0.png"), g.cutoff.der0)
+ggsave(paste0(save.at, "savitzky-golay-cutoff-der1.png"), g.cutoff.der1)
+ggsave(paste0(save.at, "savitzky-golay-cutoff-der2.png"), g.cutoff.der2)
+
 
 ```
 

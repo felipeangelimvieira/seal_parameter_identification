@@ -1,0 +1,264 @@
+## ----setup, include=FALSE------------------------------------------------------------------------
+knitr::opts_chunk$set(echo = T,
+                      message=FALSE,
+                      warning = F,
+                      results = 'asis',
+                      fig.align='center',  out.height= '100%', 
+                      fig.pos='H',
+                      out.width="100%",
+                      fig.margin=F)
+options("kableExtra.html.bsTable" = T)
+options(tinytex.verbose = TRUE)
+options(knitr.kable.NA = "-")
+rm(list = setdiff(objects(),c("main.directory","usuario", "params") ))
+
+
+
+## ------------------------------------------------------------------------------------------------
+
+library(ggplot2)
+library(data.table)
+library(pracma)
+library(dplyr)
+library(stats)
+library(ggthemes)
+library(grid)
+library(gridExtra)
+
+
+
+## ------------------------------------------------------------------------------------------------
+.blue   = "#1D7C96"
+.mauve  = "#d46edb"
+.orange = "#f27b1f"
+.bistre = "#876f5c"
+.gray   = "#6b8599"
+
+
+
+## ------------------------------------------------------------------------------------------------
+
+filter.coef <- function(width, order, derivative=0) {
+  stopifnot(width %% 2 == 1)
+  
+  
+  
+  # half-width
+  M <- (width - 1)/2
+  A <- matrix(0,
+              nrow=width,
+              ncol=order)
+  
+  for (n in 0:(width-1)){
+    for (i in 0:(order-1)){
+      A[n+1, i+1] <- (n-M)^i
+    }
+  }
+  
+  
+  H = solve(t(A) %*% A, tol=1e-80) %*% t(A)
+  
+  return(H[derivative+1,]*factorial(derivative))
+  
+  
+}
+
+
+rep.like <- function(x) {
+  return(-(length(x)%/%2):(length(x)%/%2))
+}
+
+filter <- function(x, filter) {
+  x <- as.numeric(stats::filter(x, filter, method="convolution"))
+  x[is.na(x)] <- 0
+  return(x)
+}
+
+fftshift <- function(x) {
+  l <- length(x)
+  
+  return(c(x[(l%/%2+1):l],x[1:(l%/%2)]))
+  
+  #return(c(x[(l%/%2+2):l],x[l%/%2+1], x[1:(l%/%2)]))  
+}
+
+
+fftfreq <- function(n, d) {
+  
+  if (n %% 2 == 0) {
+    
+    return(c(
+      0:(n/2-1),
+      (-n/2):-1) / (d*n))
+  }
+  
+  return(c(
+   0:((n-1)/2),
+   (-(n-1)/2):-1
+  )/(d*n)) 
+#f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   if n is even
+#f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   if n is odd
+}
+
+
+
+## ------------------------------------------------------------------------------------------------
+
+coefs <- filter.coef(15, 6, derivative=1)
+data = data.table(x=rep.like(coefs),
+                  y=coefs)
+ggplot(data) +
+  geom_hline(yintercept = 0, color=.gray, alpha=0.5) +
+  geom_line(aes(x=x, y=y), color=.blue) +
+  theme_bw()
+
+
+
+## ------------------------------------------------------------------------------------------------
+
+
+generate.impulse.response <- function(half.size) {
+  impulse.response <- rep(0, 2*half.size + 1)
+  impulse.response[half.size+1] <- 1
+  return(impulse.response)
+}
+
+impulse.response <- generate.impulse.response(2000)
+coefs <- filter.coef(15, 1)
+
+res <- filter(impulse.response, coefs)
+#res <- res[res != 0]
+#res <- stats::filter(impulse.response, coefs, method="convolution")
+res <- log10(abs(fft(res)))
+
+
+data.frame(y=res,
+           x=fftfreq(length(res), d=1)) %>%
+  ggplot(., aes(x, y)) +
+  geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+  geom_line(color=.blue) +
+  theme_pander()
+
+
+
+
+
+## ------------------------------------------------------------------------------------------------
+widths <- seq(11, 300, 20)
+orders <- seq(3, 10, 2)
+
+impulse.response <- generate.impulse.response(2000)
+
+
+
+dt <- data.table()
+for (derivative in 0:2) {
+
+  for (order in orders[orders > derivative]){
+  for (width in widths[widths > order*2]) {
+    coefs <- filter.coef(width=width, order=order, derivative=derivative)
+    res <- filter(impulse.response, coefs)
+    res.log <- log10(abs(fft(res)))
+    freqs <- fftfreq(length(res), d=1)
+    
+    dt <- rbind(dt,
+                data.table(y= as.numeric(res.log),
+                           f=fft(res),
+                           freq=freqs,
+                           width = width,
+                           order = order,
+                           derivative = derivative))
+  }
+  
+}
+
+}
+
+dt[, y_ideal := (freq*pi*2)^derivative]
+dt[, mag_ratio := 10*log10(abs(f)/abs(y_ideal))]
+dt[, width := factor(as.factor(width), levels=widths)]
+dt[, order := factor(as.factor(order), levels=orders)]
+
+plot.magnitudes <- function(dt, derivative, title="") {
+ 
+   .derivative <- derivative
+   g.widths <- ggplot(dt[(freq>0) & (order == first(order)) & (derivative == .derivative)],
+                   aes(freq, mag_ratio, color=width)) +
+              geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+              geom_line() +
+              geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+              theme_pander() +
+              scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+              scale_x_continuous(name=expression(omega*"/2"*pi)) +
+              scale_y_continuous(name="Logaritmo da magnitude")
+              
+
+    g.orders <- ggplot(dt[(freq>0) & (width == first(width)) & (derivative == .derivative)],
+                       aes(freq, mag_ratio, color=order)) +
+              geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+              geom_line() +
+              geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+              theme_pander() +
+              scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+              scale_x_continuous(name=expression(omega*"/2"*pi)) +
+              scale_y_continuous(name="Logaritmo da magnitude")
+
+
+    return(arrangeGrob(g.widths, g.orders, nrow=2,
+                       top=textGrob(title,gp=gpar(fontsize=20,font=3))
+                       )
+           )
+}
+
+
+## ------------------------------------------------------------------------------------------------
+
+g.der0 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=0, title="SG") %>% grid.draw
+
+
+
+## ------------------------------------------------------------------------------------------------
+g.der1 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=1, title="SG 1a ordem") %>% grid.draw
+
+
+## ------------------------------------------------------------------------------------------------
+g.der2 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=2, title="SG 2a ordem")
+
+
+
+## ------------------------------------------------------------------------------------------------
+
+sel.dt <- dt[(order==3) & (width == max(width)) & derivative == 1]
+ggplot(sel.dt) + 
+  geom_line(aes(freq, abs(f))) +
+  geom_line(aes(x=freq, y=abs(freq)*pi*2), color = .gray) +
+  xlim(-0.01, 0.01) +
+  ylim(0, 0.1)
+
+
+
+## ------------------------------------------------------------------------------------------------
+
+dt.cutoff <- copy(dt)
+dt.cutoff <- dt.cutoff[ (freq >= 0) & (mag_ratio <= -3)]
+dt.cutoff <- dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
+dt.cutoff[, estimated := as.numeric(order)/((as.numeric(as.character(width))))]
+
+g.cutoff <- ggplot(dt.cutoff[ (derivative == 0)],
+       aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+        geom_line() + 
+        #geom_point(aes(y=estimated)) +
+        geom_point() +
+        theme_pander() +
+        scale_x_continuous("Grau") +
+        scale_y_continuous("Frequência de corte") +
+        scale_color_gradientn("largura", colors=canva_pal(names(canva_palettes)[4])(2))
+        
+
+
+
+## ------------------------------------------------------------------------------------------------
+
+
+
+

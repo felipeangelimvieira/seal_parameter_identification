@@ -1347,3 +1347,2275 @@
 1607795672977:scale_x_continuous(name=expression(omega*"/2"*pi)) +
 1607795672995:scale_y_continuous(name="Logaritmo da magnitude")
 1607795679125:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607795781708:widths <- seq(1, 100, 30)
+1607795781728:orders <- seq(1, 8, 2)
+1607795781746:impulse.response <- generate.impulse.response(2000)
+1607795781784:dt <- data.table()
+1607795781803:for (order in orders){
+1607795781821:for (width in widths[widths > order*2]) {
+1607795781841:coefs <- filter.coef(width=width, order=order, derivative=1)
+1607795781862:res <- filter(impulse.response, coefs)
+1607795781880:res.log <- log10(abs(fft(res)))
+1607795781899:freqs <- fftfreq(length(res), d=1)
+1607795781925:dt <- rbind(dt,
+1607795781942:data.table(y=res.log,
+1607795781961:freq=freqs,
+1607795781979:width = as.factor(width),
+1607795781995:order = as.factor(order)))
+1607795782013:}
+1607795782039:}
+1607795782229:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795782245:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795782261:geom_line() +
+1607795782280:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795782298:theme_pander() +
+1607795782316:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607795782333:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795782351:scale_y_continuous(name="Logaritmo da magnitude")
+1607795782384:g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607795782402:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795782419:geom_line() +
+1607795782436:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795782452:theme_pander() +
+1607795782469:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607795782485:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795782502:scale_y_continuous(name="Logaritmo da magnitude")
+1607795782534:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607795788239:freq
+1607795793909:dt
+1607795796307:widths <- seq(1, 100, 30)
+1607795796454:orders <- seq(1, 8, 2)
+1607795796623:impulse.response <- generate.impulse.response(2000)
+1607795798032:dt <- data.table()
+1607795798262:for (order in orders){
+1607795798282:for (width in widths[widths > order*2]) {
+1607795798302:coefs <- filter.coef(width=width, order=order, derivative=1)
+1607795798319:res <- filter(impulse.response, coefs)
+1607795798336:res.log <- log10(abs(fft(res)))
+1607795798354:freqs <- fftfreq(length(res), d=1)
+1607795798377:dt <- rbind(dt,
+1607795798397:data.table(y=res.log,
+1607795798417:freq=freqs,
+1607795798435:width = as.factor(width),
+1607795798451:order = as.factor(order)))
+1607795798468:}
+1607795798490:}
+1607795821125:orders <- seq(3, 10, 2)
+1607795821788:impulse.response <- generate.impulse.response(2000)
+1607795822349:dt <- data.table()
+1607795822708:for (order in orders){
+1607795822727:for (width in widths[widths > order*2]) {
+1607795822744:coefs <- filter.coef(width=width, order=order, derivative=1)
+1607795822764:res <- filter(impulse.response, coefs)
+1607795822782:res.log <- log10(abs(fft(res)))
+1607795822799:freqs <- fftfreq(length(res), d=1)
+1607795822827:dt <- rbind(dt,
+1607795822847:data.table(y=res.log,
+1607795822867:freq=freqs,
+1607795822883:width = as.factor(width),
+1607795822900:order = as.factor(order)))
+1607795822920:}
+1607795822948:}
+1607795824292:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795824311:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795824332:geom_line() +
+1607795824355:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795824374:theme_pander() +
+1607795824391:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607795824408:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795824424:scale_y_continuous(name="Logaritmo da magnitude")
+1607795824835:g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607795824852:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795824868:geom_line() +
+1607795824886:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795824907:theme_pander() +
+1607795824926:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607795824944:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795824961:scale_y_continuous(name="Logaritmo da magnitude")
+1607795825233:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607795855443:?rep
+1607795863284:?seq
+1607795887998:widths <- seq(1, 300, 90)
+1607795888175:orders <- seq(3, 10, 2)
+1607795888340:impulse.response <- generate.impulse.response(2000)
+1607795889596:dt <- data.table()
+1607795889948:for (order in orders){
+1607795889968:for (width in widths[widths > order*2]) {
+1607795889985:coefs <- filter.coef(width=width, order=order, derivative=1)
+1607795890004:res <- filter(impulse.response, coefs)
+1607795890021:res.log <- log10(abs(fft(res)))
+1607795890040:freqs <- fftfreq(length(res), d=1)
+1607795890063:dt <- rbind(dt,
+1607795890079:data.table(y=res.log,
+1607795890096:freq=freqs,
+1607795890113:width = as.factor(width),
+1607795890131:order = as.factor(order)))
+1607795890147:}
+1607795890170:}
+1607795890439:g.widths <- ggplot(dt[(freq>0) & (order == 3)], aes(freq, y, color=width)) +
+1607795890467:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795890497:geom_line() +
+1607795890526:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795890543:theme_pander() +
+1607795890560:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607795890576:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795890592:scale_y_continuous(name="Logaritmo da magnitude")
+1607795890836:g.orders <- ggplot(dt[(freq>0) & (width == 31)], aes(freq, y, color=order)) +
+1607795890855:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795890874:geom_line() +
+1607795890895:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795890915:theme_pander() +
+1607795890931:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607795890947:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795890964:scale_y_continuous(name="Logaritmo da magnitude")
+1607795891131:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607795947666:g.orders <- ggplot(dt[(freq>0) & (width == widths[1])], aes(freq, y, color=order)) +
+1607795947688:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607795947706:geom_line() +
+1607795947722:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607795947743:theme_pander() +
+1607795947762:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607795947781:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607795947797:scale_y_continuous(name="Logaritmo da magnitude")
+1607795951361:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607795965051:g.orders
+1607795974323:dt[(freq>0) & (width == widths[1])]
+1607795983722:dt[(freq>0) & (width == widths[[1]])]
+1607795987804:dt[, unique(width)]
+1607795990826:widths
+1607796004426:g.widths <- ggplot(dt[(freq>0) & (order == orders[2])], aes(freq, y, color=width)) +
+1607796004446:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796004465:geom_line() +
+1607796004481:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796004500:theme_pander() +
+1607796004519:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796004536:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796004556:scale_y_continuous(name="Logaritmo da magnitude")
+1607796004751:g.orders <- ggplot(dt[(freq>0) & (width == widths[2])], aes(freq, y, color=order)) +
+1607796004769:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796004785:geom_line() +
+1607796004804:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796004820:theme_pander() +
+1607796004839:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796004855:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796004872:scale_y_continuous(name="Logaritmo da magnitude")
+1607796005372:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607796142158:dt <- data.table()
+1607796142385:for (derivative in 0:2)
+1607796152560:a
+1607796155290:for (derivative in 0:2) {
+1607796155316:for (order in orders[orders > derivative]){
+1607796155337:for (width in widths[widths > order*2]) {
+1607796155359:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607796155378:res <- filter(impulse.response, coefs)
+1607796155397:res.log <- log10(abs(fft(res)))
+1607796155414:freqs <- fftfreq(length(res), d=1)
+1607796155438:dt <- rbind(dt,
+1607796155457:data.table(y=res.log,
+1607796155473:freq=freqs,
+1607796155492:width = as.factor(width),
+1607796155508:order = as.factor(order),
+1607796155528:derivative = derivative))
+1607796155550:}
+1607796155576:}
+1607796155602:}
+1607796172457:g.widths <- ggplot(dt[(freq>0) & (order == orders[2]) & (derivative == 1)],
+1607796172474:aes(freq, y, color=width)) +
+1607796172492:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796172512:geom_line() +
+1607796172538:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796172557:theme_pander() +
+1607796172575:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796172596:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796172614:scale_y_continuous(name="Logaritmo da magnitude")
+1607796173146:g.orders <- ggplot(dt[(freq>0) & (width == widths[2])], aes(freq, y, color=order)) +
+1607796173164:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796173183:geom_line() +
+1607796173200:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796173218:theme_pander() +
+1607796173235:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796173252:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796173268:scale_y_continuous(name="Logaritmo da magnitude")
+1607796175307:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607796202754:g.orders <- ggplot(dt[(freq>0) & (width == widths[2]) & (derivative == 1)], aes(freq, y, color=order)) +
+1607796202774:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796202792:geom_line() +
+1607796202810:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796202827:theme_pander() +
+1607796202846:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796202865:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796202882:scale_y_continuous(name="Logaritmo da magnitude")
+1607796203106:arrangeGrob(g.widths, g.orders, nrow=2) %>% grid.draw
+1607796554670:plot.magnitudes <- function(dt, derivative) {
+1607796554697:g.widths <- ggplot(dt[(freq>0) & (order == orders[2]) & (derivative == derivative)],
+1607796554716:aes(freq, y, color=width)) +
+1607796554736:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796554754:geom_line() +
+1607796554772:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796554790:theme_pander() +
+1607796554807:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796554826:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796554843:scale_y_continuous(name="Logaritmo da magnitude")
+1607796554875:g.orders <- ggplot(dt[(freq>0) & (width == widths[2]) & (derivative == derivative)],
+1607796554895:aes(freq, y, color=order)) +
+1607796554912:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796554933:geom_line() +
+1607796554951:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796554970:theme_pander() +
+1607796554987:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796555006:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796555024:scale_y_continuous(name="Logaritmo da magnitude")
+1607796555056:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796555074:}
+1607796565291:plot.derivative(dt, derivative=0) %>% plot
+1607796567570:plot.magnitudes <- function(dt, derivative) {
+1607796567595:g.widths <- ggplot(dt[(freq>0) & (order == orders[2]) & (derivative == derivative)],
+1607796567612:aes(freq, y, color=width)) +
+1607796567630:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796567647:geom_line() +
+1607796567664:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796567684:theme_pander() +
+1607796567703:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796567722:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796567740:scale_y_continuous(name="Logaritmo da magnitude")
+1607796567769:g.orders <- ggplot(dt[(freq>0) & (width == widths[2]) & (derivative == derivative)],
+1607796567788:aes(freq, y, color=order)) +
+1607796567804:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796567822:geom_line() +
+1607796567840:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796567856:theme_pander() +
+1607796567873:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796567889:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796567907:scale_y_continuous(name="Logaritmo da magnitude")
+1607796567937:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796567954:}
+1607796568432:plot.derivative(dt, derivative=0) %>% plot
+1607796575955:plot.magnitudes(dt, derivative=0) %>% plot
+1607796585080:plot.magnitudes(dt, derivative=0) %>% plot
+1607796622586:plot.magnitudes <- function(dt, derivative) {
+1607796622612:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == derivative)],
+1607796622628:aes(freq, y, color=width)) +
+1607796622644:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796622660:geom_line() +
+1607796622676:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796622697:theme_pander() +
+1607796622717:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796622734:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796622752:scale_y_continuous(name="Logaritmo da magnitude")
+1607796622792:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == derivative)],
+1607796622810:aes(freq, y, color=order)) +
+1607796622827:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796622843:geom_line() +
+1607796622860:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796622876:theme_pander() +
+1607796622893:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796622909:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796622924:scale_y_continuous(name="Logaritmo da magnitude")
+1607796622955:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796622975:}
+1607796622992:plot.magnitudes(dt, derivative=0) %>% plot
+1607796638472:for (derivative in 0:2) {
+1607796638495:for (order in orders[orders > derivative]){
+1607796638512:for (width in widths[widths > order*2]) {
+1607796638529:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607796638546:res <- filter(impulse.response, coefs)
+1607796638564:res.log <- log10(abs(fft(res)))
+1607796638583:freqs <- fftfreq(length(res), d=1)
+1607796638609:dt <- rbind(dt,
+1607796638629:data.table(y=res.log,
+1607796638646:freq=freqs,
+1607796638663:width = as.string(width),
+1607796638680:order = as.string(order),
+1607796638696:derivative = derivative))
+1607796638711:}
+1607796638735:}
+1607796638760:}
+1607796650075:for (derivative in 0:2) {
+1607796650100:for (order in orders[orders > derivative]){
+1607796650118:for (width in widths[widths > order*2]) {
+1607796650136:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607796650155:res <- filter(impulse.response, coefs)
+1607796650175:res.log <- log10(abs(fft(res)))
+1607796650195:freqs <- fftfreq(length(res), d=1)
+1607796650220:dt <- rbind(dt,
+1607796650240:data.table(y=res.log,
+1607796650259:freq=freqs,
+1607796650277:width = as.character(width),
+1607796650295:order = as.character(order),
+1607796650316:derivative = derivative))
+1607796650335:}
+1607796650358:}
+1607796650383:}
+1607796651224:plot.magnitudes <- function(dt, derivative) {
+1607796651256:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == derivative)],
+1607796651291:aes(freq, y, color=width)) +
+1607796651313:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796651328:geom_line() +
+1607796651344:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796651361:theme_pander() +
+1607796651379:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796651394:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796651411:scale_y_continuous(name="Logaritmo da magnitude")
+1607796651443:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == derivative)],
+1607796651460:aes(freq, y, color=order)) +
+1607796651479:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796651496:geom_line() +
+1607796651512:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796651529:theme_pander() +
+1607796651546:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796651564:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796651582:scale_y_continuous(name="Logaritmo da magnitude")
+1607796651616:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796651636:}
+1607796651653:plot.magnitudes(dt, derivative=0) %>% plot
+1607796661007:dt[, min(width)]
+1607796670589:dt <- data.table()
+1607796670720:for (derivative in 0:2) {
+1607796670745:for (order in orders[orders > derivative]){
+1607796670764:for (width in widths[widths > order*2]) {
+1607796670782:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607796670800:res <- filter(impulse.response, coefs)
+1607796670818:res.log <- log10(abs(fft(res)))
+1607796670841:freqs <- fftfreq(length(res), d=1)
+1607796670870:dt <- rbind(dt,
+1607796670890:data.table(y=res.log,
+1607796670910:freq=freqs,
+1607796670925:width = as.character(width),
+1607796670944:order = as.character(order),
+1607796670963:derivative = derivative))
+1607796670983:}
+1607796671007:}
+1607796671030:}
+1607796671855:plot.magnitudes <- function(dt, derivative) {
+1607796671887:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == derivative)],
+1607796671913:aes(freq, y, color=width)) +
+1607796671938:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796671953:geom_line() +
+1607796671967:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796671982:theme_pander() +
+1607796671998:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796672016:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796672032:scale_y_continuous(name="Logaritmo da magnitude")
+1607796672068:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == derivative)],
+1607796672089:aes(freq, y, color=order)) +
+1607796672105:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796672124:geom_line() +
+1607796672143:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796672160:theme_pander() +
+1607796672178:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796672196:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796672216:scale_y_continuous(name="Logaritmo da magnitude")
+1607796672247:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796672267:}
+1607796672823:plot.magnitudes(dt, derivative=0) %>% plot
+1607796685037:derivative = 0
+1607796689337:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == derivative)],
+1607796689356:aes(freq, y, color=width)) +
+1607796689375:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796689393:geom_line() +
+1607796689409:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796689425:theme_pander() +
+1607796689442:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796689457:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796689474:scale_y_continuous(name="Logaritmo da magnitude")
+1607796694576:g.widths
+1607796708940:dt[(freq>0) & (order == min(order)) & (derivative == derivative)]
+1607796724912:dt[(freq>0) & (order == min(order)) & (derivative == derivative)][, unique(order)]
+1607796730936:dt[(freq>0) & (order == min(order)) & (derivative == derivative)][, unique(width)]
+1607796749627:plot.magnitudes(dt, derivative=1) %>% plot
+1607796776346:dt[(freq>0) & (order == min(order)) & (derivative == derivative)][, unique(derivative)]
+1607796798338:plot.magnitudes <- function(dt, derivative) {
+1607796798365:.derivative <- derivative
+1607796798385:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607796798405:aes(freq, y, color=width)) +
+1607796798425:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796798447:geom_line() +
+1607796798464:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796798486:theme_pander() +
+1607796798507:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796798530:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796798551:scale_y_continuous(name="Logaritmo da magnitude")
+1607796798601:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == derivative)],
+1607796798626:aes(freq, y, color=order)) +
+1607796798648:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796798669:geom_line() +
+1607796798691:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796798713:theme_pander() +
+1607796798729:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796798745:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796798761:scale_y_continuous(name="Logaritmo da magnitude")
+1607796798794:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796798812:}
+1607796798831:plot.magnitudes(dt, derivative=1) %>% plot
+1607796809546:plot.magnitudes <- function(dt, derivative) {
+1607796809571:.derivative <- derivative
+1607796809590:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607796809607:aes(freq, y, color=width)) +
+1607796809626:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796809645:geom_line() +
+1607796809665:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796809684:theme_pander() +
+1607796809702:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796809718:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796809736:scale_y_continuous(name="Logaritmo da magnitude")
+1607796809764:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607796809782:aes(freq, y, color=order)) +
+1607796809802:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796809818:geom_line() +
+1607796809834:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796809851:theme_pander() +
+1607796809869:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796809888:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796809906:scale_y_continuous(name="Logaritmo da magnitude")
+1607796809940:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796809960:}
+1607796809981:plot.magnitudes(dt, derivative=1) %>% plot
+1607796861410:for (derivative in 0:2) {
+1607796861433:for (order in orders[orders > derivative]){
+1607796861451:for (width in widths[widths > order*2]) {
+1607796861468:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607796861483:res <- filter(impulse.response, coefs)
+1607796861500:res.log <- 10*log10(abs(fft(res)))
+1607796861518:freqs <- fftfreq(length(res), d=1)
+1607796861543:dt <- rbind(dt,
+1607796861558:data.table(y=res.log,
+1607796861577:freq=freqs,
+1607796861596:width = as.character(width),
+1607796861612:order = as.character(order),
+1607796861630:derivative = derivative))
+1607796861650:}
+1607796861674:}
+1607796861698:}
+1607796862941:plot.magnitudes <- function(dt, derivative) {
+1607796862974:.derivative <- derivative
+1607796862994:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607796863013:aes(freq, y, color=width)) +
+1607796863027:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796863042:geom_line() +
+1607796863057:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796863072:theme_pander() +
+1607796863089:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796863107:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796863124:scale_y_continuous(name="Logaritmo da magnitude")
+1607796863158:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607796863176:aes(freq, y, color=order)) +
+1607796863192:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796863211:geom_line() +
+1607796863228:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796863246:theme_pander() +
+1607796863265:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796863284:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796863299:scale_y_continuous(name="Logaritmo da magnitude")
+1607796863330:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796863347:}
+1607796863365:plot.magnitudes(dt, derivative=1) %>% plot
+1607796872732:dt <- data.table()
+1607796873057:for (derivative in 0:2) {
+1607796873082:for (order in orders[orders > derivative]){
+1607796873101:for (width in widths[widths > order*2]) {
+1607796873121:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607796873138:res <- filter(impulse.response, coefs)
+1607796873155:res.log <- 10*log10(abs(fft(res)))
+1607796873174:freqs <- fftfreq(length(res), d=1)
+1607796873199:dt <- rbind(dt,
+1607796873216:data.table(y=res.log,
+1607796873236:freq=freqs,
+1607796873255:width = as.character(width),
+1607796873271:order = as.character(order),
+1607796873287:derivative = derivative))
+1607796873305:}
+1607796873330:}
+1607796873358:}
+1607796874197:plot.magnitudes <- function(dt, derivative) {
+1607796874235:.derivative <- derivative
+1607796874262:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607796874284:aes(freq, y, color=width)) +
+1607796874299:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796874314:geom_line() +
+1607796874333:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796874351:theme_pander() +
+1607796874371:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796874389:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796874405:scale_y_continuous(name="Logaritmo da magnitude")
+1607796874437:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607796874454:aes(freq, y, color=order)) +
+1607796874472:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796874488:geom_line() +
+1607796874504:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796874522:theme_pander() +
+1607796874537:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796874554:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796874571:scale_y_continuous(name="Logaritmo da magnitude")
+1607796874603:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796874620:}
+1607796874650:plot.magnitudes(dt, derivative=1) %>% plot
+1607796925167:res.log
+1607796928343:res.log %> max()
+1607796940943:dt <- data.table()
+1607796941162:for (derivative in 0:2) {
+1607796941185:for (order in orders[orders > derivative]){
+1607796941202:for (width in widths[widths > order*2]) {
+1607796941219:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607796941237:res <- filter(impulse.response, coefs)
+1607796941253:res.log <- log10(abs(fft(res)))
+1607796941270:freqs <- fftfreq(length(res), d=1)
+1607796941294:dt <- rbind(dt,
+1607796941309:data.table(y=res.log,
+1607796941329:freq=freqs,
+1607796941347:width = as.character(width),
+1607796941366:order = as.character(order),
+1607796941383:derivative = derivative))
+1607796941402:}
+1607796941427:}
+1607796941450:}
+1607796948881:plot.magnitudes <- function(dt, derivative) {
+1607796948907:.derivative <- derivative
+1607796948924:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607796948941:aes(freq, y, color=width)) +
+1607796948958:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796948974:geom_line() +
+1607796948990:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796949007:theme_pander() +
+1607796949025:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607796949053:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796949073:scale_y_continuous(name="Logaritmo da magnitude")
+1607796949104:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607796949122:aes(freq, y, color=order)) +
+1607796949139:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607796949155:geom_line() +
+1607796949174:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607796949191:theme_pander() +
+1607796949208:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607796949228:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607796949247:scale_y_continuous(name="Logaritmo da magnitude")
+1607796949276:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607796949295:}
+1607796949315:plot.magnitudes(dt, derivative=1) %>% plot
+1607797084425:widths <- seq(1, 300, 90)
+1607797084440:orders <- seq(3, 10, 2)
+1607797084467:impulse.response <- generate.impulse.response(2000)
+1607797084503:dt <- data.table()
+1607797084521:for (derivative in 0:2) {
+1607797084545:for (order in orders[orders > derivative]){
+1607797084561:for (width in widths[widths > order*2]) {
+1607797084578:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607797084593:res <- filter(impulse.response, coefs)
+1607797084611:res.log <- log10(abs(fft(res)))
+1607797084631:freqs <- fftfreq(length(res), d=1)
+1607797084656:dt <- rbind(dt,
+1607797084675:data.table(y=res.log,
+1607797084693:freq=freqs,
+1607797084710:width = as.character(width),
+1607797084728:order = as.character(order),
+1607797084744:derivative = derivative))
+1607797084761:}
+1607797084785:}
+1607797084809:}
+1607797085697:plot.magnitudes <- function(dt, derivative) {
+1607797085735:.derivative <- derivative
+1607797085760:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == derivative)],
+1607797085776:aes(freq, y, color=width)) +
+1607797085790:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797085806:geom_line() +
+1607797085821:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797085838:theme_pander() +
+1607797085859:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607797085877:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797085893:scale_y_continuous(name="Logaritmo da magnitude")
+1607797085923:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == derivative)],
+1607797085939:aes(freq, y, color=order)) +
+1607797085955:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797085972:geom_line() +
+1607797085989:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797086007:theme_pander() +
+1607797086023:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607797086040:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797086056:scale_y_continuous(name="Logaritmo da magnitude")
+1607797086084:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607797086100:}
+1607797086128:plot.magnitudes(dt, derivative=1) %>% plot
+1607797100992:plot.magnitudes <- function(dt, derivative) {
+1607797101017:.derivative <- derivative
+1607797101034:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607797101051:aes(freq, y, color=width)) +
+1607797101066:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797101083:geom_line() +
+1607797101101:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797101118:theme_pander() +
+1607797101137:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607797101154:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797101171:scale_y_continuous(name="Logaritmo da magnitude")
+1607797101201:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607797101218:aes(freq, y, color=order)) +
+1607797101240:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797101259:geom_line() +
+1607797101279:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797101296:theme_pander() +
+1607797101316:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607797101337:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797101360:scale_y_continuous(name="Logaritmo da magnitude")
+1607797101390:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607797101409:}
+1607797101431:plot.magnitudes(dt, derivative=1) %>% plot
+1607797114460:plot.magnitudes(dt, derivative=0) %>% plot
+1607797214448:factorial(0)
+1607797216135:factorial(2)
+1607797534805:pi
+1607797543365:dt[, y_ideal := (freq*pi)^derivative]
+1607797565417:dt[, y_ideal := log10((freq*pi)^derivative)]
+1607797574852:plot.magnitudes <- function(dt, derivative) {
+1607797574878:.derivative <- derivative
+1607797574897:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607797574915:aes(freq, y - y_ideal, color=width)) +
+1607797574934:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797574951:geom_line() +
+1607797574971:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797574989:theme_pander() +
+1607797575007:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607797575025:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797575044:scale_y_continuous(name="Logaritmo da magnitude")
+1607797575074:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607797575091:aes(freq, y, color=order)) +
+1607797575112:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797575131:geom_line() +
+1607797575147:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797575166:theme_pander() +
+1607797575187:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607797575207:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797575226:scale_y_continuous(name="Logaritmo da magnitude")
+1607797575257:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607797575276:}
+1607797575296:plot.magnitudes(dt, derivative=0) %>% plot
+1607797595002:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == 1)],
+1607797595023:aes(freq, y - y_ideal, color=width)) +
+1607797595043:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797595060:geom_line() +
+1607797595078:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797595096:theme_pander() +
+1607797595116:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607797595134:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797595152:scale_y_continuous(name="Logaritmo da magnitude")
+1607797597765:g.widhts
+1607797599484:g.widths
+1607797603014:dt
+1607797618326:dt[, y - y_ideal]
+1607797626628:dt[, as.numeric(y - y_ideal)]
+1607797630987:dt[, as.numeric(y) - y_ideal]
+1607797646655:for (derivative in 0:2) {
+1607797646681:for (order in orders[orders > derivative]){
+1607797646698:for (width in widths[widths > order*2]) {
+1607797646715:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607797646734:res <- filter(impulse.response, coefs)
+1607797646752:res.log <- log10(abs(fft(res)))
+1607797646771:freqs <- fftfreq(length(res), d=1)
+1607797646797:dt <- rbind(dt,
+1607797646815:data.table(y= as.numeric(res.log),
+1607797646832:freq=freqs,
+1607797646848:width = as.character(width),
+1607797646867:order = as.character(order),
+1607797646887:derivative = derivative))
+1607797646906:}
+1607797646930:}
+1607797646955:}
+1607797649902:dt <- data.table()
+1607797650053:for (derivative in 0:2) {
+1607797650080:for (order in orders[orders > derivative]){
+1607797650098:for (width in widths[widths > order*2]) {
+1607797650115:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607797650131:res <- filter(impulse.response, coefs)
+1607797650147:res.log <- log10(abs(fft(res)))
+1607797650166:freqs <- fftfreq(length(res), d=1)
+1607797650191:dt <- rbind(dt,
+1607797650209:data.table(y= as.numeric(res.log),
+1607797650227:freq=freqs,
+1607797650248:width = as.character(width),
+1607797650266:order = as.character(order),
+1607797650287:derivative = derivative))
+1607797650307:}
+1607797650333:}
+1607797650359:}
+1607797651183:dt[, y_ideal := log10((freq*pi)^derivative)]
+1607797653798:plot.magnitudes <- function(dt, derivative) {
+1607797653823:.derivative <- derivative
+1607797653840:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607797653858:aes(freq, y - y_ideal, color=width)) +
+1607797653873:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797653891:geom_line() +
+1607797653906:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797653922:theme_pander() +
+1607797653940:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607797653957:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797653976:scale_y_continuous(name="Logaritmo da magnitude")
+1607797654011:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607797654028:aes(freq, y, color=order)) +
+1607797654047:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797654066:geom_line() +
+1607797654085:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797654102:theme_pander() +
+1607797654119:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607797654136:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797654156:scale_y_continuous(name="Logaritmo da magnitude")
+1607797654191:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607797654211:}
+1607797654232:plot.magnitudes(dt, derivative=0) %>% plot
+1607797663071:plot.magnitudes(dt, derivative=1) %>% plot
+1607797700661:plot.magnitudes(dt, derivative=2) %>% plot
+1607797716238:plot.magnitudes <- function(dt, derivative) {
+1607797716262:.derivative <- derivative
+1607797716281:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607797716299:aes(freq, y - y_ideal, color=width)) +
+1607797716317:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797716334:geom_line() +
+1607797716351:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797716370:theme_pander() +
+1607797716388:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607797716404:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797716420:scale_y_continuous(name="Logaritmo da magnitude")
+1607797716453:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607797716472:aes(freq, y - y_ideal, color=order)) +
+1607797716488:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797716504:geom_line() +
+1607797716519:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797716538:theme_pander() +
+1607797716556:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607797716573:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797716589:scale_y_continuous(name="Logaritmo da magnitude")
+1607797716621:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607797716638:}
+1607797716659:plot.magnitudes(dt, derivative=2) %>% plot
+1607797743685:plot.magnitudes <- function(dt, derivative) {
+1607797743710:.derivative <- derivative
+1607797743728:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607797743747:aes(freq, y, color=width)) +
+1607797743763:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797743780:geom_line() +
+1607797743798:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797743814:theme_pander() +
+1607797743833:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607797743849:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797743870:scale_y_continuous(name="Logaritmo da magnitude")
+1607797743902:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607797743920:aes(freq, y, color=order)) +
+1607797743937:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607797743955:geom_line() +
+1607797743973:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607797743991:theme_pander() +
+1607797744007:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607797744021:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607797744038:scale_y_continuous(name="Logaritmo da magnitude")
+1607797744069:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607797744086:}
+1607797744105:plot.magnitudes(dt, derivative=2) %>% plot
+1607797754003:dt[(order==3)]
+1607797768933:dt[(order==3) & (width == 91) & derivative == 0]
+1607797781873:ggplot(dt[(order==3) & (width == 91) & derivative == 0]) +
+1607797781893:geom_line(aes(freq, y))
+1607797786686:ggplot(dt[(order==3) & (width == 91) & derivative == 1]) +
+1607797786703:geom_line(aes(freq, y))
+1607797818885:ggplot(dt[(order==3) & (width == 91) & derivative == 2]) +
+1607797818902:geom_line(aes(freq, y))
+1607797835069:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607797835091:res <- filter(impulse.response, coefs)
+1607797836227:res
+1607797855691:filter <- function(x, filter) {
+1607797855708:x <- as.numeric(stats::filter(x, filter, method="convolution"))
+1607797855725:x[is.na(x)] <- 0
+1607797855743:return(x)
+1607797855759:}
+1607797859309:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607797859332:res <- filter(impulse.response, coefs)
+1607797860388:res
+1607797873710:%>% length
+1607797878346:res %>% length
+1607797898635:coefs <- filter.coef(width=width, order=order, derivative=0)
+1607797898653:res <- filter(impulse.response, coefs)
+1607797901619:res %>% length
+1607797906149:res
+1607797911516:coefs
+1607797916100:impulse.response
+1607797920820:res <- filter(impulse.response, coefs)
+1607797922124:res
+1607797934634:plot(res)
+1607797952101:plot(abs(fft(res)))
+1607797959230:abs(fft(res))
+1607798252053:res
+1607798253771:plot(abs(fft(res)))
+1607798259149:plot(fft(res))
+1607798282626:plot(fft(fft(res)))
+1607798291546:plot(fft(fft(fft(res))))
+1607798403265:coefs <- filter.coef(15, 6, derivada=1)
+1607798410533:coefs <- filter.coef(15, 6, derivative=1)
+1607798411151:data = data.table(x=rep.like(coefs),
+1607798411171:y=coefs)
+1607798411892:ggplot(data) +
+1607798411910:geom_hline(yintercept = 0, color=.gray, alpha=0.5) +
+1607798411929:geom_line(aes(x=x, y=y), color=.blue) +
+1607798411948:theme_bw()
+1607798486606:ggplot(dt[(order==3) & (width == 91) & derivative == 1]) +
+1607798486629:geom_line(aes(freq, y))
+1607798499121:ggplot(dt[(order==3) & (width == 91) & derivative == 1]) +
+1607798499139:geom_line(aes(freq, exp(y)))
+1607798531443:widths <- seq(1, 300, 10)
+1607798531596:orders <- seq(3, 10, 2)
+1607798531746:impulse.response <- generate.impulse.response(2000)
+1607798531905:dt <- data.table()
+1607798532076:for (derivative in 0:2) {
+1607798532104:for (order in orders[orders > derivative]){
+1607798532122:for (width in widths[widths > order*2]) {
+1607798532141:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607798532157:res <- filter(impulse.response, coefs)
+1607798532175:res.log <- log10(abs(fft(res)))
+1607798532195:freqs <- fftfreq(length(res), d=1)
+1607798532220:dt <- rbind(dt,
+1607798532241:data.table(y= as.numeric(res.log),
+1607798532258:freq=freqs,
+1607798532277:width = as.character(width),
+1607798532293:order = as.character(order),
+1607798532309:derivative = derivative))
+1607798532329:}
+1607798532354:}
+1607798532379:}
+1607799616232:ggplot(dt[(order==3) & (width == min(width)) & derivative == 1]) +
+1607799616250:geom_line(aes(freq, exp(y)))
+1607799623615:ggplot(dt[(order==3) & (width == max(width)) & derivative == 1]) +
+1607799623633:geom_line(aes(freq, exp(y)))
+1607799640424:sel.dt <- dt[(order==3) & (width == max(width)) & derivative == 1]
+1607799640627:ggplot(sel.dt) +
+1607799640649:geom_line(aes(freq, exp(y)))
+1607799648233:sel.dt
+1607799672166:width = 91
+1607799673446:order = 3
+1607799679887:derivative = 1
+1607799684282:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607799688173:res <- filter(impulse.response, coefs)
+1607799689614:res
+1607799701742:res[res != 0]
+1607799711166:res.log <- log10(abs(fft(res)))
+1607799714607:res.log
+1607799729925:fft(res)
+1607799741486:fft(res)[!is.finite(fft(res))]
+1607799755476:res.log[!is.finite(res.log)]
+1607799772775:res[!is.finite(res.log)]
+1607799825134:dt <- data.table()
+1607799825262:for (derivative in 0:2) {
+1607799825288:for (order in orders[orders > derivative]){
+1607799825306:for (width in widths[widths > order*2]) {
+1607799825324:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607799825341:res <- filter(impulse.response, coefs)
+1607799825358:res.log <- log10(abs(fft(res)))
+1607799825374:freqs <- fftfreq(length(res), d=1)
+1607799825399:dt <- rbind(dt,
+1607799825417:data.table(y= as.numeric(res.log),
+1607799825435:fft=fft(res),
+1607799825453:freq=freqs,
+1607799825467:width = as.character(width),
+1607799825485:order = as.character(order),
+1607799825503:derivative = derivative))
+1607799825520:}
+1607799825545:}
+1607799825572:}
+1607799833471:widths <- seq(1, 300, 90)
+1607799833622:orders <- seq(3, 10, 2)
+1607799833757:impulse.response <- generate.impulse.response(2000)
+1607799833950:dt <- data.table()
+1607799834550:for (derivative in 0:2) {
+1607799834574:for (order in orders[orders > derivative]){
+1607799834594:for (width in widths[widths > order*2]) {
+1607799834617:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607799834634:res <- filter(impulse.response, coefs)
+1607799834651:res.log <- log10(abs(fft(res)))
+1607799834669:freqs <- fftfreq(length(res), d=1)
+1607799834697:dt <- rbind(dt,
+1607799834715:data.table(y= as.numeric(res.log),
+1607799834732:fft=fft(res),
+1607799834749:freq=freqs,
+1607799834766:width = as.character(width),
+1607799834784:order = as.character(order),
+1607799834802:derivative = derivative))
+1607799834817:}
+1607799834840:}
+1607799834866:}
+1607799869221:plot.magnitudes <- function(dt, derivative) {
+1607799869250:.derivative <- derivative
+1607799869268:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607799869288:aes(freq, log10(y/y_ideal), color=width)) +
+1607799869305:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607799869324:geom_line() +
+1607799869343:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607799869361:theme_pander() +
+1607799869379:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607799869397:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607799869416:scale_y_continuous(name="Logaritmo da magnitude")
+1607799869447:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607799869463:aes(freq, y, color=order)) +
+1607799869481:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607799869501:geom_line() +
+1607799869519:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607799869537:theme_pander() +
+1607799869554:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607799869573:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607799869590:scale_y_continuous(name="Logaritmo da magnitude")
+1607799869620:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607799869638:}
+1607799869658:plot.magnitudes(dt, derivative=2) %>% plot
+1607799876373:dt[, y_ideal := log10((freq*pi)^derivative)]
+1607799879182:plot.magnitudes <- function(dt, derivative) {
+1607799879208:.derivative <- derivative
+1607799879224:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607799879240:aes(freq, log10(y/y_ideal), color=width)) +
+1607799879256:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607799879274:geom_line() +
+1607799879291:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607799879308:theme_pander() +
+1607799879325:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607799879342:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607799879362:scale_y_continuous(name="Logaritmo da magnitude")
+1607799879394:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607799879410:aes(freq, y, color=order)) +
+1607799879425:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607799879441:geom_line() +
+1607799879457:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607799879476:theme_pander() +
+1607799879494:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607799879509:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607799879527:scale_y_continuous(name="Logaritmo da magnitude")
+1607799879560:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607799879577:}
+1607799879597:plot.magnitudes(dt, derivative=2) %>% plot
+1607799978455:plot.magnitudes <- function(dt, derivative) {
+1607799978484:.derivative <- derivative
+1607799978501:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607799978517:aes(freq, log10(abs(y)/abs(y_ideal)), color=width)) +
+1607799978534:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607799978549:geom_line() +
+1607799978567:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607799978584:theme_pander() +
+1607799978601:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607799978618:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607799978636:scale_y_continuous(name="Logaritmo da magnitude")
+1607799978667:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607799978684:aes(freq, y, color=order)) +
+1607799978699:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607799978715:geom_line() +
+1607799978732:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607799978752:theme_pander() +
+1607799978768:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607799978784:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607799978800:scale_y_continuous(name="Logaritmo da magnitude")
+1607799978831:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607799978848:}
+1607799978878:plot.magnitudes(dt, derivative=2) %>% plot
+1607799994427:plot.magnitudes(dt, derivative=1) %>% plot
+1607800043535:plot.magnitudes <- function(dt, derivative) {
+1607800043567:.derivative <- derivative
+1607800043584:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607800043601:aes(freq, log10(abs(fft)/abs(y_ideal)), color=width)) +
+1607800043618:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607800043637:geom_line() +
+1607800043656:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607800043674:theme_pander() +
+1607800043689:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607800043708:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607800043725:scale_y_continuous(name="Logaritmo da magnitude")
+1607800043756:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607800043772:aes(freq, y, color=order)) +
+1607800043792:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607800043815:geom_line() +
+1607800043832:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607800043849:theme_pander() +
+1607800043866:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607800043887:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607800043907:scale_y_continuous(name="Logaritmo da magnitude")
+1607800043942:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607800043961:}
+1607800045680:plot.magnitudes(dt, derivative=1) %>% plot
+1607800115882:sel.dt <- dt[(order==3) & (width == max(width)) & derivative == 1]
+1607800116079:ggplot(sel.dt) +
+1607800116100:geom_line(aes(freq, exp(y)))
+1607800130661:ggplot(sel.dt) +
+1607800130679:geom_line(aes(freq, log10(fft)))
+1607800146181:dt <- data.table()
+1607800146348:for (derivative in 0:2) {
+1607800146374:for (order in orders[orders > derivative]){
+1607800146390:for (width in widths[widths > order*2]) {
+1607800146408:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607800146424:res <- filter(impulse.response, coefs)
+1607800146441:res.log <- log10(abs(fft(res)))
+1607800146459:freqs <- fftfreq(length(res), d=1)
+1607800146486:dt <- rbind(dt,
+1607800146505:data.table(y= as.numeric(res.log),
+1607800146527:f=fft(res),
+1607800146548:freq=freqs,
+1607800146564:width = as.character(width),
+1607800146580:order = as.character(order),
+1607800146595:derivative = derivative))
+1607800146617:}
+1607800146639:}
+1607800146662:}
+1607800159174:dt[, y_ideal := (freq*pi)^derivative)]
+1607800162109:dt[, y_ideal := (freq*pi)^derivative]
+1607800169680:dt[, y_ideal := (freq*pi)^derivative]
+1607800170637:plot.magnitudes <- function(dt, derivative) {
+1607800170664:.derivative <- derivative
+1607800170683:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607800170700:aes(freq, log10(abs(f)/abs(y_ideal)), color=width)) +
+1607800170719:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607800170735:geom_line() +
+1607800170752:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607800170768:theme_pander() +
+1607800170787:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607800170808:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607800170827:scale_y_continuous(name="Logaritmo da magnitude")
+1607800170860:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607800170878:aes(freq, y, color=order)) +
+1607800170897:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607800170914:geom_line() +
+1607800170932:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607800170951:theme_pander() +
+1607800170967:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607800170985:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607800171002:scale_y_continuous(name="Logaritmo da magnitude")
+1607800171035:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607800171053:}
+1607800171071:plot.magnitudes(dt, derivative=1) %>% plot
+1607800195053:sel.dt <- dt[(order==3) & (width == max(width)) & derivative == 1]
+1607800195236:ggplot(sel.dt) +
+1607800195253:geom_line(aes(freq, log10(fft)))
+1607800208790:ggplot(sel.dt) +
+1607800208807:geom_line(aes(freq, abs(fft)))
+1607800218772:ggplot(sel.dt) +
+1607800218789:geom_line(aes(freq, abs(f)))
+1607800246267:ggplot(sel.dt) +
+1607800246286:geom_line(aes(freq, abs(fftshift(f))))
+1607800268876:dt <- data.table()
+1607800269220:for (derivative in 0:2) {
+1607800269247:for (order in orders[orders > derivative]){
+1607800269264:for (width in widths[widths > order*2]) {
+1607800269283:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607800269300:res <- filter(impulse.response, coefs)
+1607800269320:res.log <- log10(abs(fft(res)))
+1607800269338:freqs <- fftfreq(length(res), d=1)
+1607800269364:dt <- rbind(dt,
+1607800269382:data.table(y= as.numeric(res.log),
+1607800269400:y_raw = as.numeric(res)
+1607800269421:f=fft(res),
+1607800269442:freq=freqs,
+1607800269463:width = as.character(width),
+1607800269480:order = as.character(order),
+1607800269497:derivative = derivative))
+1607800269516:}
+1607800269542:}
+1607800269566:}
+1607800275488:dt <- data.table()
+1607800275660:for (derivative in 0:2) {
+1607800275699:for (order in orders[orders > derivative]){
+1607800275719:for (width in widths[widths > order*2]) {
+1607800275734:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607800275751:res <- filter(impulse.response, coefs)
+1607800275769:res.log <- log10(abs(fft(res)))
+1607800275786:freqs <- fftfreq(length(res), d=1)
+1607800275808:dt <- rbind(dt,
+1607800275823:data.table(y= as.numeric(res.log),
+1607800275841:y_raw = as.numeric(res),
+1607800275859:f=fft(res),
+1607800275875:freq=freqs,
+1607800275890:width = as.character(width),
+1607800275906:order = as.character(order),
+1607800275924:derivative = derivative))
+1607800275943:}
+1607800275967:}
+1607800275990:}
+1607800277466:dt[, y_ideal := (freq*pi)^derivative]
+1607800285439:dt
+1607800323140:dt <- data.table()
+1607800323712:for (derivative in 0:2) {
+1607800323738:for (order in orders[orders > derivative]){
+1607800323757:for (width in widths[widths > order*2]) {
+1607800323774:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607800323796:res <- filter(impulse.response, coefs)
+1607800323816:res.log <- log10(abs(fft(res)))
+1607800323830:freqs <- fftfreq(length(res), d=1)
+1607800323854:dt <- rbind(dt,
+1607800323872:data.table(y= as.numeric(res.log),
+1607800323894:f=fft(res),
+1607800323916:freq=freqs,
+1607800323936:width = as.character(width),
+1607800323957:order = as.character(order),
+1607800323977:derivative = derivative))
+1607800323996:}
+1607800324021:}
+1607800324048:}
+1607800327884:res.log
+1607800350660:sel.dt <- dt[(order==3) & (width == max(width)) & derivative == 1]
+1607800350957:ggplot(sel.dt) +
+1607800350974:geom_line(aes(freq, res.log))
+1607800368051:ggplot(sel.dt[is.finite(res.log)]) +
+1607800368068:geom_line(aes(freq, res.log))
+1607800389300:res.log
+1607800395931:res.log[!is.finite(res.log)]
+1607800401275:res[!is.finite(res)]
+1607800463812:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607800464069:res <- filter(impulse.response, coefs)
+1607800466875:fft(res)
+1607800470956:abs(fft(res))
+1607800474810:a <- abs(fft(res))
+1607800478715:a[min(a) == a]
+1607800496419:plot(abs(fft(res)))
+1607800509964:res[min(res) == res]
+1607800517547:res[!is.finite(res)]
+1607800520355:res
+1607800528162:res[res != 0]
+1607800540459:plot(res[res != 0])
+1607800559578:plot(abs(fft(res)))
+1607800583065:derivative = 0
+1607800586394:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607800586676:res <- filter(impulse.response, coefs)
+1607800589275:plot(abs(fft(res)))
+1607800612779:sel.dt <- dt[(order==3) & (width == max(width)) & derivative == 1]
+1607800626989:ggplot(sel.dt) +
+1607800627007:geom_line(aes(freq, abs(f)))
+1607800628803:sel.dt <- dt[(order==3) & (width == max(width)) & derivative == 1]
+1607800629276:ggplot(sel.dt) +
+1607800629297:geom_line(aes(freq, abs(f)))
+1607800646787:?geom_segment
+1607800666581:ggplot(sel.dt) +
+1607800666601:geom_line(aes(freq, abs(f))) +
+1607800666618:geom_segment(aes(x=0, y=0, xend=0.2, yend=0.2))
+1607800676204:ggplot(sel.dt) +
+1607800676222:geom_line(aes(freq, abs(f))) +
+1607800676240:geom_segment(aes(x=0, y=0, xend=0.2*pi, yend=0.2*pi))
+1607800684181:ggplot(sel.dt) +
+1607800684198:geom_line(aes(freq, abs(f))) +
+1607800684216:geom_segment(aes(x=0, y=0, xend=0.2, yend=0.2*pi))
+1607800694211:ggplot(sel.dt) +
+1607800694228:geom_line(aes(freq, abs(f))) +
+1607800694245:geom_segment(aes(x=0, y=0, xend=0.02, yend=0.02*pi))
+1607800755219:ggplot(sel.dt) +
+1607800755238:geom_line(aes(freq, log10(abs(f)))) +
+1607800755255:geom_segment(aes(x=0, y=0, xend=0.02, yend=0.02*pi))
+1607800763108:ggplot(sel.dt) +
+1607800763127:geom_line(aes(freq, log10(abs(f)))) +
+1607800763142:geom_segment(aes(x=0, y=0, xend=0.02, yend=log10(0.02*pi)))
+1607800776860:ggplot(sel.dt) +
+1607800776877:geom_line(aes(freq, log10(abs(f)))) +
+1607800776892:geom_segment(aes(x=0, y=log10(0), xend=0.02, yend=log10(0.02*pi)))
+1607800807293:ggplot(sel.dt) +
+1607800807310:geom_line(aes(freq, abs(f))) +
+1607800807330:geom_segment(aes(x=0, y=log10(0), xend=0.02, yend=0.02*pi))
+1607800822869:ggplot(sel.dt) +
+1607800822892:geom_line(aes(freq, abs(f))) +
+1607800822911:geom_segment(aes(x=0, y=log10(0), xend=0.02, yend=0.02*pi)) +
+1607800822928:xlim(-0.1, 0.1)
+1607800847115:freq
+1607800851985:sel.dt[, freq]
+1607800924522:ggplot(sel.dt) +
+1607800924542:geom_line(aes(freq, abs(f))) +
+1607800924561:geom_line(aes(x=freq, y=freq*pi)) +
+1607800924580:xlim(-0.1, 0.1)
+1607800975505:sel.dt
+1607800996450:sel.dt[, .(freq, abs(f))]
+1607801004186:sel.dt[, .(freq, abs(f), abs(f)/freq)]
+1607801020115:sel.dt[, .(freq, abs(f), abs(f)/freq)][, mean(V3)]
+1607801024168:sel.dt[, .(freq, abs(f), abs(f)/freq)][, mean(V3, na.rm=T)]
+1607801088769:sel.dt[, .(freq, abs(f), abs(f)/freq)][, mean(V3, na.rm=T)]
+1607801092457:sel.dt[, .(freq, abs(f), abs(f)/freq)]
+1607801103168:ggplot(sel.dt) +
+1607801103185:geom_line(aes(freq, abs(f))) +
+1607801103202:#geom_line(aes(x=freq, y=freq*pi*2)) +
+1607801103219:xlim(-0.1, 0.1)
+1607801121307:ggplot(sel.dt) +
+1607801121325:geom_line(aes(freq, abs(f))) +
+1607801121342:geom_line(aes(x=freq, y=freq*pi*2))
+1607801130152:ggplot(sel.dt) +
+1607801130171:geom_line(aes(freq, abs(f))) +
+1607801130189:geom_line(aes(x=freq, y=freq*pi*2), color = .gray)
+1607801140928:ggplot(sel.dt) +
+1607801140947:geom_line(aes(freq, abs(f))) +
+1607801140964:geom_line(aes(x=freq, y=abs(freq)*pi*2), color = .gray)
+1607801156517:ggplot(sel.dt) +
+1607801156539:geom_line(aes(freq, abs(f))) +
+1607801156555:geom_line(aes(x=freq, y=abs(freq)*pi*2), color = .gray) +
+1607801156571:xlim(-0.1, 0.1)
+1607801167330:ggplot(sel.dt) +
+1607801167350:geom_line(aes(freq, abs(f))) +
+1607801167367:geom_line(aes(x=freq, y=abs(freq)*pi*2), color = .gray) +
+1607801167384:xlim(-0.01, 0.01)
+1607801189802:ggplot(sel.dt) +
+1607801189820:geom_line(aes(freq, abs(f))) +
+1607801189837:geom_line(aes(x=freq, y=abs(freq)*pi*2), color = .gray) +
+1607801189855:xlim(-0.01, 0.01) +
+1607801189873:ylim(0, 0.1)
+1607801210217:dt[, y_ideal := (freq*pi*2)^derivative]
+1607801210530:plot.magnitudes <- function(dt, derivative) {
+1607801210556:.derivative <- derivative
+1607801210575:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607801210596:aes(freq, log10(abs(f)/abs(y_ideal)), color=width)) +
+1607801210615:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801210632:geom_line() +
+1607801210650:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801210671:theme_pander() +
+1607801210689:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607801210705:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801210723:scale_y_continuous(name="Logaritmo da magnitude")
+1607801210754:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607801210773:aes(freq, y, color=order)) +
+1607801210792:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801210812:geom_line() +
+1607801210831:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801210851:theme_pander() +
+1607801210869:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607801210888:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801210906:scale_y_continuous(name="Logaritmo da magnitude")
+1607801210938:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607801210954:}
+1607801211077:plot.magnitudes(dt, derivative=1) %>% plot
+1607801220885:plot.magnitudes(dt, derivative=2) %>% plot
+1607801248854:plot.magnitudes(dt, derivative=2) %>% plot
+1607801249444:}
+1607801266754:plot.magnitudes <- function(dt, derivative) {
+1607801266780:.derivative <- derivative
+1607801266797:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607801266814:aes(freq, 10*log10(abs(f)/abs(y_ideal)), color=width)) +
+1607801266829:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801266849:geom_line() +
+1607801266864:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801266883:theme_pander() +
+1607801266900:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607801266917:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801266933:scale_y_continuous(name="Logaritmo da magnitude")
+1607801266963:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607801266981:aes(freq, 10*log10(abs(f)/abs(y_ideal)), color=order)) +
+1607801266999:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801267017:geom_line() +
+1607801267034:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801267052:theme_pander() +
+1607801267069:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607801267087:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801267104:scale_y_continuous(name="Logaritmo da magnitude")
+1607801267135:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607801267152:}
+1607801267256:plot.magnitudes(dt, derivative=2) %>% plot
+1607801336400:seq(11, 300, 90)
+1607801344574:widths <- seq(11, 300, 90)
+1607801344999:orders <- seq(3, 10, 2)
+1607801345295:impulse.response <- generate.impulse.response(2000)
+1607801345505:dt <- data.table()
+1607801345720:for (derivative in 0:2) {
+1607801345747:for (order in orders[orders > derivative]){
+1607801345767:for (width in widths[widths > order*2]) {
+1607801345783:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607801345802:res <- filter(impulse.response, coefs)
+1607801345818:res.log <- log10(abs(fft(res)))
+1607801345835:freqs <- fftfreq(length(res), d=1)
+1607801345860:dt <- rbind(dt,
+1607801345878:data.table(y= as.numeric(res.log),
+1607801345899:f=fft(res),
+1607801345915:freq=freqs,
+1607801345934:width = as.character(width),
+1607801345951:order = as.character(order),
+1607801345970:derivative = derivative))
+1607801345989:}
+1607801346013:}
+1607801346041:}
+1607801347586:dt[, y_ideal := (freq*pi*2)^derivative]
+1607801347610:plot.magnitudes <- function(dt, derivative) {
+1607801347638:.derivative <- derivative
+1607801347653:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607801347668:aes(freq, 10*log10(abs(f)/abs(y_ideal)), color=width)) +
+1607801347681:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801347699:geom_line() +
+1607801347724:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801347745:theme_pander() +
+1607801347768:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607801347788:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801347807:scale_y_continuous(name="Logaritmo da magnitude")
+1607801347841:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607801347859:aes(freq, 10*log10(abs(f)/abs(y_ideal)), color=order)) +
+1607801347876:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801347894:geom_line() +
+1607801347913:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801347929:theme_pander() +
+1607801347947:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607801347965:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801347981:scale_y_continuous(name="Logaritmo da magnitude")
+1607801348013:return(arrangeGrob(g.widths, g.orders, nrow=2) )
+1607801348030:}
+1607801348064:plot.magnitudes(dt, derivative=2) %>% plot
+1607801406089:?arrangeGrob
+1607801487437:plot.magnitudes(dt, derivative=1, title="1a derivada") %>% plot
+1607801489329:plot.magnitudes <- function(dt, derivative, title="") {
+1607801489355:.derivative <- derivative
+1607801489371:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607801489389:aes(freq, 10*log10(abs(f)/abs(y_ideal)), color=width)) +
+1607801489406:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801489424:geom_line() +
+1607801489443:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801489460:theme_pander() +
+1607801489476:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607801489494:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801489512:scale_y_continuous(name="Logaritmo da magnitude")
+1607801489540:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607801489559:aes(freq, 10*log10(abs(f)/abs(y_ideal)), color=order)) +
+1607801489577:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801489595:geom_line() +
+1607801489614:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801489633:theme_pander() +
+1607801489650:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607801489668:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801489687:scale_y_continuous(name="Logaritmo da magnitude")
+1607801489722:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607801489739:main=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607801489757:)
+1607801489775:)
+1607801489791:}
+1607801489956:plot.magnitudes(dt, derivative=1, title="1a derivada") %>% plot
+1607801490411:plot.magnitudes(dt, derivative=2) %>% plot
+1607801506721:plot.magnitudes <- function(dt, derivative, title="") {
+1607801506747:.derivative <- derivative
+1607801506762:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607801506777:aes(freq, 10*log10(abs(f)/abs(y_ideal)), color=width)) +
+1607801506794:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801506812:geom_line() +
+1607801506832:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801506848:theme_pander() +
+1607801506862:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607801506878:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801506897:scale_y_continuous(name="Logaritmo da magnitude")
+1607801506930:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607801506946:aes(freq, 10*log10(abs(f)/abs(y_ideal)), color=order)) +
+1607801506961:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607801506980:geom_line() +
+1607801506997:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607801507014:theme_pander() +
+1607801507029:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607801507044:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607801507060:scale_y_continuous(name="Logaritmo da magnitude")
+1607801507089:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607801507105:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607801507122:)
+1607801507140:)
+1607801507155:}
+1607801507175:plot.magnitudes(dt, derivative=1, title="1a derivada") %>% plot
+1607801507888:plot.magnitudes(dt, derivative=2) %>% plot
+1607801555593:plot.magnitudes(dt, derivative=1, title="SG") %>% plot
+1607801556058:plot.magnitudes(dt, derivative=1, title="SG 1a ordem") %>% plot
+1607801560196:plot.magnitudes(dt, derivative=2, title="SG 2a ordem") %>% plot
+1607801603552:?grid.draw
+1607802028874:dt
+1607802092990:dt[, mag_ratio := 10*log10(abs(f)/abs(y_ideal)]
+1607802112519:plot.magnitudes <- function(dt, derivative, title="") {
+1607802112545:.derivative <- derivative
+1607802112564:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607802112580:aes(freq, mag_ratio, color=width)) +
+1607802112597:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607802112617:geom_line() +
+1607802112634:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607802112651:theme_pander() +
+1607802112669:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607802112686:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607802112705:scale_y_continuous(name="Logaritmo da magnitude")
+1607802112735:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607802112754:aes(freq, mag_ratio), color=order)) +
+1607802112772:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607802112791:geom_line() +
+1607802112806:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607802112824:theme_pander() +
+1607802112844:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607802112861:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607802112876:scale_y_continuous(name="Logaritmo da magnitude")
+1607802112910:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607802112927:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607802112944:)
+1607802112962:)
+1607802112983:}
+1607802113000:plot.magnitudes(dt, derivative=0, title="SG") %>% grid.draw
+1607802127487:plot.magnitudes <- function(dt, derivative, title="") {
+1607802127511:.derivative <- derivative
+1607802127532:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607802127552:aes(freq, mag_ratio, color=width)) +
+1607802127570:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607802127588:geom_line() +
+1607802127604:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607802127623:theme_pander() +
+1607802127642:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607802127662:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607802127682:scale_y_continuous(name="Logaritmo da magnitude")
+1607802127714:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607802127733:aes(freq, mag_ratio, color=order)) +
+1607802127751:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607802127770:geom_line() +
+1607802127788:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607802127807:theme_pander() +
+1607802127825:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607802127843:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607802127861:scale_y_continuous(name="Logaritmo da magnitude")
+1607802127893:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607802127911:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607802127928:)
+1607802127947:)
+1607802127965:}
+1607802128319:plot.magnitudes(dt, derivative=0, title="SG") %>% grid.draw
+1607802131909:dt[, mag_ratio := 10*log10(abs(f)/abs(y_ideal))]
+1607802133215:plot.magnitudes <- function(dt, derivative, title="") {
+1607802133240:.derivative <- derivative
+1607802133262:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607802133280:aes(freq, mag_ratio, color=width)) +
+1607802133300:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607802133319:geom_line() +
+1607802133338:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607802133354:theme_pander() +
+1607802133374:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607802133392:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607802133409:scale_y_continuous(name="Logaritmo da magnitude")
+1607802133440:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607802133455:aes(freq, mag_ratio, color=order)) +
+1607802133473:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607802133491:geom_line() +
+1607802133509:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607802133526:theme_pander() +
+1607802133543:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607802133562:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607802133578:scale_y_continuous(name="Logaritmo da magnitude")
+1607802133609:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607802133628:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607802133646:)
+1607802133664:)
+1607802133680:}
+1607802133700:plot.magnitudes(dt, derivative=0, title="SG") %>% grid.draw
+1607802242815:dt.cutoff <- copy(dt)
+1607802243200:dt.cutoff <- dt.cutoff[order(freq)]
+1607802243535:dt.cutoff[, mag_ratio]
+1607802311300:dt.cutoff <- copy(dt)
+1607802311480:dt.cutoff <- dt.cutoff[mag_ratio <= -3]
+1607802311661:dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
+1607802322813:dt.cutoff <- dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
+1607802339645:dt.cutoff
+1607802367204:dt.cutoff
+1607802476029:ggplot(dt.cutoff[ (derivative = 0)]) + geom_line(aes(x=order, y=freq, color=width))
+1607802481240:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=order, y=freq, color=width))
+1607802485851:dt.cutoff[ (derivative == 0)]
+1607802542383:dt.cutoff <- copy(dt)
+1607802542590:dt.cutoff <- dt.cutoff[ (freq >= 0) & (mag_ratio <= -3)]
+1607802543032:dt.cutoff <- dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
+1607802543748:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=order, y=freq, color=width))
+1607802548445:dt.cutoff[ (derivative == 0)]
+1607802563420:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=order, y=freq))
+1607802576731:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq))
+1607802585892:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=width))
+1607802598969:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=as.numeric(width)))
+1607802607849:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=width))
+1607802673829:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607802673846:theme_pander()
+1607802685908:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607802685927:theme_pander() +
+1607802685945:scale_color_continuous_tableau()
+1607802741869:levels <- dt.cutoff[order(width), unique(width)]
+1607802742085:dt.cutoff[, width := factor(as.factor(width), levels=levels)]
+1607802742891:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607802742910:theme_pander() +
+1607802742927:scale_color_continuous_tableau()
+1607802751731:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607802751749:theme_pander() +
+1607802751769:scale_color_continuous_tableau()
+1607802754763:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607802754781:theme_pander()
+1607802864755:canva_pal(names(canva_palettes)[3])
+1607802868318:canva_pal(names(canva_palettes)[3])(10)
+1607802876177:names(canva_palettes)[3]
+1607802888388:names(canva_palettes)[2]
+1607802913589:colors <- canva_pal("Subdued and proffesional")
+1607802928477:colors <- canva_pal("Subdued and proffesional")
+1607802928651:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607802928668:theme_pander() +
+1607802928685:scale_color_manual(values=colors)
+1607802942676:scales::seq_gradient_pal(colors)
+1607802950380:scales
+1607802953562:library(scalee)
+1607802954851:library(scales)
+1607802959300:scales::seq_gradient_pal(colors)
+1607802967298:colors
+1607802970084:colors <- canva_pal("Subdued and proffesional")
+1607802972659:colors <- canva_pal("Subdued and proffesional")(4)
+1607802974788:colors
+1607802977420:scales::seq_gradient_pal(colors)
+1607802986392:scales::seq_gradient_pal(colors)(1:10)
+1607802991074:colors
+1607803027570:do.call(scales::seq_gradient_pal, colors)(1:10)
+1607803039211:do.call(scales::seq_gradient_pal, as.list(colors))(1:10)
+1607803067288:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607803067306:theme_pander() +
+1607803067323:scale_color_gradient()
+1607803074356:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607803074373:theme_pander() +
+1607803074391:scale_color_gradientd()
+1607803130572:ggplot(dt.cutoff[ (derivative == 0)]) + geom_line(aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607803130590:theme_pander()
+1607803180434:widths <- seq(11, 300, 20)
+1607803180456:orders <- seq(3, 10, 2)
+1607803180481:impulse.response <- generate.impulse.response(2000)
+1607803180517:dt <- data.table()
+1607803180533:for (derivative in 0:2) {
+1607803180561:for (order in orders[orders > derivative]){
+1607803180577:for (width in widths[widths > order*2]) {
+1607803180593:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607803180619:res <- filter(impulse.response, coefs)
+1607803180635:res.log <- log10(abs(fft(res)))
+1607803180650:freqs <- fftfreq(length(res), d=1)
+1607803180672:dt <- rbind(dt,
+1607803180687:data.table(y= as.numeric(res.log),
+1607803180702:f=fft(res),
+1607803180718:freq=freqs,
+1607803180736:width = as.character(width),
+1607803180756:order = as.character(order),
+1607803180776:derivative = derivative))
+1607803180792:}
+1607803180816:}
+1607803180846:}
+1607803190100:dt[, y_ideal := (freq*pi*2)^derivative]
+1607803190128:dt[, mag_ratio := 10*log10(abs(f)/abs(y_ideal))]
+1607803190171:plot.magnitudes <- function(dt, derivative, title="") {
+1607803190195:.derivative <- derivative
+1607803190213:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607803190232:aes(freq, mag_ratio, color=width)) +
+1607803190250:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607803190270:geom_line() +
+1607803190288:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607803190308:theme_pander() +
+1607803190326:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607803190343:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607803190363:scale_y_continuous(name="Logaritmo da magnitude")
+1607803190396:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607803190417:aes(freq, mag_ratio, color=order)) +
+1607803190437:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607803190453:geom_line() +
+1607803190473:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607803190491:theme_pander() +
+1607803190509:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607803190528:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607803190546:scale_y_continuous(name="Logaritmo da magnitude")
+1607803190575:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607803190593:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607803190612:)
+1607803190629:)
+1607803190648:}
+1607803193824:plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=0, title="SG") %>% grid.draw
+1607803266996:widths <- seq(11, 300, 20)
+1607803267154:orders <- seq(3, 10, 2)
+1607803267299:impulse.response <- generate.impulse.response(2000)
+1607803267451:dt <- data.table()
+1607803267617:for (derivative in 0:2) {
+1607803267644:for (order in orders[orders > derivative]){
+1607803267661:for (width in widths[widths > order*2]) {
+1607803267680:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607803267697:res <- filter(impulse.response, coefs)
+1607803267713:res.log <- log10(abs(fft(res)))
+1607803267732:freqs <- fftfreq(length(res), d=1)
+1607803267756:dt <- rbind(dt,
+1607803267775:data.table(y= as.numeric(res.log),
+1607803267793:f=fft(res),
+1607803267812:freq=freqs,
+1607803267832:width = width,
+1607803267848:order = order,
+1607803267862:derivative = derivative))
+1607803267880:}
+1607803267903:}
+1607803267925:}
+1607803287314:dt[, width := factor(as.factor(width), levels=widths)]
+1607803289993:plot.magnitudes <- function(dt, derivative, title="") {
+1607803290018:.derivative <- derivative
+1607803290042:g.widths <- ggplot(dt[(freq>0) & (order == min(order)) & (derivative == .derivative)],
+1607803290066:aes(freq, mag_ratio, color=width)) +
+1607803290087:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607803290103:geom_line() +
+1607803290122:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607803290143:theme_pander() +
+1607803290159:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607803290178:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607803290197:scale_y_continuous(name="Logaritmo da magnitude")
+1607803290225:g.orders <- ggplot(dt[(freq>0) & (width == min(width)) & (derivative == .derivative)],
+1607803290246:aes(freq, mag_ratio, color=order)) +
+1607803290264:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607803290280:geom_line() +
+1607803290297:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607803290314:theme_pander() +
+1607803290332:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607803290351:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607803290368:scale_y_continuous(name="Logaritmo da magnitude")
+1607803290400:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607803290421:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607803290441:)
+1607803290457:)
+1607803290477:}
+1607803293336:plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=0, title="SG") %>% grid.draw
+1607803328962:plot.magnitudes <- function(dt, derivative, title="") {
+1607803328988:.derivative <- derivative
+1607803329007:g.widths <- ggplot(dt[(freq>0) & (order == first(order)) & (derivative == .derivative)],
+1607803329025:aes(freq, mag_ratio, color=width)) +
+1607803329043:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607803329059:geom_line() +
+1607803329077:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607803329095:theme_pander() +
+1607803329114:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607803329131:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607803329149:scale_y_continuous(name="Logaritmo da magnitude")
+1607803329180:g.orders <- ggplot(dt[(freq>0) & (width == first(width)) & (derivative == .derivative)],
+1607803329197:aes(freq, mag_ratio, color=order)) +
+1607803329213:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607803329229:geom_line() +
+1607803329245:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607803329262:theme_pander() +
+1607803329277:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607803329293:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607803329310:scale_y_continuous(name="Logaritmo da magnitude")
+1607803329337:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607803329356:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607803329373:)
+1607803329390:)
+1607803329408:}
+1607803330713:plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=0, title="SG") %>% grid.draw
+1607803335841:dt[, y_ideal := (freq*pi*2)^derivative]
+1607803335988:dt[, mag_ratio := 10*log10(abs(f)/abs(y_ideal))]
+1607803338561:plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=0, title="SG") %>% grid.draw
+1607803364902:plot.magnitudes <- function(dt, derivative, title="") {
+1607803364924:.derivative <- derivative
+1607803364944:g.widths <- ggplot(dt[(freq>0) & (order == first(order)) & (derivative == .derivative)],
+1607803364965:aes(freq, mag_ratio, color=width)) +
+1607803364986:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607803365007:geom_line() +
+1607803365023:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607803365041:theme_pander() +
+1607803365060:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607803365080:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607803365096:scale_y_continuous(name="Logaritmo da magnitude")
+1607803365127:g.orders <- ggplot(dt[(freq>0) & (width == first(width)) & (derivative == .derivative)],
+1607803365145:aes(freq, mag_ratio, color=order)) +
+1607803365162:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607803365182:geom_line() +
+1607803365200:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607803365218:theme_pander() +
+1607803365237:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607803365255:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607803365273:scale_y_continuous(name="Logaritmo da magnitude")
+1607803365305:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607803365320:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607803365340:)
+1607803365360:)
+1607803365378:}
+1607803365399:dt[, order := factor(as.factor(order), levels=orders)]
+1607803365919:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607803365936:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607803365956:)
+1607803365977:)
+1607803366020:}
+1607803366970:plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=0, title="SG") %>% grid.draw
+1607803397614:dt.cutoff <- copy(dt)
+1607803397638:dt.cutoff <- dt.cutoff[ (freq >= 0) & (mag_ratio <= -3)]
+1607803397920:dt.cutoff <- dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
+1607803398005:ggplot(dt.cutoff[ (derivative == 0)]) +
+1607803398026:geom_line(aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607803398047:theme_pander()
+1607803445377:ggplot(dt.cutoff[ (derivative == 0)],
+1607803445395:aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607803445412:geom_line() +
+1607803445429:geom_point() +
+1607803445446:theme_pander()
+1607803537180:scale_color_gradientn
+1607803564656:names(canva_palettes)[2]
+1607803577856:ggplot(dt.cutoff[ (derivative == 0)],
+1607803577874:aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607803577892:geom_line() +
+1607803577910:geom_point() +
+1607803577929:theme_pander() +
+1607803577948:scale_color_gratientn(colors=canva_pal("Subdued and proffesional"))
+1607803592994:ggplot(dt.cutoff[ (derivative == 0)],
+1607803593012:aes(x=as.numeric(order), y=freq, color=width, group=width)) +
+1607803593032:geom_line() +
+1607803593051:geom_point() +
+1607803593075:theme_pander() +
+1607803593098:scale_color_gradientn(colors=canva_pal("Subdued and proffesional"))
+1607803605130:ggplot(dt.cutoff[ (derivative == 0)],
+1607803605148:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803605165:geom_line() +
+1607803605181:geom_point() +
+1607803605200:theme_pander() +
+1607803605217:scale_color_gradientn(colors=canva_pal("Subdued and proffesional"))
+1607803612114:dt.cutoff
+1607803616745:dt.cutoff[, as.numeric(width)]
+1607803622792:canva_pal("Subdued and proffesional")
+1607803628737:ggplot(dt.cutoff[ (derivative == 0)],
+1607803628755:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803628773:geom_line() +
+1607803628788:geom_point() +
+1607803628806:theme_pander() +
+1607803628820:scale_color_gradientn(colors=canva_pal("Subdued and proffesional")(4))
+1607803645417:ggplot(dt.cutoff[ (derivative == 0)],
+1607803645437:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803645453:geom_line() +
+1607803645471:geom_point() +
+1607803645489:theme_pander() +
+1607803645507:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[3])(4))
+1607803650738:ggplot(dt.cutoff[ (derivative == 0)],
+1607803650755:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803650772:geom_line() +
+1607803650789:geom_point() +
+1607803650806:theme_pander() +
+1607803650820:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(4))
+1607803743847:dt.cutoff[, estimated := as.numeric(order)/as.numeric(width)]
+1607803762034:ggplot(dt.cutoff[ (derivative == 0)],
+1607803762051:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803762070:geom_line() +
+1607803762088:geom_point(aes(y=estimated)) +
+1607803762105:theme_pander() +
+1607803762125:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(4))
+1607803788681:dt.cutoff[, estimated := as.numeric(order)/((as.numeric(width)-1)/2)]
+1607803789001:ggplot(dt.cutoff[ (derivative == 0)],
+1607803789018:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803789039:geom_line() +
+1607803789058:geom_point(aes(y=estimated)) +
+1607803789075:theme_pander() +
+1607803789093:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(4))
+1607803809104:dt.cutoff[, estimated := ((as.numeric(width)-1)/2)/as.numeric(order)]
+1607803809731:ggplot(dt.cutoff[ (derivative == 0)],
+1607803809750:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803809770:geom_line() +
+1607803809788:geom_point(aes(y=estimated)) +
+1607803809807:theme_pander() +
+1607803809826:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(4))
+1607803814969:dt.cutoff[, estimated := as.numeric(order)/((as.numeric(width)-1)/2)]
+1607803815341:ggplot(dt.cutoff[ (derivative == 0)],
+1607803815359:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803815379:geom_line() +
+1607803815398:geom_point(aes(y=estimated)) +
+1607803815414:theme_pander() +
+1607803815428:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(4))
+1607803821585:ggplot(dt.cutoff[ (derivative == 0)],
+1607803821601:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803821617:geom_line() +
+1607803821633:#geom_point(aes(y=estimated)) +
+1607803821653:theme_pander() +
+1607803821671:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(4))
+1607803823411:dt.cutoff <- copy(dt)
+1607803823435:dt.cutoff <- dt.cutoff[ (freq >= 0) & (mag_ratio <= -3)]
+1607803823463:dt.cutoff <- dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
+1607803823511:dt.cutoff[, estimated := as.numeric(order)/((as.numeric(width)-1)/2)]
+1607803823540:ggplot(dt.cutoff[ (derivative == 0)],
+1607803823560:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607803823579:geom_line() +
+1607803823597:#geom_point(aes(y=estimated)) +
+1607803823614:theme_pander() +
+1607803823633:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(4))
+1607804087168:ggplot(dt.cutoff[ (derivative == 0)],
+1607804087186:aes(x=as.numeric(order), y=freq, color=as.numeric(width), group=width)) +
+1607804087204:geom_line() +
+1607804087221:#geom_point(aes(y=estimated)) +
+1607804087236:theme_pander() +
+1607804087256:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(2))
+1607804116889:dt.cutoff
+1607804131841:ggplot(dt.cutoff[ (derivative == 0)],
+1607804131859:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804131878:geom_line() +
+1607804131894:#geom_point(aes(y=estimated)) +
+1607804131911:theme_pander() +
+1607804131926:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(2))
+1607804156264:dt.cutoff[, estimated := as.numeric(order)/((as.numeric(as.character(width))-1)/2)]
+1607804161481:ggplot(dt.cutoff[ (derivative == 0)],
+1607804161497:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804161512:geom_line() +
+1607804161531:geom_point(aes(y=estimated)) +
+1607804161546:theme_pander() +
+1607804161565:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(2))
+1607804172776:dt.cutoff[, estimated := as.numeric(order)/((as.numeric(as.character(width)))/2)]
+1607804173402:ggplot(dt.cutoff[ (derivative == 0)],
+1607804173418:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804173434:geom_line() +
+1607804173451:geom_point(aes(y=estimated)) +
+1607804173468:theme_pander() +
+1607804173484:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(2))
+1607804181550:dt.cutoff[, estimated := as.numeric(order)/((as.numeric(as.character(width))))]
+1607804181703:ggplot(dt.cutoff[ (derivative == 0)],
+1607804181722:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804181741:geom_line() +
+1607804181760:geom_point(aes(y=estimated)) +
+1607804181777:theme_pander() +
+1607804181795:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(2))
+1607804262663:ggplot(dt.cutoff[ (derivative == 0)],
+1607804262682:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804262700:geom_line() +
+1607804262719:#geom_point(aes(y=estimated)) +
+1607804262736:geom_point() +
+1607804262754:theme_pander() +
+1607804262773:scale_color_gradientn(colors=canva_pal(names(canva_palettes)[4])(2))
+1607804273143:ggplot(dt.cutoff[ (derivative == 0)],
+1607804273160:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804273176:geom_line() +
+1607804273191:#geom_point(aes(y=estimated)) +
+1607804273209:geom_point() +
+1607804273229:theme_pander() +
+1607804273247:scale_color_gradientn("largura", colors=canva_pal(names(canva_palettes)[4])(2))
+1607804304788:ggplot(dt.cutoff[ (derivative == 0)],
+1607804304810:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804304831:geom_line() +
+1607804304847:#geom_point(aes(y=estimated)) +
+1607804304864:geom_point() +
+1607804304884:theme_pander() +
+1607804304903:scale_x_continuous("Grau") +
+1607804304921:scale_y_continuous("Frequência de corte") +
+1607804304939:scale_color_gradientn("largura", colors=canva_pal(names(canva_palettes)[4])(2))
+1607804353887:getwd
+1607804356016:getwd()
+1607804411666:source('~/.active-rstudio-document', echo=TRUE)
+1607804485278:sel.dt <- dt[(order==3) & (width == last(width)) & derivative == 1]
+1607804485454:ggplot(sel.dt) +
+1607804485474:geom_line(aes(freq, abs(f))) +
+1607804485494:geom_line(aes(x=freq, y=abs(freq)*pi*2), color = .gray) +
+1607804485512:xlim(-0.01, 0.01) +
+1607804485529:ylim(0, 0.1)
+1607804493393:sel.dt <- dt[(order==3) & (width == first(width)) & derivative == 1]
+1607804493539:ggplot(sel.dt) +
+1607804493568:geom_line(aes(freq, abs(f))) +
+1607804493587:geom_line(aes(x=freq, y=abs(freq)*pi*2), color = .gray) +
+1607804493608:xlim(-0.01, 0.01) +
+1607804493631:ylim(0, 0.1)
+1607804570193:# Chunk 1: setup
+1607804570210:knitr::opts_chunk$set(echo = T,
+1607804570224:message=FALSE,
+1607804570242:warning = F,
+1607804570260:results = 'asis',
+1607804570276:fig.align='center',  out.height= '100%',
+1607804570292:fig.pos='H',
+1607804570309:out.width="100%",
+1607804570325:fig.margin=F)
+1607804570343:options("kableExtra.html.bsTable" = T)
+1607804570362:options(tinytex.verbose = TRUE)
+1607804570377:options(knitr.kable.NA = "-")
+1607804570393:rm(list = setdiff(objects(),c("main.directory","usuario", "params") ))
+1607804570425:# Chunk 2
+1607804570449:library(ggplot2)
+1607804570467:library(data.table)
+1607804570487:library(pracma)
+1607804570505:library(dplyr)
+1607804570522:library(stats)
+1607804570540:library(ggthemes)
+1607804570555:library(grid)
+1607804570572:library(gridExtra)
+1607804570603:# Chunk 3
+1607804570621:.blue   = "#1D7C96"
+1607804570639:.mauve  = "#d46edb"
+1607804570657:.orange = "#f27b1f"
+1607804570675:.bistre = "#876f5c"
+1607804570692:.gray   = "#6b8599"
+1607804570726:# Chunk 4
+1607804570749:filter.coef <- function(width, order, derivative=0) {
+1607804570767:stopifnot(width %% 2 == 1)
+1607804570803:# half-width
+1607804570820:M <- (width - 1)/2
+1607804570838:A <- matrix(0,
+1607804570854:nrow=width,
+1607804570872:ncol=order)
+1607804570896:for (n in 0:(width-1)){
+1607804570914:for (i in 0:(order-1)){
+1607804570930:A[n+1, i+1] <- (n-M)^i
+1607804570947:}
+1607804570964:}
+1607804570994:H = solve(t(A) %*% A, tol=1e-80) %*% t(A)
+1607804571019:return(H[derivative+1,]*factorial(derivative))
+1607804571049:}
+1607804571080:rep.like <- function(x) {
+1607804571100:return(-(length(x)%/%2):(length(x)%/%2))
+1607804571117:}
+1607804571143:filter <- function(x, filter) {
+1607804571161:x <- as.numeric(stats::filter(x, filter, method="convolution"))
+1607804571178:x[is.na(x)] <- 0
+1607804571197:return(x)
+1607804571213:}
+1607804571237:fftshift <- function(x) {
+1607804571255:l <- length(x)
+1607804571280:return(c(x[(l%/%2+1):l],x[1:(l%/%2)]))
+1607804571303:#return(c(x[(l%/%2+2):l],x[l%/%2+1], x[1:(l%/%2)]))
+1607804571320:}
+1607804571351:fftfreq <- function(n, d) {
+1607804571376:if (n %% 2 == 0) {
+1607804571399:return(c(
+1607804571416:0:(n/2-1),
+1607804571434:(-n/2):-1) / (d*n))
+1607804571455:}
+1607804571480:return(c(
+1607804571496:0:((n-1)/2),
+1607804571513:(-(n-1)/2):-1
+1607804571532:)/(d*n))
+1607804571549:#f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   if n is even
+1607804571569:#f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   if n is odd
+1607804571589:}
+1607804571617:# Chunk 5
+1607804571641:coefs <- filter.coef(15, 6, derivative=1)
+1607804571698:data = data.table(x=rep.like(coefs),
+1607804571735:y=coefs)
+1607804571993:ggplot(data) +
+1607804572010:geom_hline(yintercept = 0, color=.gray, alpha=0.5) +
+1607804572030:geom_line(aes(x=x, y=y), color=.blue) +
+1607804572050:theme_bw()
+1607804572218:# Chunk 6
+1607804572247:generate.impulse.response <- function(half.size) {
+1607804572265:impulse.response <- rep(0, 2*half.size + 1)
+1607804572285:impulse.response[half.size+1] <- 1
+1607804572302:return(impulse.response)
+1607804572318:}
+1607804572342:impulse.response <- generate.impulse.response(2000)
+1607804572359:coefs <- filter.coef(15, 1)
+1607804573120:res <- filter(impulse.response, coefs)
+1607804573138:#res <- res[res != 0]
+1607804573156:#res <- stats::filter(impulse.response, coefs, method="convolution")
+1607804573174:res <- log10(abs(fft(res)))
+1607804573219:data.frame(y=res,
+1607804573239:x=fftfreq(length(res), d=1)) %>%
+1607804573257:ggplot(., aes(x, y)) +
+1607804573273:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607804573290:geom_line(color=.blue) +
+1607804573307:theme_pander()
+1607804573581:# Chunk 7
+1607804573599:widths <- seq(11, 300, 20)
+1607804573618:orders <- seq(3, 10, 2)
+1607804573643:impulse.response <- generate.impulse.response(2000)
+1607804574603:dt <- data.table()
+1607804574622:for (derivative in 0:2) {
+1607804574651:for (order in orders[orders > derivative]){
+1607804574671:for (width in widths[widths > order*2]) {
+1607804574695:coefs <- filter.coef(width=width, order=order, derivative=derivative)
+1607804574715:res <- filter(impulse.response, coefs)
+1607804574734:res.log <- log10(abs(fft(res)))
+1607804574752:freqs <- fftfreq(length(res), d=1)
+1607804574787:dt <- rbind(dt,
+1607804574804:data.table(y= as.numeric(res.log),
+1607804574821:f=fft(res),
+1607804574839:freq=freqs,
+1607804574857:width = width,
+1607804574877:order = order,
+1607804574894:derivative = derivative))
+1607804574912:}
+1607804574939:}
+1607804574966:}
+1607804582955:dt[, y_ideal := (freq*pi*2)^derivative]
+1607804582997:dt[, mag_ratio := 10*log10(abs(f)/abs(y_ideal))]
+1607804583031:dt[, width := factor(as.factor(width), levels=widths)]
+1607804583654:dt[, order := factor(as.factor(order), levels=orders)]
+1607804584183:plot.magnitudes <- function(dt, derivative, title="") {
+1607804584207:.derivative <- derivative
+1607804584224:g.widths <- ggplot(dt[(freq>0) & (order == first(order)) & (derivative == .derivative)],
+1607804584242:aes(freq, mag_ratio, color=width)) +
+1607804584261:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607804584277:geom_line() +
+1607804584294:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607804584313:theme_pander() +
+1607804584332:scale_color_canva("largura", palette = names(canva_palettes)[2]) +
+1607804584350:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607804584369:scale_y_continuous(name="Logaritmo da magnitude")
+1607804584401:g.orders <- ggplot(dt[(freq>0) & (width == first(width)) & (derivative == .derivative)],
+1607804584416:aes(freq, mag_ratio, color=order)) +
+1607804584431:geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+1607804584450:geom_line() +
+1607804584469:geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
+1607804584487:theme_pander() +
+1607804584505:scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+1607804584524:scale_x_continuous(name=expression(omega*"/2"*pi)) +
+1607804584543:scale_y_continuous(name="Logaritmo da magnitude")
+1607804584577:return(arrangeGrob(g.widths, g.orders, nrow=2,
+1607804584600:top=textGrob(title,gp=gpar(fontsize=20,font=3))
+1607804584622:)
+1607804584641:)
+1607804584658:}
+1607804584683:# Chunk 8
+1607804584706:g.der0 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=0, title="SG")
+1607804585414:g.der1 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=1, title="SG 1a ordem")
+1607804585662:g.der2 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=2, title="SG 2a ordem")
+1607804585923:# Chunk 9
+1607804585940:g.der0 %>% grid.draw
+1607804586094:# Chunk 10
+1607804586113:g.der1 %>% grid.draw
+1607804586264:# Chunk 11
+1607804586283:g.der2 %>% grid.draw
+1607804586433:# Chunk 12
+1607804586457:sel.dt <- dt[(order==3) & (width == last(width)) & derivative == 1]
+1607804591589:ggplot(sel.dt) +
+1607804591606:geom_line(aes(freq, abs(f))) +
+1607804591623:geom_line(aes(x=freq, y=abs(freq)*pi*2), color = .gray) +
+1607804591641:xlim(-0.01, 0.01) +
+1607804591658:ylim(0, 0.1)
+1607804591921:# Chunk 13
+1607804591946:dt.cutoff <- copy(dt)
+1607804591993:dt.cutoff <- dt.cutoff[ (freq >= 0) & (mag_ratio <= -3)]
+1607804592023:dt.cutoff <- dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
+1607804593100:dt.cutoff[, estimated := as.numeric(order)/((as.numeric(as.character(width))))]
+1607804593206:g.cutoff <- ggplot(dt.cutoff[ (derivative == 0)],
+1607804593223:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804593241:geom_line() +
+1607804593259:#geom_point(aes(y=estimated)) +
+1607804593276:geom_point() +
+1607804593293:theme_pander() +
+1607804593309:scale_x_continuous("Grau") +
+1607804593327:scale_y_continuous("Frequência de corte") +
+1607804593343:scale_color_gradientn("largura", colors=canva_pal(names(canva_palettes)[4])(2))
+1607804865630:plot.cutoff <- function(derivative) {
+1607804865650:.derivative <- derivative
+1607804865668:g <- ggplot(dt.cutoff[ (derivative == .derivative)],
+1607804865684:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804865701:geom_line() +
+1607804865716:#geom_point(aes(y=estimated)) +
+1607804865734:geom_point() +
+1607804865753:theme_pander() +
+1607804865769:scale_x_continuous("Grau") +
+1607804865789:scale_y_continuous("Frequência de corte") +
+1607804865807:scale_color_gradientn("largura", colors=canva_pal(names(canva_palettes)[4])(2))
+1607804865825:return(g)
+1607804865845:}
+1607804872669:g.cutoff.der0 <- plot.cutoff(0)
+1607804875742:plot(g.cutoff.der0)
+1607804889685:g.cutoff.der2 <- plot.cutoff(2)
+1607804897441:plot(g.cutoff.der0)
+1607804897660:plot(g.cutoff.der1)
+1607804898760:plot(g.cutoff.der2)
+1607804901732:g.cutoff.der1 <- plot.cutoff(1)
+1607804901926:g.cutoff.der2 <- plot.cutoff(2)
+1607804902470:plot(g.cutoff.der0)
+1607804902690:plot(g.cutoff.der1)
+1607804903849:plot(g.cutoff.der2)
+1607804918308:ggsave(paste0(save.at, "savitzky-golay-cutoff-der2.png"), g.cutoff.der2)
+1607804922663:save.at <- c("~/R/images")
+1607804922808:dir.create(save.at)
+1607804922965:ggsave(paste0(save.at, "savitzky-golay-der0.png"), g.der0)
+1607804923580:ggsave(paste0(save.at, "savitzky-golay-der1.png"), g.der1)
+1607804924168:ggsave(paste0(save.at, "savitzky-golay-der2.png"), g.der2)
+1607804924604:ggsave(paste0(save.at, "savitzky-golay-cutoff-der0.png"), g.cutoff.der0)
+1607804924981:ggsave(paste0(save.at, "savitzky-golay-cutoff-der1.png"), g.cutoff.der1)
+1607804925373:ggsave(paste0(save.at, "savitzky-golay-cutoff-der2.png"), g.cutoff.der2)
+1607804982911:plot.cutoff <- function(derivative) {
+1607804982929:.derivative <- derivative
+1607804982947:g <- ggplot(dt.cutoff[ (derivative == .derivative)],
+1607804982965:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804982983:geom_line() +
+1607804983001:#geom_point(aes(y=estimated)) +
+1607804983020:geom_point() +
+1607804983038:theme_pander() +
+1607804983057:scale_x_continuous("Grau") +
+1607804983075:scale_y_continuous("Frequência de corte") +
+1607804983094:scale_color_gradientn("largura", colors=canva_pal(names(canva_palettes)[5])(2))
+1607804983112:return(g)
+1607804983134:}
+1607804983589:g.cutoff.der0 <- plot.cutoff(0)
+1607804984990:plot(g.cutoff.der0)
+1607804991684:plot.cutoff <- function(derivative) {
+1607804991701:.derivative <- derivative
+1607804991722:g <- ggplot(dt.cutoff[ (derivative == .derivative)],
+1607804991741:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607804991759:geom_line() +
+1607804991778:#geom_point(aes(y=estimated)) +
+1607804991796:geom_point() +
+1607804991814:theme_pander() +
+1607804991834:scale_x_continuous("Grau") +
+1607804991851:scale_y_continuous("Frequência de corte") +
+1607804991867:scale_color_gradientn("largura", colors=canva_pal(names(canva_palettes)[4])(3))
+1607804991884:return(g)
+1607804991903:}
+1607804991923:g.cutoff.der0 <- plot.cutoff(0)
+1607804992796:plot(g.cutoff.der0)
+1607805005599:names(canva_palettes)[4])(2)
+1607805015771:canvas_pal(names(canva_palettes)[4]))(2)
+1607805021226:canva_pal(names(canva_palettes)[4])(2)
+1607805058269:plot.cutoff <- function(derivative) {
+1607805058287:.derivative <- derivative
+1607805058304:g <- ggplot(dt.cutoff[ (derivative == .derivative)],
+1607805058319:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805058336:geom_line() +
+1607805058353:#geom_point(aes(y=estimated)) +
+1607805058372:geom_point() +
+1607805058390:theme_pander() +
+1607805058407:scale_x_continuous("Grau") +
+1607805058423:scale_y_continuous("Frequência de corte") +
+1607805058440:scale_color_gradientn("largura", colors=c("#93b6db", "#505160"))
+1607805058458:return(g)
+1607805058477:}
+1607805058654:g.cutoff.der0 <- plot.cutoff(0)
+1607805059701:plot(g.cutoff.der0)
+1607805102884:plot(g.cutoff.der0 + ylim(0, 0.06))
+1607805139597:dt.cutoff[freq <0.1]
+1607805140481:plot.cutoff <- function(derivative) {
+1607805140504:.derivative <- derivative
+1607805140523:g <- ggplot(dt.cutoff[ (derivative == .derivative)],
+1607805140541:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805140561:geom_line() +
+1607805140579:#geom_point(aes(y=estimated)) +
+1607805140597:geom_point() +
+1607805140616:theme_pander() +
+1607805140633:scale_x_continuous("Grau") +
+1607805140650:scale_y_continuous("Frequência de corte") +
+1607805140669:scale_color_gradientn("largura", colors=c("#93b6db", "#505160"))
+1607805140686:return(g)
+1607805140706:}
+1607805141628:g.cutoff.der0 <- plot.cutoff(0)
+1607805142740:plot(g.cutoff.der0)
+1607805151645:dt.cutoff <- dt.cutoff[freq <0.1]
+1607805151923:plot.cutoff <- function(derivative) {
+1607805151940:.derivative <- derivative
+1607805151958:g <- ggplot(dt.cutoff[ (derivative == .derivative)],
+1607805151977:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805151997:geom_line() +
+1607805152016:#geom_point(aes(y=estimated)) +
+1607805152035:geom_point() +
+1607805152051:theme_pander() +
+1607805152071:scale_x_continuous("Grau") +
+1607805152091:scale_y_continuous("Frequência de corte") +
+1607805152110:scale_color_gradientn("largura", colors=c("#93b6db", "#505160"))
+1607805152126:return(g)
+1607805152143:}
+1607805152238:g.cutoff.der0 <- plot.cutoff(0)
+1607805153575:plot(g.cutoff.der0)
+1607805160564:g.cutoff.der1 <- plot.cutoff(1)
+1607805160772:g.cutoff.der2 <- plot.cutoff(2)
+1607805161693:plot(g.cutoff.der1)
+1607805166912:plot(g.cutoff.der2)
+1607805194149:plot.cutoff <- function(derivative) {
+1607805194168:.derivative <- derivative
+1607805194186:g <- ggplot(dt.cutoff[ (derivative == .derivative)],
+1607805194203:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805194221:geom_line() +
+1607805194237:#geom_point(aes(y=estimated)) +
+1607805194253:geom_point() +
+1607805194269:theme_pander() +
+1607805194287:scale_x_continuous("Grau") +
+1607805194304:scale_y_continuous("Frequência de corte") +
+1607805194322:scale_color_gradientn("largura", colors=c("#93b6db", "#505160")) +
+1607805194341:coord_cartesian(ylim=c(NA, 0.1))
+1607805194360:return(g)
+1607805194379:}
+1607805194427:g.cutoff.der0 <- plot.cutoff(0)
+1607805195549:plot(g.cutoff.der0)
+1607805197844:g.cutoff.der1 <- plot.cutoff(1)
+1607805198820:plot(g.cutoff.der1)
+1607805210515:g <- ggplot(dt.cutoff[ (derivative == .derivative)],
+1607805210533:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805210552:geom_line() +
+1607805210572:#geom_point(aes(y=estimated)) +
+1607805210587:geom_point() +
+1607805210602:theme_pander() +
+1607805210624:scale_x_continuous("Grau") +
+1607805210644:scale_y_continuous("Frequência de corte") +
+1607805210663:scale_color_gradientn("largura", colors=c("#93b6db", "#505160")) +
+1607805210678:coord_cartesian(ylim=c(NA, 0.12))
+1607805211674:plot.cutoff <- function(derivative) {
+1607805211693:.derivative <- derivative
+1607805211710:g <- ggplot(dt.cutoff[ (derivative == .derivative)],
+1607805211726:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805211741:geom_line() +
+1607805211756:#geom_point(aes(y=estimated)) +
+1607805211772:geom_point() +
+1607805211791:theme_pander() +
+1607805211810:scale_x_continuous("Grau") +
+1607805211829:scale_y_continuous("Frequência de corte") +
+1607805211849:scale_color_gradientn("largura", colors=c("#93b6db", "#505160")) +
+1607805211866:coord_cartesian(ylim=c(NA, 0.12))
+1607805211882:return(g)
+1607805211898:}
+1607805211918:g.cutoff.der0 <- plot.cutoff(0)
+1607805212084:g.cutoff.der1 <- plot.cutoff(1)
+1607805212378:g.cutoff.der2 <- plot.cutoff(2)
+1607805212533:plot(g.cutoff.der0)
+1607805213863:plot(g.cutoff.der1)
+1607805235421:plot.cutoff <- function(derivative) {
+1607805235440:.derivative <- derivative
+1607805235456:g <- ggplot(dt.cutoff[ (derivative == .derivative) & (freq < 0.12)],
+1607805235475:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805235492:geom_line() +
+1607805235510:#geom_point(aes(y=estimated)) +
+1607805235528:geom_point() +
+1607805235547:theme_pander() +
+1607805235564:scale_x_continuous("Grau") +
+1607805235583:scale_y_continuous("Frequência de corte") +
+1607805235599:scale_color_gradientn("largura", colors=c("#93b6db", "#505160")) +
+1607805235616:coord_cartesian(ylim=c(NA, 0.12))
+1607805235634:return(g)
+1607805235652:}
+1607805235769:g.cutoff.der0 <- plot.cutoff(0)
+1607805235956:g.cutoff.der1 <- plot.cutoff(1)
+1607805236450:g.cutoff.der2 <- plot.cutoff(2)
+1607805236580:plot(g.cutoff.der0)
+1607805237908:plot(g.cutoff.der1)
+1607805275068:plot.cutoff <- function(derivative) {
+1607805275086:.derivative <- derivative
+1607805275103:g <- ggplot(dt.cutoff[ (derivative == .derivative) & (freq < 0.12)],
+1607805275121:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805275136:geom_line() +
+1607805275151:#geom_point(aes(y=estimated)) +
+1607805275169:geom_point() +
+1607805275184:theme_pander() +
+1607805275205:scale_x_continuous("Grau") +
+1607805275223:scale_y_continuous("Frequência de corte") +
+1607805275240:scale_color_stepsn("largura", colors=c("#93b6db", "#505160")) +
+1607805275257:coord_cartesian(ylim=c(NA, 0.12))
+1607805275274:return(g)
+1607805275291:}
+1607805275530:g.cutoff.der0 <- plot.cutoff(0)
+1607805276973:plot(g.cutoff.der0)
+1607805286614:g.cutoff.der1 <- plot.cutoff(1)
+1607805288190:g.cutoff.der2 <- plot.cutoff(2)
+1607805291847:plot(g.cutoff.der1)
+1607805292146:plot(g.cutoff.der2)
+1607805363172:plot.cutoff <- function(derivative) {
+1607805363198:.derivative <- derivative
+1607805363218:g <- ggplot(dt.cutoff[ (derivative == .derivative) & (freq < 0.12)],
+1607805363237:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805363255:geom_line() +
+1607805363273:#geom_point(aes(y=estimated)) +
+1607805363289:geom_point() +
+1607805363306:theme_pander() +
+1607805363322:scale_x_continuous("Grau") +
+1607805363338:scale_y_continuous("Frequência de corte") +
+1607805363354:scale_color_stepsn("largura", colors=c("#bfdeff", "#93b6db", "#505160")) +
+1607805363368:coord_cartesian(ylim=c(NA, 0.12))
+1607805363384:return(g)
+1607805363402:}
+1607805363424:g.cutoff.der0 <- plot.cutoff(0)
+1607805364291:plot(g.cutoff.der0)
+1607805366830:g.cutoff.der1 <- plot.cutoff(1)
+1607805367876:g.cutoff.der2 <- plot.cutoff(2)
+1607805368531:plot(g.cutoff.der0)
+1607805370380:plot(g.cutoff.der1)
+1607805377423:}
+1607805377605:g.cutoff.der1 <- plot.cutoff(1)
+1607805377942:g.cutoff.der2 <- plot.cutoff(2)
+1607805378079:plot(g.cutoff.der0)
+1607805383764:plot.cutoff <- function(derivative) {
+1607805383783:.derivative <- derivative
+1607805383798:g <- ggplot(dt.cutoff[ (derivative == .derivative) & (freq < 0.12)],
+1607805383815:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805383834:geom_line() +
+1607805383853:#geom_point(aes(y=estimated)) +
+1607805383874:geom_point() +
+1607805383892:theme_pander() +
+1607805383909:scale_x_continuous("Grau") +
+1607805383925:scale_y_continuous("Frequência de corte") +
+1607805383943:scale_color_stepsn("largura", colors=c("#93b6db", "#505160")) +
+1607805383963:coord_cartesian(ylim=c(NA, 0.12))
+1607805383981:return(g)
+1607805383999:}
+1607805384020:g.cutoff.der0 <- plot.cutoff(0)
+1607805384168:g.cutoff.der1 <- plot.cutoff(1)
+1607805384196:g.cutoff.der2 <- plot.cutoff(2)
+1607805384446:plot(g.cutoff.der0)
+1607805385720:plot(g.cutoff.der1)
+1607805386887:plot(g.cutoff.der2)
+1607805389910:?scale_color_stepsn
+1607805424248:plot.cutoff <- function(derivative) {
+1607805424265:.derivative <- derivative
+1607805424282:g <- ggplot(dt.cutoff[ (derivative == .derivative) & (freq < 0.12)],
+1607805424300:aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
+1607805424318:geom_line() +
+1607805424336:#geom_point(aes(y=estimated)) +
+1607805424354:geom_point() +
+1607805424372:theme_pander() +
+1607805424389:scale_x_continuous("Grau") +
+1607805424407:scale_y_continuous("Frequência de corte") +
+1607805424427:scale_color_stepsn("largura", colors=c("#93b6db", "#505160"), n.breaks=5, nice.breaks=T) +
+1607805424445:coord_cartesian(ylim=c(NA, 0.12))
+1607805424462:return(g)
+1607805424481:}
+1607805424499:g.cutoff.der0 <- plot.cutoff(0)
+1607805425531:plot(g.cutoff.der0)
