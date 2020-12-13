@@ -51,7 +51,10 @@ library(ggthemes)
 library(grid)
 library(gridExtra)
 library(cowplot)
+library(jsonlite)
 
+
+theme_set(theme_pander())
 ```
 
 ```{r}
@@ -66,8 +69,34 @@ library(cowplot)
 
 ```{r}
 
+# Dados
+# ......................
 dt <- fread("~/simulation/data/sin/excitation_sinusoidal.csv")
 
+
+# Resultados
+# .......................
+coef.files <- c("~/simulation/data/sin/linreg.csv",
+                "~/simulation/data/sin/gradient.csv",
+                "~/simulation/data/sin/eiv.csv")
+
+coef.dt <- data.table()
+for (f in coef.files) {
+  coef.dt <- rbind(coef.dt,
+                   fread(f))
+}
+model.colors <- data.table(color=c(.blue, .mauve, .orange),
+                           model=c("linreg", "gradient", "eiv"))
+coef.dt <- coef.dt %>% merge(., model.colors, by="model")
+
+
+# 
+# .........................
+```
+
+```{r}
+
+config.json$K[[1]][1]
 ```
 
 
@@ -125,5 +154,17 @@ save.path <- function(x) paste0(save.at, x)
 ggsave(save.path("data_simulation_4hz.png"), g.data.4hz)
 ggsave(save.path("data_simulation_69hz.png"), g.data.69hz)
 
+```
+
+
+```{r}
+
+sel.coef <- "cxy"
+ggplot(coef.dt) +
+  geom_hline(yintercept = 0, linetype="dashed", color=.gray, alpha=0.65) +
+  geom_point(aes(x=freq, y=get(sel.coef), color=color)) +
+  geom_line(aes(x=freq, y=get(sel.coef), color=color), alpha=0.5) +
+  scale_color_identity(labels=model.colors$model, breaks=model.colors$color,
+                       guide="legend") 
 ```
 

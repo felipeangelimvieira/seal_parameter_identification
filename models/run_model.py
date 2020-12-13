@@ -4,6 +4,7 @@ from numpy.fft import fftshift, fftfreq, fft
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
+sys.path.append("..")
 from utils import *
 from utils import Shuffler
 import jax
@@ -31,7 +32,7 @@ def add_derivatives(df):
     return all_data
 
 
-def linreg_estimate(df):
+def linreg_estimate(df, *args, **kwargs):
     # df["x_dot2"] =  df["x_dot2"].shift()
     # df["y_dot2"] =  df["y_dot2"].shift()
 
@@ -61,7 +62,7 @@ def select_frequency(df, freq, tol=1e-2):
     return df[np.abs(df.freqs - freq) <= tol]
 
 
-def eiv_estimate(df, freq):
+def eiv_estimate(df, freq, *args, **kwargs):
     df_freq = pd.DataFrame()
 
     for (episode, axis), group in df.groupby(["episode", "axis"]):
@@ -119,7 +120,7 @@ def optimize(q, q_dot, q_dot2, f, batch_size=10000, step_size=1e3, epochs=7):
     return params
 
 
-def optimization_estimate(df):
+def optimization_estimate(df, *args, **kwargs):
     q = df[["x", "y"]].values.reshape((-1, 2, 1))
     q_dot = df[["x_dot", "y_dot"]].values.reshape((-1, 2, 1))
     q_dot2 = df[["x_dot2", "y_dot2"]].values.reshape((-1, 2, 1))
@@ -138,10 +139,10 @@ def get_coefficients(df, estimate_fun):
 
     for freq in df.freq.unique():
         sel_df = df[(df.seal == True) & (df.freq == freq)]
-        with_seal = estimate_fun(sel_df)
+        with_seal = estimate_fun(sel_df, freq)
 
         sel_df = df[(df.seal == False) & (df.freq == freq)]
-        wo_seal = estimate_fun(sel_df)
+        wo_seal = estimate_fun(sel_df, freq)
 
         C = with_seal["C"] - wo_seal["C"]
         K = with_seal["K"] - wo_seal["K"]
@@ -178,13 +179,34 @@ def to_dataframe(Fs, Ks, Cs):
 
     return df
 
+
+models = {
+    "linreg" : linreg_estimate,
+    "gradient" : optimization_estimate,
+    "eiv" : eiv_estimate
+}
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('--data_file', type=str, help=".csv filepath that must have x, y, fx, fy, t, freq, axis,"
+    argparser.add_argument('--data_path', type=str, help=".csv filepath that must have x, y, fx, fy, t, freq, axis,"
                                                          "and episode columns.")
-    argparser.add_argument('--save_dir', type=str)
+    argparser.add_argument('--save_path', type=str)
     argparser.add_argument('--model', type=str)
     argparser.add_argument('--savgol', action="store_true")
     args = argparser.parse_args()
 
-    df = pd.read_csv("../simulation/data/debug/excitation_sinusoidal.csv")df = pd.read_csv("../simulation/data/debug/excitation_sinusoidal.csv")
+    df = pd.read_csv(args.data_path)
+    estimate_fun = models[args.model]
+
+    if args.savgol:
+        df = add_derivatives(df)
+
+    Fs, Ks, Cs = get_coefficients(df, estimate_fun)
+    results_df = to_dataframe(Fs, Ks, Cs)
+    results_df["model"] = args.model
+    results_df["savgol"] = args.savgol
+
+
+    results_df.to_csv(args.save_path, index=False)
+
+
+

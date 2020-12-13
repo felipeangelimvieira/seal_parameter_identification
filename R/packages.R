@@ -7,7 +7,9 @@ packages.to.install <- c("ggplot2",
                          "matlib",
                          "ggthemes",
                          "dplyr",
-                         "gridExtra"
+                         "gridExtra",
+                         "jsonlite",
+                         "rjson",
                          "cowplot")
 
 
