@@ -1,0 +1,129 @@
+---
+title: "EDA - Template"
+author: "Exploratory Data Analysis"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+    #includes:
+    #    in_header: inputs_esteticos_para_relatorio/preamble.tex
+  html_document:
+     theme: spacelab
+     toc: true
+     toc_depth: 2
+     toc_float: true
+     smooth_scroll: false
+     number_sections: true
+     highlight: tango
+     code_folding: hide
+classoption: "aspectratio=169"
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T,
+                      message=FALSE,
+                      warning = F,
+                      results = 'asis',
+                      fig.align='center',  out.height= '100%', 
+                      fig.pos='H',
+                      out.width="100%",
+                      fig.margin=F)
+options("kableExtra.html.bsTable" = T)
+options(tinytex.verbose = TRUE)
+options(knitr.kable.NA = "-")
+rm(list = setdiff(objects(),c("main.directory","usuario", "params") ))
+
+.libPaths("~/R/lib")
+
+```
+
+```{r}
+
+library(ggplot2)
+library(data.table)
+library(pracma)
+library(dplyr)
+library(stats)
+library(ggthemes)
+library(grid)
+library(gridExtra)
+library(cowplot)
+
+```
+
+```{r}
+.blue   = "#1D7C96"
+.mauve  = "#d46edb"
+.orange = "#f27b1f"
+.bistre = "#876f5c"
+.gray   = "#6b8599"
+
+```
+
+
+```{r}
+
+dt <- fread("~/simulation/data/sin/excitation_sinusoidal.csv")
+
+```
+
+
+```{r}
+
+
+sel.freq <- 4
+
+
+plot.data.freq <- function(sel.freq) {
+  
+  sel.dt <- dt[(episode == 0) &
+             (freq == sel.freq) &
+             (seal == T) &
+             (t > 1/sel.freq*10) &
+             (t < 1/sel.freq*14)]
+
+  g1 <- ggplot(sel.dt[axis=="x"]) +
+          geom_line(aes(x=t, y=x, color=.blue)) +
+          geom_line(aes(x=t, y=y, color=.orange)) +
+          scale_color_identity("",
+                               labels = c("x", "y"), breaks=c(.blue, .orange),
+                               guide = "legend") +
+          scale_y_continuous(name="Posição (m)") + 
+          theme_pander()
+  
+  g2 <- ggplot(sel.dt[axis=="x"]) +
+          geom_line(aes(x=t, y=fx, color=.blue)) +
+          geom_line(aes(x=t, y=fy, color=.orange)) +
+          scale_color_identity("",
+                               labels = c("Fx", "Fy"), breaks=c(.blue, .orange),
+                               guide = "legend") +
+          scale_y_continuous(name="Força (N)") + 
+          theme_pander()
+  
+  g <- plot_grid(g1, g2, ncol=1, align="v")
+
+  return(g)
+}
+
+
+```
+
+```{r}
+g.data.4hz <- plot.data.freq(4)
+g.data.69hz <- plot.data.freq(69)
+
+```
+
+```{r Save images}
+
+save.at <- "~/R/images/"
+
+save.path <- function(x) paste0(save.at, x)
+ggsave(save.path("data_simulation_4hz.png"), g.data.4hz)
+ggsave(save.path("data_simulation_69hz.png"), g.data.69hz)
+
+```
+

@@ -119,12 +119,18 @@ def generate_dataset_sweep(config):
 def generate_dataset(config):
 
     if config["excitation"] == "sweep":
-        return generate_dataset_sweep(config)
+        data = generate_dataset_sweep(config)
     elif config["excitation"] == "sinusoidal":
-        return generate_dataset_sin(config)
+        data = generate_dataset_sin(config)
     else:
         raise ValueError(config["excitation"])
 
+    data["fx"] = data["fx"] + np.random.normal(0, scale=config["force_std"], size=data.shape[0])
+    data["fy"] = data["fy"] + np.random.normal(0, scale=config["force_std"], size=data.shape[0])
+    data["x"] = data["x"] + np.random.normal(0, scale=config["position_std"], size=data.shape[0])
+    data["y"] = data["y"] + np.random.normal(0, scale=config["position_std"], size=data.shape[0])
+
+    return data
 
         
 if __name__ == "__main__":
