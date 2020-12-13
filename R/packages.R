@@ -7,7 +7,8 @@ packages.to.install <- c("ggplot2",
                          "matlib",
                          "ggthemes",
                          "dplyr",
-                         "gridExtra")
+                         "gridExtra"
+                         "cowplot")
 
 
 install.packages(packages.to.install, dependencies=T)

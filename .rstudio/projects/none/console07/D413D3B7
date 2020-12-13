@@ -1,18 +1,0 @@
-To run a command as administrator (user "root"), use "sudo <command>".
-See "man sudo_root" for details.
-
-]0;/home/rstudio/Rrstudio@6020d941fc64:~/R$ sudo apt-g[Kinstall libXt-dev
-sudo: apt-install: command not found
-]0;/home/rstudio/Rrstudio@6020d941fc64:~/R$ sudo apt-install libXt-dev[C[C[C[C[C[C[C[C[C[1@d[1@e[1@v[1@ 
-sudo: apt-dev: command not found
-]0;/home/rstudio/Rrstudio@6020d941fc64:~/R$ sudo apt-dev install libXt-dev[C[1P[1P[1P[1@g[1@e[1@t
-Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 8%Reading package lists... 8%Reading package lists... 8%Reading package lists... 8%Reading package lists... 78%Reading package lists... 78%Reading package lists... 79%Reading package lists... 79%Reading package lists... 84%Reading package lists... 84%Reading package lists... 85%Reading package lists... 85%Reading package lists... 91%Reading package lists... 91%Reading package lists... 91%Reading package lists... 91%Reading package lists... 91%Reading package lists... 91%Reading package lists... 94%Reading package lists... 94%Reading package lists... 94%Reading package lists... 94%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... Done
-Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree       
-Reading state information... 0%Reading state information... 0%Reading state information... Done
-E: Unable to locate package libXt-dev
-]0;/home/rstudio/Rrstudio@6020d941fc64:~/R$ sudo apt-get install libXt-dev[K[K[K[K
-Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 8%Reading package lists... 8%Reading package lists... 8%Reading package lists... 8%Reading package lists... 78%Reading package lists... 78%Reading package lists... 79%Reading package lists... 79%Reading package lists... 84%Reading package lists... 84%Reading package lists... 85%Reading package lists... 85%Reading package lists... 91%Reading package lists... 91%Reading package lists... 91%Reading package lists... 91%Reading package lists... 91%Reading package lists... 91%Reading package lists... 94%Reading package lists... 94%Reading package lists... 94%Reading package lists... 94%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... Done
-Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree       
-Reading state information... 0%Reading state information... 0%Reading state information... Done
-E: Unable to locate package libXt
-]0;/home/rstudio/Rrstudio@6020d941fc64:~/R$ [Krstudio@6020d941fc64:~/R$ 
