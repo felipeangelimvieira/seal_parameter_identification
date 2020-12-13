@@ -190,6 +190,7 @@ for (derivative in 0:2) {
     dt <- rbind(dt,
                 data.table(y= as.numeric(res.log),
                            f=fft(res),
+                           fft_abs = abs(fft(res)),
                            freq=freqs,
                            width = width,
                            order = order,
@@ -205,49 +206,94 @@ dt[, mag_ratio := 10*log10(abs(f)/abs(y_ideal))]
 dt[, width := factor(as.factor(width), levels=widths)]
 dt[, order := factor(as.factor(order), levels=orders)]
 
+
+to.numeric <- function(x) as.numeric(as.character(x))
 plot.magnitudes <- function(dt, derivative, title="") {
  
    .derivative <- derivative
-   g.widths <- ggplot(dt[(freq>0) & (order == first(order)) & (derivative == .derivative)],
+   .order <- dt[, first(order)]
+   .width <- dt[to.numeric(width) > 2*max(to.numeric(order)), first(width)]
+   
+   g.widths <- ggplot(dt[(freq>0) & (order == .order) & (derivative == .derivative)],
                    aes(freq, mag_ratio, color=width)) +
               geom_hline(yintercept=0, color=.gray, alpha=0.4) +
               geom_line() +
               geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
               theme_pander() +
               scale_color_canva("largura", palette = names(canva_palettes)[2]) +
-              scale_x_continuous(name=expression(omega*"/2"*pi)) +
-              scale_y_continuous(name="Logaritmo da magnitude")
+              #scale_x_continuous(name=expression(omega*"/2"*pi)) +
+              scale_y_continuous(name="Logaritmo da magnitude") +
+              ggtitle(paste0("grau = ", .order))
+        
               
 
-    g.orders <- ggplot(dt[(freq>0) & (width == first(width)) & (derivative == .derivative)],
+    g.orders <- ggplot(dt[(freq>0) & (width == .width) & (derivative == .derivative)],
                        aes(freq, mag_ratio, color=order)) +
               geom_hline(yintercept=0, color=.gray, alpha=0.4) +
               geom_line() +
               geom_hline(yintercept=-3, color="black", alpha=0.8, linetype="dashed") +
               theme_pander() +
-              scale_color_canva("ordem", palette = names(canva_palettes)[3]) +
+              scale_color_canva("grau", palette = names(canva_palettes)[3]) +
               scale_x_continuous(name=expression(omega*"/2"*pi)) +
-              scale_y_continuous(name="Logaritmo da magnitude")
+              scale_y_continuous(name="")+
+              ggtitle(paste0("largura = ", .width))
 
 
-    return(arrangeGrob(g.widths, g.orders, nrow=2,
-                       top=textGrob(title,gp=gpar(fontsize=20,font=3))
-                       )
-           )
+    return(arrangeGrob(g.widths, g.orders, nrow=2))
+           
 }
+
+
+plot.magnitudes2 <- function(dt, derivative, title="") {
+ 
+   .derivative <- derivative
+   .order <- dt[, first(order)]
+   .width <- dt[to.numeric(width) > 2*max(to.numeric(order)), first(width)]
+   
+
+    g.orders <- ggplot(dt[(freq>0) & (width == .width) & (derivative == .derivative)],
+                       aes(freq, fft_abs, color=order)) +
+              geom_hline(yintercept=0, color=.gray, alpha=0.4) +
+              geom_line() +
+              geom_line(aes(y=y_ideal), linetype="dashed", color="black") +
+              theme_pander() +
+              scale_color_canva("grau", palette = names(canva_palettes)[3]) +
+              scale_x_continuous(name=expression(omega*"/2"*pi)) +
+              scale_y_continuous(name="")+
+              ggtitle(paste0("largura = ", .width)) 
+      
+    if (derivative == 0) {
+      g.orders <- g.orders + ylim(0, 1.1) 
+    } else {
+      g.orders <- g.orders + ylim(0, 0.5)
+      }
+
+
+    return(g.orders)
+           
+}
+
 ```
 
 
 ```{r}
 
-g.der0 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=0, title="SG") 
-g.der1 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=1, title="SG 1a ordem") 
-g.der2 <- plot.magnitudes(dt[width %in% c(11, 71, 131, 191)], derivative=2, title="SG 2a ordem")
+sel.dt <- dt[width %in% c(11, 31, 71, 131)][order %in% c(3, 5, 7, 9)]
+
+g.frf.der0 <- plot.magnitudes2(sel.dt, derivative=0) 
+g.frf.der1 <- plot.magnitudes2(sel.dt, derivative=1) 
+g.frf.der2 <- plot.magnitudes2(sel.dt, derivative=2)
+
+
+g.der0 <- plot.magnitudes(sel.dt, derivative=0) 
+g.der1 <- plot.magnitudes(sel.dt, derivative=1) 
+g.der2 <- plot.magnitudes(sel.dt, derivative=2)
 
 ```
 
 
 ```{r}
+
 g.der0 %>% grid.draw
 ```
 
@@ -279,7 +325,7 @@ dt.cutoff <- dt.cutoff[ (freq >= 0) & (mag_ratio <= -3)]
 dt.cutoff <- dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
 dt.cutoff[, estimated := as.numeric(order)/((as.numeric(as.character(width))))]
 
-plot.cutoff <- function(derivative) {
+plot.cutoff <- function(derivative, guide="colorbar") {
   .derivative <- derivative
   g <- ggplot(dt.cutoff[ (derivative == .derivative) & (freq < 0.12)],
        aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
@@ -289,11 +335,13 @@ plot.cutoff <- function(derivative) {
         theme_pander() +
         scale_x_continuous("Grau") +
         scale_y_continuous("Frequência de corte") +
-        scale_color_gradientn("largura", colors=c("#93b6db", "#505160")) +
+        scale_color_gradientn("largura", colors=c("#505160", "#93b6db"), guide=guide) +
         coord_cartesian(ylim=c(NA, 0.12))
   return(g)
 }
-g.cutoff.der0 <- plot.cutoff(0)
+
+
+g.cutoff.der0 <- plot.cutoff(0, guide="none")
 g.cutoff.der1 <- plot.cutoff(1)      
 g.cutoff.der2 <- plot.cutoff(2)      
 
@@ -308,6 +356,9 @@ plot(g.cutoff.der2)
 save.at <- c("~/R/images/")
 dir.create(save.at)
 
+ggsave(paste0(save.at, "savitzky-golay-frf0-der0.png"), g.frf.der0)
+ggsave(paste0(save.at, "savitzky-golay-frf1-der1.png"), g.frf.der1)
+ggsave(paste0(save.at, "savitzky-golay-frf2-der2.png"), g.frf.der2)
 ggsave(paste0(save.at, "savitzky-golay-der0.png"), g.der0)
 ggsave(paste0(save.at, "savitzky-golay-der1.png"), g.der1)
 ggsave(paste0(save.at, "savitzky-golay-der2.png"), g.der2)
