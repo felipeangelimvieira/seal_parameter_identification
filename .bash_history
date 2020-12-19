@@ -1,0 +1,2 @@
+ls
+Rscript packages.R

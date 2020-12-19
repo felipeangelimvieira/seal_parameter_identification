@@ -7,20 +7,24 @@ import sys
 sys.path.append("..")
 from utils import *
 from utils import Shuffler
-import jax
-from jax import numpy as jnp
-from jax.experimental.ode import odeint
-from jax import grad, jit, vmap, value_and_grad, jacfwd, jacrev, jacobian, hessian
-from jax import random
-from jax.experimental import stax
-from jax.experimental.optimizers import adam, sgd
-from models.newton import mse, initialize_params, get_batch_forward_pass, get_loss_function, train
+try:
+    import jax
+    from jax import numpy as jnp
+    from jax.experimental.ode import odeint
+    from jax import grad, jit, vmap, value_and_grad, jacfwd, jacrev, jacobian, hessian
+    from jax import random
+    from jax.experimental import stax
+    from jax.experimental.optimizers import adam, sgd
+    from models.newton import mse, initialize_params, get_batch_forward_pass, get_loss_function, train
+except:
+    pass
+
 
 
 def add_derivatives(df):
     all_data = pd.DataFrame()
 
-    for name, group in df.groupby(["seal", "episode", "freq"]):
+    for name, group in df.groupby(df.columns.intersection(["seal", "episode", "freq"]).tolist()):
         dt = (df["t"] - df["t"].shift()).median()
         group = append_derivatives_to_dataframe(group, "x", dt=dt)
         group = append_derivatives_to_dataframe(group, "y", dt=dt)
@@ -49,6 +53,23 @@ def linreg_estimate(df, *args, **kwargs):
     return {"C": C,
             "K": K}
 
+def linreg_estimate(df, *args, **kwargs):
+    # df["x_dot2"] =  df["x_dot2"].shift()
+    # df["y_dot2"] =  df["y_dot2"].shift()
+
+    df = df[df.t > 0.5]
+    X = df[["x_dot", "y_dot", "x", "y"]].values
+    df["fx_"] = df["fx"] - 1 * df["x_dot2"]
+    df["fy_"] = df["fy"] - 1 * df["y_dot2"]
+    Y = df[["fx_", "fy_"]].values
+    params = np.linalg.inv(X.transpose() @ X) @ X.transpose() @ Y
+
+    C = params[:2].transpose()
+    K = params[2:].transpose()
+
+    return {"C": C,
+            "K": K}
+
 def to_frequency_domain(df):
     data = {}
 
@@ -58,25 +79,41 @@ def to_frequency_domain(df):
     data["freqs"] = fftshift(fftfreq(data["xf"].shape[0], d=dt))
     return pd.DataFrame(data)
 
-def select_frequency(df, freq, tol=1e-2):
+def select_frequency(df, freq, tol=5e-2):
     return df[np.abs(df.freqs - freq) <= tol]
 
 
 def eiv_estimate(df, freq, *args, **kwargs):
-    df_freq = pd.DataFrame()
 
-    for (episode, axis), group in df.groupby(["episode", "axis"]):
+    print(freq)
+    period = 1/freq
+    df["period"] = df["t"].apply(lambda x: x // (5*period))
+    df = df[df["period"] > 1]
+
+    if "episode" not in df.columns:
+        df["episode"] = 0
+
+    df_freq = pd.DataFrame()
+    for (_period, episode, axis), group in df.groupby(["period", "episode", "axis"]):
         _df = to_frequency_domain(group)
         _df["axis"] = axis
         _df["episode"] = episode
+        _df["period"] = _period
 
         df_freq = pd.concat([df_freq, _df])
 
-    df_freq = select_frequency(df_freq, freq=freq)
+    #df_freq = select_frequency(df_freq[df_freq["freqs"]], freq=freq)
+
+    nearest_freq = np.ceil(df_freq.iloc[(df_freq["freqs"] - freq).abs().argmin(),]["freqs"])
+    df_freq = df_freq[np.ceil(df_freq["freqs"]) == nearest_freq]
+    #df_freq = df_freq[]
 
     Us = []
     Ys = []
-    for episode, group in df_freq.groupby("episode"):
+    for (period, episode), group in df_freq.groupby(["period", "episode"]):
+        if group.shape[0] < 2:
+            continue
+
         U = group[["xf", "yf"]].values.transpose()
         Y = group[["fxf", "fyf"]].values.transpose()
         Us.append(U)
@@ -85,9 +122,13 @@ def eiv_estimate(df, freq, *args, **kwargs):
     Us = np.array(Us)
     Ys = np.array(Ys)
 
+
     G = np.mean(Ys, axis=0) @ np.linalg.inv(np.mean(Us, axis=0))
     C = np.imag(G) / (2 * np.pi * freq)
     K = np.real(G) + (2 * np.pi * freq) ** 2 * np.array([[1, 0], [0, 1]])
+
+    print(f"K: {K}")
+    print(f"C: {C}")
 
     return {"freq": freq,
             "G": G,
@@ -138,14 +179,23 @@ def get_coefficients(df, estimate_fun):
     Fs = []
 
     for freq in df.freq.unique():
-        sel_df = df[(df.seal == True) & (df.freq == freq)]
-        with_seal = estimate_fun(sel_df, freq)
 
-        sel_df = df[(df.seal == False) & (df.freq == freq)]
-        wo_seal = estimate_fun(sel_df, freq)
+        if "seal" in df.columns:
+            sel_df = df[(df.seal == True) & (df.freq == freq)]
+            with_seal = estimate_fun(sel_df, freq)
 
-        C = with_seal["C"] - wo_seal["C"]
-        K = with_seal["K"] - wo_seal["K"]
+            sel_df = df[(df.seal == False) & (df.freq == freq)]
+            wo_seal = estimate_fun(sel_df, freq)
+
+            C = with_seal["C"] - wo_seal["C"]
+            K = with_seal["K"] - wo_seal["K"]
+
+        else:
+            sel_df = df[(df.freq == freq)]
+            coefs = estimate_fun(sel_df, freq)
+
+            C = coefs["C"]
+            K = coefs["K"]
 
         Cs.append(C)
         Ks.append(K)
@@ -202,6 +252,7 @@ if __name__ == "__main__":
 
     Fs, Ks, Cs = get_coefficients(df, estimate_fun)
     results_df = to_dataframe(Fs, Ks, Cs)
+    print(results_df)
     results_df["model"] = args.model
     results_df["savgol"] = args.savgol
 

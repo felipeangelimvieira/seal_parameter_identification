@@ -71,14 +71,18 @@ theme_set(theme_pander())
 
 # Dados
 # ......................
-dt <- fread("~/simulation/data/sin/excitation_sinusoidal.csv")
+dt <- fread("~/experiments/sin.csv")
+sweep.dt <- fread("~/experiments/sweep.csv")
+
 
 
 # Resultados
 # .......................
-coef.files <- c("~/simulation/data/sin/linreg.csv",
-                "~/simulation/data/sin/gradient.csv",
-                "~/simulation/data/sin/eiv.csv")
+coef.files <- c(
+                "~/experiments/sin_linreg.csv",
+                "~/experiments/sin_gradient.csv",
+                "~/experiments/sin_eiv.csv"
+                )
 
 coef.dt <- data.table()
 for (f in coef.files) {
@@ -94,34 +98,20 @@ coef.dt <- coef.dt %>% merge(., model.colors, by="model")
 # .........................
 ```
 
-```{r}
-
-config.json <- read_json("~/simulation/data/sin/config.json")
-
-groundtruth <- c("kxx" = config.json$K[[1]][1],
-       "kxy" = config.json$K[[1]][2],
-       "kyx" = config.json$K[[2]][1],
-       "kyy" = config.json$K[[2]][2],
-       "cxx" = config.json$C[[1]][1],
-       "cxy" = config.json$C[[1]][2],
-       "cyx" = config.json$C[[2]][1],
-       "cyy" = config.json$C[[2]][2])
-
-
-```
-
 
 ```{r}
 
 
-sel.freq <- 4
+min.freq <- dt[, min(freq)]
+max.freq <- dt[, max(freq)]
 
 
 plot.data.freq <- function(sel.freq) {
   
-  sel.dt <- dt[(episode == 0) &
+  sel.dt <- dt[
              (freq == sel.freq) &
-             (seal == T) &
+             
+              
              (t > 1/sel.freq*10) &
              (t < 1/sel.freq*14)]
 
@@ -152,8 +142,8 @@ plot.data.freq <- function(sel.freq) {
 ```
 
 ```{r}
-g.data.4hz <- plot.data.freq(4)
-g.data.69hz <- plot.data.freq(69)
+g.data.4hz <- plot.data.freq(min.freq)
+g.data.69hz <- plot.data.freq(max.freq)
 
 ```
 
@@ -174,7 +164,7 @@ plot.coefs <- function(coefs) {
   gs <- list()
   for (sel.coef in coefs) {
     g <- ggplot(coef.dt) +
-          geom_hline(yintercept = groundtruth[[sel.coef]], linetype="dashed", color=.gray, alpha=0.65) +
+          #geom_hline(yintercept = groundtruth[[sel.coef]], linetype="dashed", color=.gray, alpha=0.65) +
           geom_point(aes_string(x="freq", y=sel.coef, color="color")) +
           geom_line(aes_string(x="freq", y=sel.coef, color="color"), alpha=0.5) +
           scale_color_identity("", labels=model.colors$model, breaks=model.colors$color,
@@ -202,16 +192,34 @@ g.coefs.c <- plot.coefs(c("cxx", "cxy", "cyx", "cyy"))
 ```
 
 
+```{r legacy, eval=F}
+
+sel.dt <- sweep.dt[episode==0][3950:20000]
+sel.dt[, t := t - min(t)]
+g1 <- ggplot(sel.dt) + geom_line(aes(x=t %% 1, y=x, group=t %/% 1, color =t %/% 1))
+g2 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fx))
+plot_grid(g1, g2, ncol=1, align="v")
+
+sel.dt[, d:=cumsum(x) - shift(cumsum(x), -1002)]
+ggplot(sel.dt[!is.na(d)][t < 4]) + geom_line(aes(x=t, y=d))
+
+t1 <- sel.dt[d>0.018, min(t)]
+t2 <- sel.dt[t > t1, min(t)]
+
+ggplot(sel.dt[(t>t1) & (t<t2)]) + geom_line(aes(x=t, y=x))
+```
+
+
 
 ```{r Save images}
 
 save.at <- "~/R/images/"
 
 save.path <- function(x) paste0(save.at, x)
-ggsave(save.path("data_simulation_4hz.png"), g.data.4hz)
-ggsave(save.path("data_simulation_69hz.png"), g.data.69hz)
-ggsave(save.path("data_simulation_results_k.png"), g.coefs.k)
-ggsave(save.path("data_simulation_results_c.png"), g.coefs.c)
+ggsave(save.path(sprintf("data_experiments_%shz.png", min.freq)), g.data.69hz)
+ggsave(save.path(sprintf("data_experiments_%shz.png", max.freq)), g.data.69hz)
+ggsave(save.path("data_experiments_results_k.png"), g.coefs.k)
+ggsave(save.path("data_experiments_results_c.png"), g.coefs.c)
 
 ```
 
