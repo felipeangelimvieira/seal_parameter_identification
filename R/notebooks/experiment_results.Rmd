@@ -54,7 +54,7 @@ library(cowplot)
 library(jsonlite)
 
 
-theme_set(theme_pander())
+theme_set(theme_pander() + theme(legend.position = "bottom"))
 ```
 
 ```{r}
@@ -73,6 +73,7 @@ theme_set(theme_pander())
 # ......................
 dt <- fread("~/experiments/sin.csv")
 sweep.dt <- fread("~/experiments/sweep.csv")
+sweep.savgol.dt <- fread("~/experiments/sweep_savgol.csv")
 
 
 
@@ -193,20 +194,57 @@ g.coefs.c <- plot.coefs(c("cxx", "cxy", "cyx", "cyy"))
 
 
 ```{r legacy, eval=F}
+library(RColorBrewer)
+n <- 60
+qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
 
-sel.dt <- sweep.dt[episode==0][3950:20000]
-sel.dt[, t := t - min(t)]
-g1 <- ggplot(sel.dt) + geom_line(aes(x=t %% 1, y=x, group=t %/% 1, color =t %/% 1))
-g2 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fx))
-plot_grid(g1, g2, ncol=1, align="v")
+sel.dt <- sweep.dt[(axis == "x")]#[3950:20000]
 
-sel.dt[, d:=cumsum(x) - shift(cumsum(x), -1002)]
-ggplot(sel.dt[!is.na(d)][t < 4]) + geom_line(aes(x=t, y=d))
 
-t1 <- sel.dt[d>0.018, min(t)]
-t2 <- sel.dt[t > t1, min(t)]
+plot.sweep.data <- function(sel.dt) {
+  
+  g1 <- ggplot(sel.dt) + geom_line(aes(x=t, y=x, group= episode , color = as.factor(episode)),
+                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) +
+                  guides(color=guide_legend(nrow=2))
 
-ggplot(sel.dt[(t>t1) & (t<t2)]) + geom_line(aes(x=t, y=x))
+  g2 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fx, group= episode , color = as.factor(episode)),
+                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) + theme(legend.position = "none")
+  
+  g3 <- ggplot(sel.dt) + geom_line(aes(x=t, y=y, group= episode , color = as.factor(episode)),
+                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) +
+                                theme(legend.position = "none")
+
+  g4 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fy, group= episode , color = as.factor(episode)),
+                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) + theme(legend.position = "none")
+  
+  
+  mylegend<-g_legend(g1)
+  
+  g1 <- g1 + theme(legend.position = "none")
+  gs <- list(g1, g2, g3, g4)
+  
+  gg <- grid.arrange(arrangeGrob(grobs=gs, ncol=2, nrow=2, layout_matrix=rbind(c(1,3), c(2,4))), mylegend, heights=c(10, 1))
+  
+  
+  return(gg)
+}
+
+
+g.x <- plot.sweep.data(sweep.dt[(axis=="x")])
+g.y <- plot.sweep.data(sweep.dt[(axis=="y")])
+
+
+g.savgol.x <- plot.sweep.data(sweep.savgol.dt[(axis=="x")])
+g.savgol.y <- plot.sweep.data(sweep.savgol.dt[(axis=="y")])
+
+
+ggplot()  + geom_line(data=sweep.dt[(episode == 0) & (axis == "x")],
+                      aes(x=t,y=fx), color=.orange, alpha=0.5) +
+  geom_line(data=sweep.savgol.dt[(episode == 0) & (axis == "x")],
+                      aes(x=t,y=fx), color=.mauve)
+  
+
 ```
 
 

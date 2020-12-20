@@ -2,8 +2,11 @@ import argparse
 import numpy as np
 from numpy.fft import fftshift, fftfreq, fft
 import matplotlib.pyplot as plt
+from pathlib import Path
 import pandas as pd
 import sys
+from tqdm import tqdm
+from scipy.stats import trim_mean
 sys.path.append("..")
 from utils import *
 from utils import Shuffler
@@ -24,7 +27,7 @@ except:
 def add_derivatives(df):
     all_data = pd.DataFrame()
 
-    for name, group in df.groupby(df.columns.intersection(["seal", "episode", "freq"]).tolist()):
+    for name, group in df.groupby(df.columns.intersection(["seal", "episode", "freq", "axis"]).tolist()):
         dt = (df["t"] - df["t"].shift()).median()
         group = append_derivatives_to_dataframe(group, "x", dt=dt)
         group = append_derivatives_to_dataframe(group, "y", dt=dt)
@@ -40,7 +43,7 @@ def linreg_estimate(df, *args, **kwargs):
     # df["x_dot2"] =  df["x_dot2"].shift()
     # df["y_dot2"] =  df["y_dot2"].shift()
 
-    df = df[df.t > 0.5]
+    #df = df[df.t > 0.5]
     X = df[["x_dot", "y_dot", "x", "y"]].values
     df["fx_"] = df["fx"] - 1 * df["x_dot2"]
     df["fy_"] = df["fy"] - 1 * df["y_dot2"]
@@ -53,22 +56,49 @@ def linreg_estimate(df, *args, **kwargs):
     return {"C": C,
             "K": K}
 
-def linreg_estimate(df, *args, **kwargs):
+
+def linreg_sweep_estimate(df, fmin, fmax, period, *args, **kwargs):
     # df["x_dot2"] =  df["x_dot2"].shift()
     # df["y_dot2"] =  df["y_dot2"].shift()
 
-    df = df[df.t > 0.5]
-    X = df[["x_dot", "y_dot", "x", "y"]].values
-    df["fx_"] = df["fx"] - 1 * df["x_dot2"]
-    df["fy_"] = df["fy"] - 1 * df["y_dot2"]
-    Y = df[["fx_", "fy_"]].values
-    params = np.linalg.inv(X.transpose() @ X) @ X.transpose() @ Y
+    params_history = []
+    window = 320
 
-    C = params[:2].transpose()
-    K = params[2:].transpose()
+    Cs_episodes = []
+    Ks_episodes = []
+    #df = df[df["episode"] == 0]
+    episode_length = -np.inf
+    for (episode, axis), group in df.groupby(["episode", "axis"]):
+        if group.shape[0]//window < episode_length:
+            continue
+        episode_length = group.shape[0]//window
 
-    return {"C": C,
-            "K": K}
+        Cs = []
+        Ks = []
+        for i in tqdm(range(group.shape[0] - window)):
+            params = linreg_estimate(group.iloc[i:(i + window)])
+            K = params["K"]
+            C = params["C"]
+            Ks.append(K)
+            Cs.append(C)
+
+        Ks_episodes.append(np.array(Ks))
+        Cs_episodes.append(np.array(Cs))
+
+    Cs_episodes = np.array(Cs_episodes)
+    Ks_episodes = np.array(Ks_episodes)
+
+    freq_per_s = (fmax - fmin)/period
+    dt = (group["t"] - group["t"].shift()).median()
+    window_t = window*dt
+    freq_per_window = window_t * freq_per_s
+
+    Fs = np.arange(start=1, stop=Ks_episodes.shape[1], step=1)*freq_per_s*dt + fmin + freq_per_window/2
+    Ks = np.median(Ks_episodes, axis=0)
+    Cs = np.median(Cs_episodes, axis=0)
+    return {"Fs" : Fs,
+           "Cs": Cs,
+            "Ks": Ks}
 
 def to_frequency_domain(df):
     data = {}
@@ -208,6 +238,13 @@ def get_coefficients(df, estimate_fun):
     return Fs, Ks, Cs
 
 
+def get_coefficients_sweep(df, estimate_fun, *args, **kwargs):
+
+    coefs = estimate_fun(df, *args, **kwargs)
+
+    return coefs["Fs"], coefs["Ks"], coefs["Cs"]
+
+
 def to_dataframe(Fs, Ks, Cs):
     all_data = []
     for i, freq in enumerate(Fs):
@@ -233,7 +270,8 @@ def to_dataframe(Fs, Ks, Cs):
 models = {
     "linreg" : linreg_estimate,
     "gradient" : optimization_estimate,
-    "eiv" : eiv_estimate
+    "eiv" : eiv_estimate,
+    "linreg_sweep" : linreg_sweep_estimate
 }
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
@@ -241,8 +279,15 @@ if __name__ == "__main__":
                                                          "and episode columns.")
     argparser.add_argument('--save_path', type=str)
     argparser.add_argument('--model', type=str)
+    argparser.add_argument('--sweep_fmin', type=float, default=5)
+    argparser.add_argument('--sweep_fmax', type=float, default=69)
+    argparser.add_argument('--sweep_period', type=float, default=1)
     argparser.add_argument('--savgol', action="store_true")
     args = argparser.parse_args()
+
+    data_path = Path(args.data_path)
+    save_path = Path(args.save_path) if args.save_path else None
+    savgol_path = save_path.parent / Path(data_path.stem + "_savgol.csv") if args.save_path else None
 
     df = pd.read_csv(args.data_path)
     estimate_fun = models[args.model]
@@ -250,14 +295,21 @@ if __name__ == "__main__":
     if args.savgol:
         df = add_derivatives(df)
 
-    Fs, Ks, Cs = get_coefficients(df, estimate_fun)
+
+    if "sweep" in args.model:
+        Fs, Ks, Cs = get_coefficients_sweep(df, estimate_fun, fmin=args.sweep_fmin, fmax=args.sweep_fmax,
+                                            period=args.sweep_period)
+    else:
+        Fs, Ks, Cs = get_coefficients(df, estimate_fun)
+
     results_df = to_dataframe(Fs, Ks, Cs)
     print(results_df)
     results_df["model"] = args.model
     results_df["savgol"] = args.savgol
 
-
-    results_df.to_csv(args.save_path, index=False)
+    if args.save_path:
+        df.to_csv(savgol_path, index=False)
+        results_df.to_csv(save_path, index=False)
 
 
 

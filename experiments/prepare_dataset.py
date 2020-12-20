@@ -104,8 +104,6 @@ def load_amb_sweep_data(file):
         df["episode"] = i
 
         all_data = pd.concat([all_data, df], ignore_index=True)
-
-
     return all_data
 
 
@@ -139,9 +137,16 @@ def get_data_sweep(data_path):
         elif "fy" in file:
             df["axis"] = "y"
 
-        df["freq"] = np.nan
+#        df["freq"] = np.nan
 
         all_data = pd.concat([all_data, df], ignore_index=True)
+
+    # Verificado na mão, é um intervalo onde os dados estão com boa qualidade
+    all_data = all_data[all_data["episode"] == 0]
+    all_data = all_data[all_data["t"] >= 0.867814]#0.771289
+    all_data["t"] = all_data["t"] -  0.867814
+    all_data["episode"] = all_data["t"].apply(lambda t: t // 1)
+    all_data["t"] = all_data["t"].apply(lambda t: t % 1)
 
     return all_data
 
