@@ -172,12 +172,12 @@ g_legend<-function(a.gplot){
     
 }
 
-plot.coefs <- function(coefs) {
+plot.coefs <- function(dt=coef.dt, coefs) {
   gs <- list()
   for (sel.coef in coefs) {
-    g <- ggplot(coef.dt) +
+    g <- ggplot(dt) +
           geom_hline(yintercept = groundtruth[[sel.coef]], linetype="dashed", color=.gray, alpha=0.65) +
-          geom_point(data= coef.dt[!grepl("sweep", model, fixed=T)], aes_string(x="freq", y=sel.coef, color="color")) +
+          geom_point(data= dt[!grepl("sweep", model, fixed=T)], aes_string(x="freq", y=sel.coef, color="color")) +
           geom_line(aes_string(x="freq", y=sel.coef, color="color"), alpha=0.5) +
           scale_color_identity("", labels=model.colors$model, breaks=model.colors$color,
                                guide="legend") + 
@@ -199,10 +199,47 @@ plot.coefs <- function(coefs) {
 }
 
 
-g.coefs.k <- plot.coefs(c("kxx", "kxy", "kyx", "kyy"))
-g.coefs.c <- plot.coefs(c("cxx", "cxy", "cyx", "cyy"))
+g.coefs.k <- plot.coefs(dt=coef.dt, coefs=c("kxx", "kxy", "kyx", "kyy"))
+g.coefs.c <- plot.coefs(dt=coef.dt, coefs=c("cxx", "cxy", "cyx", "cyy"))
 
+plot(g.coefs.k)
 plot(g.coefs.c)
+
+g.coefs.k.wo.sweep <- plot.coefs(dt=coef.dt[model != "linreg_sweep"], coefs=c("kxx", "kxy", "kyx", "kyy"))
+g.coefs.c.wo.sweep <- plot.coefs(dt=coef.dt[model != "linreg_sweep"], coefs=c("cxx", "cxy", "cyx", "cyy"))
+
+plot(g.coefs.k.wo.sweep)
+plot(g.coefs.c.wo.sweep)
+
+
+plot.coef.bar.error <- function(coef.dt, sel.coef) {
+
+  dt <- coef.dt[, .(model, freq, color, coef=get(sel.coef))] %>% setnames(., "coef", sel.coef)
+
+  
+  dt <- melt(dt, id.vars = c("model", "freq", "color"))
+  dt[, expected_value := groundtruth[[sel.coef]]]
+  dt[, error := expected_value - value]
+  
+  sel.dt <- dt[, .(error=sqrt(mean(error^2, na.rm=T))), by=.(model, color)]
+  error_adjust = sel.dt[, max(error)]/15
+  ggplot(sel.dt) +
+    geom_col(aes(x=model, y=error, fill=color), alpha=0.8) +
+    scale_fill_identity() +
+    scale_y_continuous(paste0("RMSE (", sel.coef, ")")) + 
+    geom_text(aes(x=model, y=error+error_adjust, label=round(error, 1))) +
+    scale_x_discrete("")
+  
+}
+
+
+gg.error.ks <- lapply(c("kxx", "kyx", "kxy", "kyy"),
+              function(x) plot.coef.bar.error(coef.dt, sel.coef=x))
+gg.error.cs <- lapply(c("cxx", "cyx", "cxy", "cyy"),
+              function(x) plot.coef.bar.error(coef.dt, sel.coef=x))
+
+gg.error.ks <- plot_grid(plotlist=gg.error.ks)
+gg.error.cs <- plot_grid(plotlist=gg.error.cs)
 ```
 
 
@@ -273,6 +310,10 @@ ggsave(save.path("data_simulation_4hz.png"), g.data.4hz)
 ggsave(save.path("data_simulation_69hz.png"), g.data.69hz)
 ggsave(save.path("data_simulation_results_k.png"), g.coefs.k)
 ggsave(save.path("data_simulation_results_c.png"), g.coefs.c)
+ggsave(save.path("data_simulation_results_k_wo_sweep.png"), g.coefs.k.wo.sweep)
+ggsave(save.path("data_simulation_results_c_wo_sweep.png"), g.coefs.c.wo.sweep)
+ggsave(save.path("data_simulation_results_error_ks.png"), gg.error.ks)
+ggsave(save.path("data_simulation_results_error_cs.png"), gg.error.cs)
 
 ```
 

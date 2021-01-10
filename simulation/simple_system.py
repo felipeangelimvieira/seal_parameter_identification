@@ -87,11 +87,12 @@ class SimpleSystem:
 def parse_axis(axis):
     if axis not in ["both", "x", "y"]:
         raise ValueError()
-    mask = np.array([0, 0])
-    if axis in ("y", "both"):
-        mask += np.array([0, 1])
-    if axis in ("x", "both"):
-        mask += np.array([1, 0])
+    if axis == "y":
+        mask = np.array([0, 1])
+    if axis  == "x":
+        mask = np.array([1, 0])
+    if axis == "both":
+        mask = np.random.uniform(0.3, 1, size=2)
     return mask
 
 

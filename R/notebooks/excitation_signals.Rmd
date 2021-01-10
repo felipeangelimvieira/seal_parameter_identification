@@ -129,13 +129,14 @@ g.multisin <- plot.fun(fun, n=1000) + xlim(0, 1)
 g.multisin
 
 
-gg <- plot_grid(g.sin + ggtitle("Senoidal") + scale_x_continuous(""),
-                g.sweep + ggtitle("Varredura de frequências") + scale_x_continuous(""),
-                g.multisin + ggtitle("Multi-tônico") + scale_x_continuous(""),
+gg <- plot_grid(g.sin + ggtitle("Senoidal") + theme(axis.title.x=element_blank()),
+                g.sweep + ggtitle("Varredura de frequências") + theme(axis.title.x=element_blank()),
+                g.multisin + ggtitle("Multi-tônico") + theme(axis.title.x=element_blank()),
                 nrow=3)
 
-gg
+gg %>% plot
 ```
+
 ```{r}
 
 save.at <- "~/R/images/"

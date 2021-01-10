@@ -6,6 +6,7 @@ import numpy as np
 import json
 import matplotlib.pyplot as plt
 from simulation.simple_system import SimpleSystem, sinusoidal_fun, sweep_fun
+from simulation.excitation_signals import multisine_fun
 from pathlib import Path
 import logging 
 from tqdm import tqdm
@@ -39,6 +40,8 @@ def generate_data_episode(axis,
         force_fun = sweep_fun(T=config["time_per_episode"], f1=excitation_params["fmin"], f2=excitation_params["fmax"], axis=axis)
     elif config["excitation"].lower() == "sinusoidal":
         force_fun = sinusoidal_fun(config["f"],  axis=axis)
+    elif config["excitation"].lower() == "multisin":
+        force_fun = multisin_fun(config["f"],  axis=axis)
     else:
         raise ValueError(config["excitation"])
 
