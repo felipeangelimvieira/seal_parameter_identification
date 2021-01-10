@@ -42,8 +42,9 @@ def generate_data_episode(axis,
     else:
         raise ValueError(config["excitation"])
 
-    res = env.solve(dt=dt, t=t, force_fun=force_fun)
+    res = env.solve(dt=dt, t=t*2, force_fun=force_fun)
     df = pd.DataFrame(res)
+    df = df.iloc[df.shape[0]//2:]
 
     if config["excitation"].lower() == "sinusoidal":
         df["freq"] = config["f"]

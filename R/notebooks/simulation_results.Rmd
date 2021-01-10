@@ -72,21 +72,23 @@ theme_set(theme_pander())
 # Dados
 # ......................
 dt <- fread("~/simulation/data/sin/excitation_sinusoidal.csv")
-
+sweep.dt <- fread("~/simulation/data/sweep/excitation_sweep.csv")
+sweep.savgol.dt <- fread("~/simulation/data/sweep/excitation_sweep_savgol.csv")
 
 # Resultados
 # .......................
 coef.files <- c("~/simulation/data/sin/linreg.csv",
                 "~/simulation/data/sin/gradient.csv",
-                "~/simulation/data/sin/eiv.csv")
+                "~/simulation/data/sin/eiv.csv",
+                "~/simulation/data/sweep/linreg_sweep.csv")
 
 coef.dt <- data.table()
 for (f in coef.files) {
   coef.dt <- rbind(coef.dt,
                    fread(f))
 }
-model.colors <- data.table(color=c(.blue, .mauve, .orange),
-                           model=c("linreg", "gradient", "eiv"))
+model.colors <- data.table(color=c(.blue, .mauve, .orange, .bistre),
+                           model=c("linreg", "gradient", "eiv", "linreg_sweep"))
 coef.dt <- coef.dt %>% merge(., model.colors, by="model")
 
 
@@ -175,7 +177,7 @@ plot.coefs <- function(coefs) {
   for (sel.coef in coefs) {
     g <- ggplot(coef.dt) +
           geom_hline(yintercept = groundtruth[[sel.coef]], linetype="dashed", color=.gray, alpha=0.65) +
-          geom_point(aes_string(x="freq", y=sel.coef, color="color")) +
+          geom_point(data= coef.dt[!grepl("sweep", model, fixed=T)], aes_string(x="freq", y=sel.coef, color="color")) +
           geom_line(aes_string(x="freq", y=sel.coef, color="color"), alpha=0.5) +
           scale_color_identity("", labels=model.colors$model, breaks=model.colors$color,
                                guide="legend") + 
@@ -199,6 +201,65 @@ plot.coefs <- function(coefs) {
 
 g.coefs.k <- plot.coefs(c("kxx", "kxy", "kyx", "kyy"))
 g.coefs.c <- plot.coefs(c("cxx", "cxy", "cyx", "cyy"))
+
+plot(g.coefs.c)
+```
+
+
+```{r}
+
+library(RColorBrewer)
+n <- 60
+qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+
+sel.dt <- sweep.dt[(axis == "x")]#[3950:20000]
+
+
+plot.sweep.data <- function(sel.dt) {
+  
+  g1 <- ggplot(sel.dt) + geom_line(aes(x=t, y=x, group= episode , color = as.factor(episode)),
+                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) +
+                  guides(color=guide_legend(nrow=2))
+
+  g2 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fx, group= episode , color = as.factor(episode)),
+                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) + theme(legend.position = "none")
+  
+  g3 <- ggplot(sel.dt) + geom_line(aes(x=t, y=y, group= episode , color = as.factor(episode)),
+                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) +
+                                theme(legend.position = "none")
+
+  g4 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fy, group= episode , color = as.factor(episode)),
+                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) + theme(legend.position = "none")
+  
+  
+  mylegend<-g_legend(g1)
+  
+  g1 <- g1 + theme(legend.position = "none")
+  gs <- list(g1, g2, g3, g4)
+  
+  gg <- grid.arrange(arrangeGrob(grobs=gs, ncol=2, nrow=2, layout_matrix=rbind(c(1,3), c(2,4))), mylegend, heights=c(10, 1))
+  
+  
+  return(gg)
+}
+
+
+g.sweep.x <- plot.sweep.data(sweep.dt[(axis=="x")])
+g.sweep.y <- plot.sweep.data(sweep.dt[(axis=="y")])
+
+
+g.sweep.x <- plot.sweep.data(sweep.dt[(axis=="x") & (seal == F)])
+g.sweep.x <- plot.sweep.data(sweep.dt[(axis=="x") & (seal == T)])
+
+
+g.sweep.savgol.x <- plot.sweep.data(sweep.savgol.dt[(axis=="x")])
+g.sweep.savgol.y <- plot.sweep.data(sweep.savgol.dt[(axis=="y")])
+
+g.sweep.savgol.x <- plot.sweep.data(sweep.savgol.dt[(axis=="x") & (seal == F)])
+g.sweep.savgol.y <- plot.sweep.data(sweep.savgol.dt[(axis=="y") & (seal == T)])
+
+g.sweep.x
 ```
 
 

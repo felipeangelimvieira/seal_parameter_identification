@@ -1,0 +1,147 @@
+---
+title: "EDA - Template"
+author: "Exploratory Data Analysis"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+    #includes:
+    #    in_header: inputs_esteticos_para_relatorio/preamble.tex
+  html_document:
+     theme: spacelab
+     toc: true
+     toc_depth: 2
+     toc_float: true
+     smooth_scroll: false
+     number_sections: true
+     highlight: tango
+     code_folding: hide
+classoption: "aspectratio=169"
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T,
+                      message=FALSE,
+                      warning = F,
+                      results = 'asis',
+                      fig.align='center',  out.height= '100%', 
+                      fig.pos='H',
+                      out.width="100%",
+                      fig.margin=F)
+options("kableExtra.html.bsTable" = T)
+options(tinytex.verbose = TRUE)
+options(knitr.kable.NA = "-")
+rm(list = setdiff(objects(),c("main.directory","usuario", "params") ))
+
+.libPaths("~/R/lib")
+
+```
+
+```{r}
+
+library(ggplot2)
+library(data.table)
+library(pracma)
+library(dplyr)
+library(stats)
+library(ggthemes)
+library(grid)
+library(gridExtra)
+library(cowplot)
+library(jsonlite)
+
+
+theme_set(theme_pander() + theme(legend.position = "bottom"))
+```
+
+
+
+```{r}
+.blue   = "#1D7C96"
+.mauve  = "#d46edb"
+.orange = "#f27b1f"
+.bistre = "#876f5c"
+.gray   = "#6b8599"
+
+```
+
+```{r}
+
+
+plot.fun <- function(fun, n = 10000) {
+  g <- ggplot(data = data.frame(x = 0), mapping = aes(x = x)) +
+      stat_function(fun = fun, n=n) +
+    scale_y_continuous("") + 
+    scale_x_continuous("")
+  return(g)
+}
+
+fun <- function(x) sin(2*pi*x)
+g.sin <- plot.fun(fun) + xlim(0, 5)
+
+g.sin
+
+get.sweep <- function(f1, f2, T0){
+  f0 <- 1/T0
+  k1 <- f1/f0
+  k2 <- f2/f0
+  
+  b <- 2*pi*k1*f0
+  a <- pi*(k2 - k1)*(f0^2)
+  f <- function(x) {
+    
+    return(sin((a*x + b)*x))
+    
+  }
+}
+
+fun <- get.sweep(0, 69, 1)
+g.sweep <- plot.fun(fun) + xlim(0, 1)
+g.sweep
+
+
+
+
+get.multisin <- function(fs = seq(5, 69, 4)) {
+  
+  phases <- runif(length(fs), 0, pi)
+  
+  f <- function(t) {
+      out <- 0
+      for (i in 1:length(fs)) {
+        
+        out <- out + cos(2*pi*fs[[i]]*t + phases[[i]])/length(fs)
+      }
+      
+      
+      return(out)
+      
+  }
+  
+  return(f)
+} 
+
+fun <- get.multisin()
+g.multisin <- plot.fun(fun, n=1000) + xlim(0, 1)
+g.multisin
+
+
+gg <- plot_grid(g.sin + ggtitle("Senoidal") + scale_x_continuous(""),
+                g.sweep + ggtitle("Varredura de frequências") + scale_x_continuous(""),
+                g.multisin + ggtitle("Multi-tônico") + scale_x_continuous(""),
+                nrow=3)
+
+gg
+```
+```{r}
+
+save.at <- "~/R/images/"
+
+save.path <- function(x) paste0(save.at, x)
+ggsave(save.path("excitation_signals.png"), gg)
+
+```
+

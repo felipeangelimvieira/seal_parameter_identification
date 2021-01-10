@@ -82,7 +82,8 @@ sweep.savgol.dt <- fread("~/experiments/sweep_savgol.csv")
 coef.files <- c(
                 "~/experiments/sin_linreg.csv",
                 "~/experiments/sin_gradient.csv",
-                "~/experiments/sin_eiv.csv"
+                "~/experiments/sin_eiv.csv",
+                "~/experiments/sweep_linreg.csv"
                 )
 
 coef.dt <- data.table()
@@ -90,8 +91,8 @@ for (f in coef.files) {
   coef.dt <- rbind(coef.dt,
                    fread(f))
 }
-model.colors <- data.table(color=c(.blue, .mauve, .orange),
-                           model=c("linreg", "gradient", "eiv"))
+model.colors <- data.table(color=c(.blue, .mauve, .orange, .bistre),
+                           model=c("linreg", "gradient", "eiv", "linreg_sweep"))
 coef.dt <- coef.dt %>% merge(., model.colors, by="model")
 
 
@@ -166,7 +167,7 @@ plot.coefs <- function(coefs) {
   for (sel.coef in coefs) {
     g <- ggplot(coef.dt) +
           #geom_hline(yintercept = groundtruth[[sel.coef]], linetype="dashed", color=.gray, alpha=0.65) +
-          geom_point(aes_string(x="freq", y=sel.coef, color="color")) +
+          geom_point(data= coef.dt[!grepl("sweep", model, fixed=T)], aes_string(x="freq", y=sel.coef, color="color")) +
           geom_line(aes_string(x="freq", y=sel.coef, color="color"), alpha=0.5) +
           scale_color_identity("", labels=model.colors$model, breaks=model.colors$color,
                                guide="legend") + 
@@ -190,10 +191,14 @@ plot.coefs <- function(coefs) {
 
 g.coefs.k <- plot.coefs(c("kxx", "kxy", "kyx", "kyy"))
 g.coefs.c <- plot.coefs(c("cxx", "cxy", "cyx", "cyy"))
+
+plot(g.coefs.k)
+plot(g.coefs.c)
 ```
 
 
-```{r legacy, eval=F}
+```{r legacy, eval=T}
+
 library(RColorBrewer)
 n <- 60
 qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
@@ -231,22 +236,62 @@ plot.sweep.data <- function(sel.dt) {
 }
 
 
-g.x <- plot.sweep.data(sweep.dt[(axis=="x")])
-g.y <- plot.sweep.data(sweep.dt[(axis=="y")])
+g.sweep.x <- plot.sweep.data(sweep.dt[(axis=="x")])
+g.sweep.y <- plot.sweep.data(sweep.dt[(axis=="y")])
 
 
-g.savgol.x <- plot.sweep.data(sweep.savgol.dt[(axis=="x")])
-g.savgol.y <- plot.sweep.data(sweep.savgol.dt[(axis=="y")])
+g.sweep.savgol.x <- plot.sweep.data(sweep.savgol.dt[(axis=="x")])
+g.sweep.savgol.y <- plot.sweep.data(sweep.savgol.dt[(axis=="y")])
 
 
-ggplot()  + geom_line(data=sweep.dt[(episode == 0) & (axis == "x")],
-                      aes(x=t,y=fx), color=.orange, alpha=0.5) +
-  geom_line(data=sweep.savgol.dt[(episode == 0) & (axis == "x")],
-                      aes(x=t,y=fx), color=.mauve)
+g.sweep.savgol <- ggplot()  + geom_line(data=sweep.dt[(episode == 1) & (axis == "x")],
+                      aes(x=t,y=fx), color=.gray, alpha=0.5) +
+  geom_line(data=sweep.savgol.dt[(episode == 1) & (axis == "x")],
+                      aes(x=t,y=fx), color= .blue)
   
+g.sweep.savgol.dot <- ggplot() +
+                        geom_line(data=sweep.dt[(episode == 1) & (axis == "x")],
+                                  aes(x=t,y=x/shift(x)/(t/shift(t))), color= .gray, alpha=0.2) +
+                        geom_line(data=sweep.savgol.dt[(episode == 1) & (axis == "x")],
+                                  aes(x=t,y=x_dot), color= .blue) + 
+                          coord_cartesian(ylim=c(sweep.savgol.dt[(episode == 1) & (axis == "x"), min(x_dot)],
+                                                 sweep.savgol.dt[(episode == 1) & (axis == "x"), max(x_dot)]
+                                                 )) +
+                        scale_y_continuous("dxdt")
+g.sweep.savgol.dot %>% plot  
 
 ```
 
+```{r}
+
+plot.sin.data <- function(sel.dt) {
+  
+  g1 <- ggplot(sel.dt) + geom_line(aes(x=t, y=x)) +
+                  guides(color=guide_legend(nrow=2))
+
+  g2 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fx),
+                                 alpha=1)  + theme(legend.position = "none")
+  
+  g3 <- ggplot(sel.dt) + geom_line(aes(x=t, y=y),
+                                 alpha=1) +
+                                theme(legend.position = "none")
+
+  g4 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fy),
+                                 alpha=1) + theme(legend.position = "none")
+  
+  
+  gs <- list(g1, g2, g3, g4)
+  
+  gg <- plot_grid(g1, g2, g3, g4, ncol=2, nrow=2, align="v")
+  
+  
+  return(gg)
+}
+
+g.sin.4hz <- plot.sin.data(dt[(t <= 1/min.freq*4) & (axis == "x") & (freq == min.freq)])
+g.sin.69hz <- plot.sin.data(dt[(t <= 1/max.freq*4) & (axis == "x") & (freq == max.freq)])
+
+```
 
 
 ```{r Save images}
@@ -254,10 +299,24 @@ ggplot()  + geom_line(data=sweep.dt[(episode == 0) & (axis == "x")],
 save.at <- "~/R/images/"
 
 save.path <- function(x) paste0(save.at, x)
-ggsave(save.path(sprintf("data_experiments_%shz.png", min.freq)), g.data.69hz)
-ggsave(save.path(sprintf("data_experiments_%shz.png", max.freq)), g.data.69hz)
+ggsave(save.path(sprintf("data_experiments_%shz.png", min.freq)), g.sin.4hz)
+ggsave(save.path(sprintf("data_experiments_%shz.png", max.freq)), g.sin.69hz)
 ggsave(save.path("data_experiments_results_k.png"), g.coefs.k)
 ggsave(save.path("data_experiments_results_c.png"), g.coefs.c)
+
+ggsave(save.path("data_experiments_results_k.png"), g.coefs.k)
+ggsave(save.path("data_experiments_results_c.png"), g.coefs.c)
+
+
+ggsave(save.path("data_experiments_sweep_x.png"), g.sweep.x)
+ggsave(save.path("data_experiments_sweep_y.png"), g.sweep.y)
+
+ggsave(save.path("data_experiments_sweep_savgol_x.png"), g.sweep.savgol.x)
+ggsave(save.path("data_experiments_sweep_savgol_y.png"), g.sweep.savgol.y)
+ggsave(save.path("data_experiments_sweep_savgol.png"), g.sweep.savgol)
+ggsave(save.path("data_experiments_sweep_savgol_dot.png"), g.sweep.savgol.dot)
+
+
 
 ```
 

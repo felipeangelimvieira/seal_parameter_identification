@@ -55,7 +55,7 @@ def load_amb_sin_data(file):
 
 
 
-def append_derivatives_to_dataframe(df, column, dt, window_length=21, polyorder=3):
+def append_derivatives_to_dataframe(df, column, dt, window_length=71, polyorder=5):
 
     df = df.copy()
     x = df[column].values.flatten()

@@ -1,15 +1,18 @@
 import argparse
+
 import numpy as np
 from numpy.fft import fftshift, fftfreq, fft
 import matplotlib.pyplot as plt
 from pathlib import Path
 import pandas as pd
 import sys
+import os
+sys.path.append(os.path.dirname(__file__))
 from tqdm import tqdm
 from scipy.stats import trim_mean
-sys.path.append("..")
 from utils import *
 from utils import Shuffler
+
 try:
     import jax
     from jax import numpy as jnp
@@ -38,6 +41,31 @@ def add_derivatives(df):
 
     return all_data
 
+def _linreg_estimate(df, axis, *args, **kwargs):
+    X = df[["x_dot", "y_dot", "x", "y"]].values
+    df["fx_"] = df["fx"] - 1 * df["x_dot2"]
+    df["fy_"] = df["fy"] - 1 * df["y_dot2"]
+    sel_cols = []
+    if axis in ("x", "both"):
+        sel_cols.append("fx_")
+    if axis in ("y", "both"):
+        sel_cols.append("fy_")
+    for null_col in np.where(np.abs(X.sum(axis=0)) < 1e-9)[0]:
+        X[:, null_col] = np.random.normal(size=(X.shape[0]))*1e10
+
+    Y = df[sel_cols].values
+    params = np.linalg.inv(X.transpose() @ X) @ X.transpose() @ Y
+
+    if axis == "x":
+        params = np.concatenate([params, np.zeros_like(params)*np.nan], axis=1)
+    elif axis == "y":
+        params = np.concatenate([np.zeros_like(params) * np.nan, params], axis=1)
+
+    C = params[:2].transpose()
+    K = params[2:].transpose()
+
+    return {"C": C,
+            "K": K}
 
 def linreg_estimate(df, *args, **kwargs):
     # df["x_dot2"] =  df["x_dot2"].shift()
@@ -57,16 +85,23 @@ def linreg_estimate(df, *args, **kwargs):
             "K": K}
 
 
-def linreg_sweep_estimate(df, fmin, fmax, period, *args, **kwargs):
+def linreg_sweep_estimate(df, fmin, fmax, period, window=None, *args, **kwargs):
     # df["x_dot2"] =  df["x_dot2"].shift()
     # df["y_dot2"] =  df["y_dot2"].shift()
 
     params_history = []
-    window = 320
+
+    if not window:
+
+        group = df[(df.episode == 0) & (df.axis == df.axis.values[0])]
+        freq_per_s = (fmax - fmin) / period
+        dt = (group["t"] - group["t"].shift()).median()
+        window = int((1/dt)/freq_per_s)*4
+        print(f"Window: {window}")
 
     Cs_episodes = []
     Ks_episodes = []
-    #df = df[df["episode"] == 0]
+    #df = df[df["episode"] < 2]
     episode_length = -np.inf
     for (episode, axis), group in df.groupby(["episode", "axis"]):
         if group.shape[0]//window < episode_length:
@@ -76,7 +111,7 @@ def linreg_sweep_estimate(df, fmin, fmax, period, *args, **kwargs):
         Cs = []
         Ks = []
         for i in tqdm(range(group.shape[0] - window)):
-            params = linreg_estimate(group.iloc[i:(i + window)])
+            params = _linreg_estimate(group.iloc[i:(i + window)], axis=axis)
             K = params["K"]
             C = params["C"]
             Ks.append(K)
@@ -94,8 +129,8 @@ def linreg_sweep_estimate(df, fmin, fmax, period, *args, **kwargs):
     freq_per_window = window_t * freq_per_s
 
     Fs = np.arange(start=1, stop=Ks_episodes.shape[1], step=1)*freq_per_s*dt + fmin + freq_per_window/2
-    Ks = np.median(Ks_episodes, axis=0)
-    Cs = np.median(Cs_episodes, axis=0)
+    Ks = np.nanmean(Ks_episodes, axis=0)
+    Cs = np.nanmean(Cs_episodes, axis=0)
     return {"Fs" : Fs,
            "Cs": Cs,
             "Ks": Ks}
@@ -240,7 +275,19 @@ def get_coefficients(df, estimate_fun):
 
 def get_coefficients_sweep(df, estimate_fun, *args, **kwargs):
 
-    coefs = estimate_fun(df, *args, **kwargs)
+    if "seal" in df.columns:
+        wo_seal = estimate_fun(df[df.seal == False], *args, **kwargs)
+        with_seal = estimate_fun(df[df.seal == True], *args, **kwargs)
+        Cs = np.array(with_seal["Cs"]) - np.array(wo_seal["Cs"])
+        Ks = np.array(with_seal["Ks"]) - np.array(wo_seal["Ks"])
+
+
+        coefs = {"Fs" : wo_seal["Fs"],
+                "Cs" : Cs,
+                "Ks" : Ks}
+
+    else:
+        coefs = estimate_fun(df, *args, **kwargs)
 
     return coefs["Fs"], coefs["Ks"], coefs["Cs"]
 

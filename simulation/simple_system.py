@@ -115,7 +115,9 @@ def sweep_fun(T, f1, f2, axis="both", **kwargs):
     b = 2 * np.pi * f0
 
     def sweep(t):
-        f = np.sin((a * t * b) * t)
+        t = t % T
+
+        f = np.sin((a * t + b) * t)
         return f * mask
 
     return sweep

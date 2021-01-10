@@ -171,7 +171,7 @@ data.frame(y=res,
 
 ```{r}
 widths <- seq(11, 300, 20)
-orders <- seq(3, 12, 2)
+orders <- seq(2, 12, 1)
 
 impulse.response <- generate.impulse.response(2000)
 
@@ -324,10 +324,12 @@ dt.cutoff <- copy(dt)
 dt.cutoff <- dt.cutoff[ (freq >= 0) & (mag_ratio <= -3)]
 dt.cutoff <- dt.cutoff[, .SD[freq==min(freq)], by=.(order, width, derivative)]
 dt.cutoff[, estimated := as.numeric(order)/((as.numeric(as.character(width))))]
+dt.cutoff[, estimated_un := estimated*(1/0.000195)]
+dt.cutoff[, freq_un := freq*(1/0.000195)]
 
 plot.cutoff <- function(derivative, guide="colorbar") {
   .derivative <- derivative
-  g <- ggplot(dt.cutoff[ (derivative == .derivative) & (freq < 0.12)],
+  g <- ggplot(dt.cutoff[ (derivative == .derivative) & (freq < 0.12) & (as.numeric(as.character(order)) %% 2 == 1)],
        aes(x=as.numeric(order), y=freq, color=as.numeric(as.character(width)), group=width)) +
         geom_line() + 
         #geom_point(aes(y=estimated)) +
@@ -349,6 +351,15 @@ plot(g.cutoff.der0)
 plot(g.cutoff.der1)
 plot(g.cutoff.der2)
 
+.order  <- 5
+g.cutoff.un <- ggplot(dt.cutoff[order==.order]) +
+                geom_line(aes(x=width, y=freq_un,group=derivative, color=as.factor(derivative))) +
+                #geom_line(aes(x=width, y=estimated_un,group=derivative), color="black") +
+                scale_y_continuous("Frequência de corte (Hz)") +
+                scale_color_canva("Derivada") +
+                ggtitle(sprintf("Polinômio de grau %s", .order)) +
+                coord_cartesian(ylim=c(0, 100))
+  
 ```
 
 ```{r Save figures}
@@ -365,6 +376,8 @@ ggsave(paste0(save.at, "savitzky-golay-der2.png"), g.der2)
 ggsave(paste0(save.at, "savitzky-golay-cutoff-der0.png"), g.cutoff.der0)
 ggsave(paste0(save.at, "savitzky-golay-cutoff-der1.png"), g.cutoff.der1)
 ggsave(paste0(save.at, "savitzky-golay-cutoff-der2.png"), g.cutoff.der2)
+
+ggsave(paste0(save.at, "savitzky-golay-cutoff-un-order.png"), g.cutoff.un)
 
 
 ```

@@ -1,14 +1,15 @@
 {
     "excitation" : "sweep",
     "excitation_params" : {
-        "f1": 4,
-        "f2": 69
+        "fmin" : 4,
+        "fmax" : 69
     },
-    "episodes_x" : 2,
-    "episodes_y" : 2,
-    "episodes_both" : 2,
+    "episodes_x" : 1,
+    "episodes_y" : 1,
+    "episodes_both" : 0,
     "time_per_episode" : 1,
-    "K": [[4300, 430],[-430, 430]],
+    "K": [[4300, -430],
+          [430, 430]],
     "C": [[43, 0],
           [0, 43]],
     "kp" : 7.5e3,
