@@ -39,3 +39,20 @@ def sweep_fun(T, f1, f2, axis="both", **kwargs):
         return f * mask
 
     return sweep
+
+
+def _multisine(t, phases, amplitudes, frequencies):
+  result = 0
+  for i in range(len(amplitudes)):
+    result += amplitudes[i]*np.sin(2*np.pi*frequencies[i]*t + phases[i])
+  return result
+
+def multisine_fun(phases, amplitudes, frequencies, axis, *args, **kwargs):
+    from functools import partial
+    mask = parse_axis(axis)
+
+    multisine = partial(_multisine, phases=phases, amplitudes=amplitudes, frequencies=frequencies)
+    def masked_multisine(t):
+        return multisine(t)*mask
+
+    return masked_multisine

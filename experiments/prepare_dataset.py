@@ -57,6 +57,27 @@ def get_data_sin(data_path="../amb_sin/*"):
     return all_data
 
 
+def get_data_multisin(data_path="../amb_other/flat_schroeder_*"):
+    all_data = pd.DataFrame()
+    data_files = list(
+        filter(lambda x: "Hz" in x and x.endswith(".txt"), glob.glob(data_path))
+    )
+
+    for file in data_files:
+        print(file)
+        df = load_amb_sin_data(file).iloc[10000:]
+        df = prepare_df(df)
+
+        if "fx" in file:
+            df["axis"] = "x"
+        elif "fy" in file:
+            df["axis"] = "y"
+
+        all_data = pd.concat([all_data, df], ignore_index=True)
+
+    return all_data
+
+
 def load_amb_sin_data(file):
     df = pd.read_csv(file, sep="\t")
     df = df.iloc[3:]

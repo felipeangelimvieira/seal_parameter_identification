@@ -72,6 +72,7 @@ theme_set(theme_pander())
 # Dados
 # ......................
 dt <- fread("~/simulation/data/sin/excitation_sinusoidal.csv")
+multisine.dt <- fread("~/simulation/data/multisin/excitation_multisine.csv")
 sweep.dt <- fread("~/simulation/data/sweep/excitation_sweep.csv")
 sweep.savgol.dt <- fread("~/simulation/data/sweep/excitation_sweep_savgol.csv")
 
@@ -156,6 +157,32 @@ plot.data.freq <- function(sel.freq) {
 ```{r}
 g.data.4hz <- plot.data.freq(4)
 g.data.69hz <- plot.data.freq(69)
+
+```
+
+```{r multisine, eval=F}
+
+sel.dt <- multisine.dt[(t < 11) & (axis=="x") & (seal == F)]
+ggplot(sel.dt) + geom_line(aes(x=t, y=x))
+
+ggplot(multisine.dt[(t < 11) & (axis=="x") & (seal == T)]) + geom_line(aes(x=t, y=x))
+
+
+config.multisin <- jsonlite::read_json("~/simulation/data/multisin/config.json")
+excitation_params <-config.multisin$excitation_params
+freqs <- excitation_params$frequencies %>% unlist
+phases <- excitation_params$phases %>% unlist
+amplitudes <- excitation_params$amplitudes %>% unlist
+
+
+ones.matrix <- ones(nrow(sel.dt), length(phases))
+
+
+
+S <- sin(t(t(ones.matrix) * freqs * sel.dt[, t])*2*pi + t(t(ones.matrix) * phases))
+
+plot(S[1:1000, 3])
+inv(t(S) %*% S) %*% t(S) %*% sel.dt[, x]
 
 ```
 

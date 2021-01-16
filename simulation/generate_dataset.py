@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 import json
 import matplotlib.pyplot as plt
-from simulation.simple_system import SimpleSystem, sinusoidal_fun, sweep_fun
-from simulation.excitation_signals import multisine_fun
+from simulation.simple_system import SimpleSystem
+from simulation.excitation_signals import multisine_fun, sinusoidal_fun, sweep_fun
 from pathlib import Path
 import logging 
 from tqdm import tqdm
@@ -40,8 +40,8 @@ def generate_data_episode(axis,
         force_fun = sweep_fun(T=config["time_per_episode"], f1=excitation_params["fmin"], f2=excitation_params["fmax"], axis=axis)
     elif config["excitation"].lower() == "sinusoidal":
         force_fun = sinusoidal_fun(config["f"],  axis=axis)
-    elif config["excitation"].lower() == "multisin":
-        force_fun = multisin_fun(config["f"],  axis=axis)
+    elif config["excitation"].lower() == "multisine":
+        force_fun = multisine_fun( axis=axis, **config, **config["excitation_params"])
     else:
         raise ValueError(config["excitation"])
 
@@ -72,6 +72,22 @@ def post_processing_data(df, noise):
         df = add_noise_to_data(df, config)
     return df
 
+def generate_dataset_multisine(config):
+    all_data = pd.DataFrame()
+    for use_seal in [True, False]:
+        for i in tqdm(range(config.get("episodes_x", 0))):
+            df = generate_data_episode(axis="x", config=config, use_seal=use_seal)
+            df["episode"] = i
+            all_data = pd.concat([all_data, df], ignore_index=False)
+        for i in tqdm(range(config.get("episodes_y", 0))):
+            df = generate_data_episode(axis="y", config=config, use_seal=use_seal)
+            df["episode"] = i
+            all_data = pd.concat([all_data, df], ignore_index=False)
+        for i in tqdm(range(config.get("episodes_both", 0))):
+            df = generate_data_episode(axis="both", config=config, use_seal=use_seal)
+            df["episode"] = i
+            all_data = pd.concat([all_data, df], ignore_index=False)
+    return all_data
 
 def generate_dataset_sin(config):
     all_data = pd.DataFrame()
@@ -126,6 +142,8 @@ def generate_dataset(config):
         data = generate_dataset_sweep(config)
     elif config["excitation"] == "sinusoidal":
         data = generate_dataset_sin(config)
+    elif config["excitation"] == "multisine":
+        data = generate_dataset_multisine(config)
     else:
         raise ValueError(config["excitation"])
 
