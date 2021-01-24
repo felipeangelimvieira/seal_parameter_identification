@@ -12,6 +12,7 @@ from tqdm import tqdm
 from scipy.stats import trim_mean
 from utils import *
 from utils import Shuffler
+from models.sin_projection_linreg import sin_projection_linreg_estimate
 
 try:
     import jax
@@ -318,8 +319,11 @@ models = {
     "linreg" : linreg_estimate,
     "gradient" : optimization_estimate,
     "eiv" : eiv_estimate,
-    "linreg_sweep" : linreg_sweep_estimate
+    "linreg_sweep" : linreg_sweep_estimate,
+    "sin_projection_linreg" : sin_projection_linreg_estimate
 }
+
+
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--data_path', type=str, help=".csv filepath that must have x, y, fx, fy, t, freq, axis,"
@@ -329,6 +333,10 @@ if __name__ == "__main__":
     argparser.add_argument('--sweep_fmin', type=float, default=5)
     argparser.add_argument('--sweep_fmax', type=float, default=69)
     argparser.add_argument('--sweep_period', type=float, default=1)
+    argparser.add_argument('--frequencies', nargs="+",
+                           #default=[5,9,13,17,21,25,29,33,37,41,45,49,53,57,61,65,69],
+                           default = list(range(4,70,5)),
+                           )
     argparser.add_argument('--savgol', action="store_true")
     args = argparser.parse_args()
 
@@ -343,9 +351,9 @@ if __name__ == "__main__":
         df = add_derivatives(df)
 
 
-    if "sweep" in args.model:
+    if "sweep" in args.model or "sin_projection" in args.model:
         Fs, Ks, Cs = get_coefficients_sweep(df, estimate_fun, fmin=args.sweep_fmin, fmax=args.sweep_fmax,
-                                            period=args.sweep_period)
+                                            period=args.sweep_period, **vars(args))
     else:
         Fs, Ks, Cs = get_coefficients(df, estimate_fun)
 

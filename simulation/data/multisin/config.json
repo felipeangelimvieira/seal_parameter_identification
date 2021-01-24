@@ -8,9 +8,9 @@
         "amplitudes": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         "frequencies": [4, 9, 14, 19, 24, 29, 34, 39, 44, 49, 54, 59, 64, 69]
     },
-    "episodes_x" : 3,
-    "episodes_y" : 3,
-    "episodes_both" : 1,
+    "episodes_x" : 2,
+    "episodes_y" : 2,
+    "episodes_both" : 0,
     "time_per_episode" : 10,
     "K": [[4300, -430],
           [430, 430]],

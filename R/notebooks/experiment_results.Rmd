@@ -63,6 +63,7 @@ theme_set(theme_pander() + theme(legend.position = "bottom"))
 .orange = "#f27b1f"
 .bistre = "#876f5c"
 .gray   = "#6b8599"
+.green  = "#2a9d8f"
 
 ```
 
@@ -83,7 +84,8 @@ coef.files <- c(
                 "~/experiments/sin_linreg.csv",
                 "~/experiments/sin_gradient.csv",
                 "~/experiments/sin_eiv.csv",
-                "~/experiments/sweep_linreg.csv"
+                "~/experiments/sweep_linreg.csv",
+                "~/experiments/flat_schroeder_sin_linreg_projection.csv"
                 )
 
 coef.dt <- data.table()
@@ -91,8 +93,10 @@ for (f in coef.files) {
   coef.dt <- rbind(coef.dt,
                    fread(f))
 }
-model.colors <- data.table(color=c(.blue, .mauve, .orange, .bistre),
-                           model=c("linreg", "gradient", "eiv", "linreg_sweep"))
+
+coef.dt[model=="sin_projection_linreg", model := "linreg_multisine"]
+model.colors <- data.table(color=c(.blue, .mauve, .orange, .bistre, .green),
+                           model=c("linreg", "gradient", "eiv", "linreg_sweep", "linreg_multisine"))
 coef.dt <- coef.dt %>% merge(., model.colors, by="model")
 
 
