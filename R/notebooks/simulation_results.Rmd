@@ -199,19 +199,30 @@ g_legend<-function(a.gplot){
     
 }
 
-plot.coefs <- function(dt=coef.dt, coefs) {
+plot.coefs <- function(dt=coef.dt, coefs, zoom=F) {
   gs <- list()
   for (sel.coef in coefs) {
     g <- ggplot(dt) +
           geom_hline(yintercept = groundtruth[[sel.coef]], linetype="dashed", color=.gray, alpha=0.65) +
           geom_point(data= dt[!grepl("sweep", model, fixed=T)], aes_string(x="freq", y=sel.coef, color="color")) +
-          geom_line(aes_string(x="freq", y=sel.coef, color="color"), alpha=0.5) +
+          geom_line(data= dt[grepl("sweep", model, fixed=T)], aes_string(x="freq", y=sel.coef, color="color"), alpha=0.25) +
+          geom_line(data= dt[!grepl("sweep", model, fixed=T)], aes_string(x="freq", y=sel.coef, color="color"), alpha=0.5) +
           scale_color_identity("", labels=model.colors$model, breaks=model.colors$color,
                                guide="legend") + 
       ggtitle(sel.coef) + 
       theme(legend.position = "bottom")
+    
+    if (zoom) {
+      y.max <- coef.dt[model != "linreg_sweep", max(get(sel.coef), na.rm=T)]
+      y.min <- coef.dt[model != "linreg_sweep", min(get(sel.coef), na.rm=T)]
+      
+      g <- g + coord_cartesian(ylim=c(y.min, y.max))
+      
+    }
     gs[[sel.coef]] <- g
   }
+  
+
   
   
   
@@ -232,8 +243,12 @@ g.coefs.c <- plot.coefs(dt=coef.dt, coefs=c("cxx", "cxy", "cyx", "cyy"))
 plot(g.coefs.k)
 plot(g.coefs.c)
 
-g.coefs.k.wo.sweep <- plot.coefs(dt=coef.dt[model != "linreg_sweep"], coefs=c("kxx", "kxy", "kyx", "kyy"))
-g.coefs.c.wo.sweep <- plot.coefs(dt=coef.dt[model != "linreg_sweep"], coefs=c("cxx", "cxy", "cyx", "cyy"))
+g.coefs.k.wo.sweep <- plot.coefs(dt=coef.dt,
+                                 coefs=c("kxx", "kxy", "kyx", "kyy"),
+                                 zoom=T)
+g.coefs.c.wo.sweep <- plot.coefs(dt=coef.dt,
+                                 coefs=c("cxx", "cxy", "cyx", "cyy"),
+                                 zoom=T)
 
 plot(g.coefs.k.wo.sweep)
 plot(g.coefs.c.wo.sweep)
