@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 import sys
 import os
-sys.path.append(os.path.dirname(__file__))
+sys.path.append(os.path.dirname(Path(__file__).parent))
 from tqdm import tqdm
 from scipy.stats import trim_mean
 from utils import *
@@ -97,8 +97,11 @@ def linreg_sweep_estimate(df, fmin, fmax, period, window=None, *args, **kwargs):
         group = df[(df.episode == 0) & (df.axis == df.axis.values[0])]
         freq_per_s = (fmax - fmin) / period
         dt = (group["t"] - group["t"].shift()).median()
-        window = int((1/dt)/freq_per_s)*4
+        window = int(4/(dt*freq_per_s))
         print(f"Window: {window}")
+        
+        print(f"Frequency per s: {freq_per_s}")
+        print(f"Frequency per window: { window*dt * freq_per_s}")
 
     Cs_episodes = []
     Ks_episodes = []
@@ -124,12 +127,18 @@ def linreg_sweep_estimate(df, fmin, fmax, period, window=None, *args, **kwargs):
     Cs_episodes = np.array(Cs_episodes)
     Ks_episodes = np.array(Ks_episodes)
 
-    freq_per_s = (fmax - fmin)/period
+    freq_per_s = (fmax - fmin) / 1
+    print(f"Frequency per s: {freq_per_s}")
     dt = (group["t"] - group["t"].shift()).median()
     window_t = window*dt
     freq_per_window = window_t * freq_per_s
+    
+    print(f"Frequency per window: {freq_per_window}")
+    print(f"""size: {Ks_episodes.shape[1]}, freq_per_s = {freq_per_s},
+          dt = {dt}, fmin={fmin}, freq_per_window={freq_per_window}""")
 
     Fs = np.arange(start=1, stop=Ks_episodes.shape[1], step=1)*freq_per_s*dt + fmin + freq_per_window/2
+    print(Fs)
     Ks = np.nanmean(Ks_episodes, axis=0)
     Cs = np.nanmean(Cs_episodes, axis=0)
     return {"Fs" : Fs,
@@ -204,6 +213,8 @@ def eiv_estimate(df, freq, *args, **kwargs):
 
 
 def optimize(q, q_dot, q_dot2, f, batch_size=10000, step_size=1e3, epochs=7):
+    from jax import random
+    
     rng = random.PRNGKey(15)
     params = initialize_params(rng, dims=2, scale=1)
     batch_forward_pass = get_batch_forward_pass(mass=[[1, 0], [0, 1]], g=jnp.array([[0], [0]]))
@@ -332,10 +343,10 @@ if __name__ == "__main__":
     argparser.add_argument('--model', type=str)
     argparser.add_argument('--sweep_fmin', type=float, default=5)
     argparser.add_argument('--sweep_fmax', type=float, default=69)
-    argparser.add_argument('--sweep_period', type=float, default=1)
+    argparser.add_argument('--sweep_period', type=float, default=2)
     argparser.add_argument('--frequencies', nargs="+",
-                           #default=[5,9,13,17,21,25,29,33,37,41,45,49,53,57,61,65,69],
-                           default = list(range(4,70,5)),
+                           default=[5,9,13,17,21,25,29,33,37,41,45,49,53,57,61,65,69], #experimento
+                           #default = list(range(4,70,5)),
                            )
     argparser.add_argument('--savgol', action="store_true")
     args = argparser.parse_args()

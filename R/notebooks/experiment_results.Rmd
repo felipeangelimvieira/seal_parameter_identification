@@ -54,7 +54,7 @@ library(cowplot)
 library(jsonlite)
 
 
-theme_set(theme_pander() + theme(legend.position = "bottom"))
+theme_set(theme_pander(base_size = 10) + theme(legend.position = "bottom"))
 ```
 
 ```{r}
@@ -80,12 +80,14 @@ sweep.savgol.dt <- fread("~/experiments/sweep_savgol.csv")
 
 # Resultados
 # .......................
+
+
 coef.files <- c(
-                "~/experiments/sin_linreg.csv",
-                "~/experiments/sin_gradient.csv",
-                "~/experiments/sin_eiv.csv",
-                "~/experiments/sweep_linreg.csv",
-                "~/experiments/flat_schroeder_sin_linreg_projection.csv"
+                "~/experiments/results_eiv.csv",
+                "~/experiments/results_linreg_multisine.csv",
+                "~/experiments/results_gradient.csv",
+                #"~/experiments/results_linreg_sweep.csv",
+                "~/experiments/results_linreg.csv"
                 )
 
 coef.dt <- data.table()
@@ -96,7 +98,8 @@ for (f in coef.files) {
 
 coef.dt[model=="sin_projection_linreg", model := "linreg_multisine"]
 model.colors <- data.table(color=c(.blue, .mauve, .orange, .bistre, .green),
-                           model=c("linreg", "gradient", "eiv", "linreg_sweep", "linreg_multisine"))
+                           model=c("linreg", "gradient", "eiv", "linreg_sweep", "linreg_multisine"),
+                           marker=c(0, 1, 2, 3, 4))
 coef.dt <- coef.dt %>% merge(., model.colors, by="model")
 
 
@@ -128,7 +131,7 @@ plot.data.freq <- function(sel.freq) {
                                labels = c("x", "y"), breaks=c(.blue, .orange),
                                guide = "legend") +
           scale_y_continuous(name="Posição (m)") + 
-          theme_pander()
+          theme_pander(base_size = 10)
   
   g2 <- ggplot(sel.dt[axis=="x"]) +
           geom_line(aes(x=t, y=fx, color=.blue)) +
@@ -137,7 +140,7 @@ plot.data.freq <- function(sel.freq) {
                                labels = c("Fx", "Fy"), breaks=c(.blue, .orange),
                                guide = "legend") +
           scale_y_continuous(name="Força (N)") + 
-          theme_pander()
+          theme_pander(base_size = 10)
   
   g <- plot_grid(g1, g2, ncol=1, align="v")
 
@@ -166,15 +169,29 @@ g_legend<-function(a.gplot){
     
 }
 
-plot.coefs <- function(coefs) {
+plot.coefs <- function(coefs, y.label=NULL) {
   gs <- list()
+  
+  if (is.null(y.label)) {
+    if ("kxx" %in% coefs) {
+      y.label <- "Stiffness [N/m]"
+    } else if ("cxx" %in% coefs) {
+      y.label <- "Damping [Ns/m]"
+    }
+  }
+  
   for (sel.coef in coefs) {
     g <- ggplot(coef.dt) +
           #geom_hline(yintercept = groundtruth[[sel.coef]], linetype="dashed", color=.gray, alpha=0.65) +
-          geom_point(data= coef.dt[!grepl("sweep", model, fixed=T)], aes_string(x="freq", y=sel.coef, color="color")) +
-          geom_line(aes_string(x="freq", y=sel.coef, color="color"), alpha=0.5) +
-          scale_color_identity("", labels=model.colors$model, breaks=model.colors$color,
+          geom_point(data= coef.dt[!grepl("sweep", model, fixed=T)], aes_string(x="freq", y=sel.coef, color="color", shape="marker")) +
+          geom_line(aes_string(x="freq", y=sel.coef, color="color", shape="marker"), alpha=0.5) +
+          scale_color_identity("", labels=model.colors$model,
+                               breaks=model.colors$color,
                                guide="legend") + 
+      scale_shape_identity("", labels=model.colors$model,
+                           breaks=model.colors$marker, guide="legend") + 
+      scale_x_continuous("Frequency [Hz]") +
+      scale_y_continuous(y.label) +
       ggtitle(sel.coef) + 
       theme(legend.position = "bottom")
     gs[[sel.coef]] <- g
@@ -201,87 +218,76 @@ plot(g.coefs.c)
 ```
 
 
-```{r legacy, eval=T}
+```{r}
 
-library(RColorBrewer)
-n <- 60
-qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
-col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+coef.long.dt <- melt(coef.dt, id.vars = c("model", "freq", "color", "marker", "savgol"))
+coef.long.dt <- merge(coef.long.dt[model != "eiv"], coef.long.dt[model == "eiv", .(freq, variable, baseline_value = value)],
+                      by=c('freq', 'variable'))
 
-sel.dt <- sweep.dt[(axis == "x")]#[3950:20000]
-
-
-plot.sweep.data <- function(sel.dt) {
+rmse <- function(x) {
   
-  g1 <- ggplot(sel.dt) + geom_line(aes(x=t, y=x, group= episode , color = as.factor(episode)),
-                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) +
-                  guides(color=guide_legend(nrow=2))
-
-  g2 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fx, group= episode , color = as.factor(episode)),
-                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) + theme(legend.position = "none")
-  
-  g3 <- ggplot(sel.dt) + geom_line(aes(x=t, y=y, group= episode , color = as.factor(episode)),
-                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) +
-                                theme(legend.position = "none")
-
-  g4 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fy, group= episode , color = as.factor(episode)),
-                                 alpha=0.5) + scale_color_manual("Episódio", values=col_vector) + theme(legend.position = "none")
-  
-  
-  mylegend<-g_legend(g1)
-  
-  g1 <- g1 + theme(legend.position = "none")
-  gs <- list(g1, g2, g3, g4)
-  
-  gg <- grid.arrange(arrangeGrob(grobs=gs, ncol=2, nrow=2, layout_matrix=rbind(c(1,3), c(2,4))), mylegend, heights=c(10, 1))
-  
-  
-  return(gg)
+  sqrt(mean(x^2))
 }
 
-
-g.sweep.x <- plot.sweep.data(sweep.dt[(axis=="x")])
-g.sweep.y <- plot.sweep.data(sweep.dt[(axis=="y")])
+error <- coef.long.dt[, .(error = rmse(value - baseline_value)), by=.(model, variable, color)]
 
 
-g.sweep.savgol.x <- plot.sweep.data(sweep.savgol.dt[(axis=="x")])
-g.sweep.savgol.y <- plot.sweep.data(sweep.savgol.dt[(axis=="y")])
 
+coefs <- c("kxx", "kxy", "kyx", "kyy")
 
-g.sweep.savgol <- ggplot()  + geom_line(data=sweep.dt[(episode == 1) & (axis == "x")],
-                      aes(x=t,y=fx), color=.gray, alpha=0.5) +
-  geom_line(data=sweep.savgol.dt[(episode == 1) & (axis == "x")],
-                      aes(x=t,y=fx), color= .blue)
+plot.errors <- function(error, coefs) {
+  gs <- list()
+for (coef in coefs) {
+  g <- ggplot(error[variable == coef]) + geom_col(aes(x=model, y=error, fill=color)) +
+  scale_fill_identity("",
+                       breaks=error$color,
+                       labels=error$model, guide="none")  +
+  scale_y_continuous(coef) 
   
-g.sweep.savgol.dot <- ggplot() +
-                        geom_line(data=sweep.dt[(episode == 1) & (axis == "x")],
-                                  aes(x=t,y=x/shift(x)/(t/shift(t))), color= .gray, alpha=0.2) +
-                        geom_line(data=sweep.savgol.dt[(episode == 1) & (axis == "x")],
-                                  aes(x=t,y=x_dot), color= .blue) + 
-                          coord_cartesian(ylim=c(sweep.savgol.dt[(episode == 1) & (axis == "x"), min(x_dot)],
-                                                 sweep.savgol.dt[(episode == 1) & (axis == "x"), max(x_dot)]
-                                                 )) +
-                        scale_y_continuous("dxdt")
-g.sweep.savgol.dot %>% plot  
+  gs[[coef]] <- g
+}
+
+  
+gg <- grid.arrange(arrangeGrob(grobs=gs))
+
+
+return(gg)
+}
+
+errors.k <- plot.errors(error, c("kxx", "kxy", "kyx", "kyy"))
+errors.c <- plot.errors(error, c("cxx", "cxy", "cyx", "cyy"))
 
 ```
+
 
 ```{r}
 
 plot.sin.data <- function(sel.dt) {
   
+  scale.x <- scale_x_continuous("time [s]")
   g1 <- ggplot(sel.dt) + geom_line(aes(x=t, y=x)) +
+    scale_y_continuous("Displacement, horizontal axis [m]") +
+    scale.x +
+                                theme(legend.position = "none") +
                   guides(color=guide_legend(nrow=2))
 
   g2 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fx),
-                                 alpha=1)  + theme(legend.position = "none")
+                                 alpha=1)  +
+    scale_y_continuous("Force, horizontal axis [N]") +
+    scale.x +
+    theme(legend.position = "none")
   
   g3 <- ggplot(sel.dt) + geom_line(aes(x=t, y=y),
                                  alpha=1) +
+    scale_y_continuous("Displacement, vertical axis [m]") +
+    scale.x +
                                 theme(legend.position = "none")
 
   g4 <- ggplot(sel.dt) + geom_line(aes(x=t, y=fy),
-                                 alpha=1) + theme(legend.position = "none")
+                                 alpha=1) +
+    scale_y_continuous("Force, vertical axis [N]") +
+    scale.x +
+    theme(legend.position = "none")
   
   
   gs <- list(g1, g2, g3, g4)
@@ -293,6 +299,8 @@ plot.sin.data <- function(sel.dt) {
 }
 
 g.sin.4hz <- plot.sin.data(dt[(t <= 1/min.freq*4) & (axis == "x") & (freq == min.freq)])
+plot(g.sin.4hz)
+
 g.sin.69hz <- plot.sin.data(dt[(t <= 1/max.freq*4) & (axis == "x") & (freq == max.freq)])
 
 ```
@@ -308,8 +316,9 @@ ggsave(save.path(sprintf("data_experiments_%shz.png", max.freq)), g.sin.69hz)
 ggsave(save.path("data_experiments_results_k.png"), g.coefs.k)
 ggsave(save.path("data_experiments_results_c.png"), g.coefs.c)
 
-ggsave(save.path("data_experiments_results_k.png"), g.coefs.k)
-ggsave(save.path("data_experiments_results_c.png"), g.coefs.c)
+ggsave(save.path("data_experiments_errors_k.png"), errors.k)
+ggsave(save.path("data_experiments_errors_c.png"), errors.c)
+
 
 
 ggsave(save.path("data_experiments_sweep_x.png"), g.sweep.x)
